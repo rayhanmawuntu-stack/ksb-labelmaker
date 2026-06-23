@@ -60,7 +60,7 @@
     }
     .scatter-item:hover { transform: rotate(var(--r, 0deg)) translateY(-8px) scale(1.06); z-index: 4; }
     .scatter-item .item-num {
-      position: absolute; font-size: 13px; color: var(--w95-light);
+      position: absolute; font-size: 24px; color: var(--w95-light);
       font-family: 'VCR', monospace; text-shadow: 1px 1px 0 #000; white-space: nowrap;
     }
     .scatter-item .item-img {
@@ -69,20 +69,20 @@
     }
     .scatter-item:hover .item-img { filter: drop-shadow(4px 8px 12px rgba(0,0,0,0.4)); }
 
-    #scatterSingle { top: 12%; left: 14%; --r: -9deg; --w: 200px; }
+    #scatterSingle { top: 10%; left: 12%; --r: -9deg; --w: 280px; }
     #scatterSingle .item-num { bottom: -18px; left: -6px; }
 
-    #scatterBatch { top: 13%; right: 14%; --r: 8deg; --w: 180px; }
+    #scatterBatch { top: 10%; right: 12%; --r: 8deg; --w: 260px; }
     #scatterBatch .item-num { bottom: -18px; right: -6px; }
 
-    #scatterAccent { top: 16%; left: 50%; --r: -5deg; --w: 220px; transform: translateX(-50%) rotate(var(--r,0deg)); }
+    #scatterAccent { top: 12%; left: 50%; --r: -5deg; --w: 320px; transform: translateX(-50%) rotate(var(--r,0deg)); }
     #scatterAccent:hover { transform: translateX(-50%) rotate(var(--r,0deg)) translateY(-8px) scale(1.06); }
     #scatterAccent .item-num { top: -18px; left: 50%; transform: translateX(-50%); }
 
-    #scatterHistory { bottom: 14%; left: 14%; --r: 6deg; --w: 170px; }
+    #scatterHistory { bottom: 10%; left: 12%; --r: 6deg; --w: 250px; }
     #scatterHistory .item-num { top: -18px; left: -6px; }
 
-    #scatterMine { bottom: 13%; right: 14%; --r: -7deg; --w: 175px; }
+    #scatterMine { bottom: 10%; right: 12%; --r: -7deg; --w: 260px; }
     #scatterMine .item-num { top: -18px; right: -6px; }
 
     .desk-center { position: relative; z-index: 3; text-align: center; }
@@ -738,12 +738,12 @@
     @media (max-width: 600px) {
       .desk-title { font-size: 32px; }
       .desk-pill { padding: 8px 24px; font-size: 12px; }
-      #scatterSingle { top: 8%; left: 8%; --w: 120px; }
-      #scatterBatch { top: 8%; right: 8%; --w: 110px; }
-      #scatterAccent { top: 10%; --w: 150px; }
-      #scatterHistory { bottom: 8%; left: 8%; --w: 105px; }
-      #scatterMine { bottom: 8%; right: 8%; --w: 108px; }
-      .scatter-item .item-num { font-size: 15px; }
+      #scatterSingle { top: 6%; left: 6%; --w: 160px; }
+      #scatterBatch { top: 6%; right: 6%; --w: 150px; }
+      #scatterAccent { top: 8%; --w: 180px; }
+      #scatterHistory { bottom: 6%; left: 6%; --w: 140px; }
+      #scatterMine { bottom: 6%; right: 6%; --w: 150px; }
+      .scatter-item .item-num { font-size: 20px; }
     }
   </style>
 <base target="_blank">
@@ -1264,7 +1264,7 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
   <div id="printArea" style="display:none;"></div>
 
   <div class="w95-taskbar" id="w95Taskbar" style="display: none;">
-    <button class="w95-start-btn" data-action="goHome()"><span style="font-size: 14px;">🪟</span><span>Start</span></button>
+    <button class="w95-start-btn" data-action="goHome()"><img src="https://file.garden/ad-wGPVIV3ilAD_L/WORK%20PROJECT/LABEL%20MAKER/Icon/Start.png" alt="Start" class="w95-start-icon" style="width:16px;height:16px;object-fit:contain;"><span>Start</span></button>
     <div class="w95-taskbar-divider"></div>
     <div class="w95-taskbar-time" id="taskbarTime">12:00 PM</div>
   </div>
