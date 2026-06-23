@@ -218,6 +218,14 @@
       page-break-inside: avoid; page-break-after: always;
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; display: flex; flex-direction: column;
     }
+    .ksb-label .recipient-section {
+      padding-right: 80px;
+    }
+    .ksb-label .label-name,
+    .ksb-label .label-attn {
+      padding-right: 10px;
+      word-break: break-word;
+    }
     .ksb-label:last-child { page-break-after: auto; }
     .ksb-label-inner { position: relative; display: flex; flex-direction: column; height: 100%; }
     .ksb-logo { position: absolute; top: 0; right: 0; width: 70px; height: auto; opacity: 0.9; }
@@ -405,30 +413,28 @@
     @media print {
       /* ══════════════════════════════════════════════════════
          PRINT SYSTEM — reliable single-page-per-label layout
-
-         Key principles:
-         - Each .print-page is one physical sheet
-         - Use explicit mm heights for grid rows (1fr is unreliable in print)
-         - No position:fixed (causes content duplication in browsers)
-         - Single clean border, no outline tricks
-         - Logo sizes proportional to label dimensions
          ══════════════════════════════════════════════════════ */
 
       @page { size: A4 landscape; margin: 10mm; }
 
-      /* Hide everything except printArea */
-      body * { visibility: hidden !important; }
-      #printArea, #printArea * { visibility: visible !important; }
+      /* Hide ALL non-print content completely */
+      body { background: #fff !important; }
+      .home-page, .w95-desktop, .minesweeper-desktop, .calculator-desktop,
+      .w95-taskbar, .app-footer, .ms-game-over-overlay {
+        display: none !important;
+      }
 
       #printArea {
         display: block !important;
-        position: absolute !important;
-        top: 0 !important;
-        left: 0 !important;
-        width: 100%;
-        margin: 0;
-        padding: 0;
+        position: static !important;
+        top: auto !important;
+        left: auto !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        visibility: visible !important;
       }
+      #printArea * { visibility: visible !important; }
 
       /* Each .print-page = one sheet. position:relative with explicit height.
          A4 landscape printable: 277mm × 190mm (with 10mm margins) */
@@ -500,6 +506,16 @@
         box-sizing: border-box !important;
         position: relative !important;
         overflow: hidden !important;
+      }
+      /* Prevent text from overlapping with the KSB logo */
+      .ksb-label .recipient-section {
+        padding-right: 5mm !important;
+      }
+      .ksb-label .label-name,
+      .ksb-label .label-attn {
+        padding-right: 5mm !important;
+        word-break: break-word !important;
+        hyphens: auto !important;
       }
       .ksb-label-inner {
         position: relative !important;
