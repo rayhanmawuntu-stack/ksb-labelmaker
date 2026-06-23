@@ -410,15 +410,23 @@
       content: '✓'; position: absolute; top: -2px; left: 1px; font-size: 12px; color: var(--w95-text);
     }
 
-    @media print {
-      /* ══════════════════════════════════════════════════════
-         PRINT SYSTEM — reliable single-page-per-label layout
-         ══════════════════════════════════════════════════════ */
+                @media print {
+      /*
+        CRITICAL: Use 'size: auto' to avoid Chrome bug where @page landscape
+        hides the Orientation dropdown entirely. User must manually select
+        Landscape in the print dialog. A JS alert reminds them before printing.
+      */
+      @page { size: auto; margin: 8mm; }
 
-      @page { size: A4 landscape; margin: 10mm; }
+      html, body {
+        width: 100% !important;
+        height: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+        overflow: hidden !important;
+      }
 
-      /* Hide ALL non-print content completely */
-      body { background: #fff !important; }
       .home-page, .w95-desktop, .minesweeper-desktop, .calculator-desktop,
       .w95-taskbar, .app-footer, .ms-game-over-overlay {
         display: none !important;
@@ -427,19 +435,18 @@
       #printArea {
         display: block !important;
         position: static !important;
-        top: auto !important;
-        left: auto !important;
         width: 100% !important;
+        height: 100% !important;
         margin: 0 !important;
         padding: 0 !important;
         visibility: visible !important;
       }
       #printArea * { visibility: visible !important; }
 
-      /* Each .print-page = one sheet. position:relative with explicit height.
-         A4 landscape printable: 277mm × 190mm (with 10mm margins) */
+      /* Each sheet = one landscape page. We design for 277mm x 190mm
+         printable area (A4 landscape with 10mm margins). The user MUST
+         select Landscape in the print dialog for this to render correctly. */
       .print-page {
-        position: relative !important;
         width: 277mm !important;
         height: 190mm !important;
         display: grid !important;
@@ -451,13 +458,13 @@
         align-items: stretch !important;
         justify-items: stretch !important;
         overflow: hidden !important;
+        background: #fff !important;
       }
       .print-page:last-child {
         page-break-after: auto !important;
         break-after: auto !important;
       }
 
-      /* ── Grid definitions with explicit mm row heights ── */
       .print-page.layout-1x1 {
         grid-template-columns: 1fr;
         grid-template-rows: 190mm;
@@ -485,11 +492,10 @@
       }
       .print-page.layout-3x3 {
         grid-template-columns: repeat(3, 1fr);
-        grid-template-rows: 59mm 59mm 59mm;
-        gap: 6mm;
+        grid-template-rows: 60mm 60mm 60mm;
+        gap: 5mm;
       }
 
-      /* ── Base label reset ── */
       .ksb-label {
         width: 100% !important;
         max-width: 100% !important;
@@ -507,16 +513,6 @@
         position: relative !important;
         overflow: hidden !important;
       }
-      /* Prevent text from overlapping with the KSB logo */
-      .ksb-label .recipient-section {
-        padding-right: 5mm !important;
-      }
-      .ksb-label .label-name,
-      .ksb-label .label-attn {
-        padding-right: 5mm !important;
-        word-break: break-word !important;
-        hyphens: auto !important;
-      }
       .ksb-label-inner {
         position: relative !important;
         display: flex !important;
@@ -529,6 +525,7 @@
         display: flex !important;
         flex-direction: column !important;
         min-height: 0 !important;
+        padding-right: 5mm !important;
       }
       .sender-section {
         flex: 0 0 auto !important;
@@ -537,15 +534,15 @@
       .label-divider {
         background: #000 !important;
         flex: 0 0 auto !important;
-        margin: 3mm 0 !important;
+        margin: 2mm 0 !important;
         height: 1.5pt !important;
       }
 
-      /* ── Base element styling ── */
       .label-name {
         font-weight: 800 !important;
         text-transform: uppercase !important;
         letter-spacing: 0.3px !important;
+        word-break: break-word !important;
       }
       .label-address {
         font-weight: 600 !important;
@@ -555,6 +552,7 @@
       .label-attn {
         font-style: italic !important;
         text-transform: uppercase !important;
+        word-break: break-word !important;
       }
       .label-heading {
         color: #444 !important;
@@ -565,11 +563,6 @@
         color: #333 !important;
       }
 
-      /* ══════════════════════════════════════════════════════
-         LAYOUT-SPECIFIC TYPOGRAPHY, SPACING & LOGO SIZES
-         ══════════════════════════════════════════════════════ */
-
-      /* 1×1  ~277 × 190mm — one big label per page */
       .print-page.layout-1x1 .ksb-label   { padding: 12mm 14mm !important; }
       .print-page.layout-1x1 .ksb-logo    { width: 160px !important; top: 10mm !important; right: 12mm !important; }
       .print-page.layout-1x1 .label-heading { font-size: 12pt !important; margin-bottom: 2mm !important; }
@@ -578,7 +571,6 @@
       .print-page.layout-1x1 .label-address { font-size: 18pt !important; line-height: 1.45 !important; }
       .print-page.layout-1x1 .label-phone   { font-size: 14pt !important; margin-top: 3mm !important; }
 
-      /* 1×2  ~277 × 91mm — two tall landscape labels */
       .print-page.layout-1x2 .ksb-label   { padding: 7mm 10mm !important; }
       .print-page.layout-1x2 .ksb-logo    { width: 110px !important; top: 5mm !important; right: 8mm !important; }
       .print-page.layout-1x2 .label-heading { font-size: 10pt !important; margin-bottom: 1.5mm !important; }
@@ -587,7 +579,6 @@
       .print-page.layout-1x2 .label-address { font-size: 13pt !important; line-height: 1.4 !important; }
       .print-page.layout-1x2 .label-phone   { font-size: 11pt !important; margin-top: 2mm !important; }
 
-      /* 2×2  ~133 × 91mm — four labels */
       .print-page.layout-2x2 .ksb-label   { padding: 6mm 8mm !important; }
       .print-page.layout-2x2 .ksb-logo    { width: 85px !important; top: 4mm !important; right: 6mm !important; }
       .print-page.layout-2x2 .label-heading { font-size: 9pt !important; margin-bottom: 1mm !important; }
@@ -596,7 +587,6 @@
       .print-page.layout-2x2 .label-address { font-size: 11.5pt !important; line-height: 1.38 !important; }
       .print-page.layout-2x2 .label-phone   { font-size: 10pt !important; margin-top: 1.5mm !important; }
 
-      /* 2×3  ~133 × 59mm — six labels, tight height */
       .print-page.layout-2x3 .ksb-label   { padding: 4mm 6mm !important; }
       .print-page.layout-2x3 .ksb-logo    { width: 65px !important; top: 3mm !important; right: 5mm !important; }
       .print-page.layout-2x3 .label-heading { font-size: 7.5pt !important; margin-bottom: 0.5mm !important; }
@@ -605,7 +595,6 @@
       .print-page.layout-2x3 .label-address { font-size: 9.5pt !important; line-height: 1.3 !important; }
       .print-page.layout-2x3 .label-phone   { font-size: 8pt !important; margin-top: 0.5mm !important; }
 
-      /* 3×2  ~89 × 91mm — six labels, tight width */
       .print-page.layout-3x2 .ksb-label   { padding: 5mm 6mm !important; }
       .print-page.layout-3x2 .ksb-logo    { width: 60px !important; top: 4mm !important; right: 4mm !important; }
       .print-page.layout-3x2 .label-heading { font-size: 8pt !important; margin-bottom: 0.8mm !important; }
@@ -614,15 +603,14 @@
       .print-page.layout-3x2 .label-address { font-size: 9.5pt !important; line-height: 1.32 !important; }
       .print-page.layout-3x2 .label-phone   { font-size: 8pt !important; margin-top: 0.8mm !important; }
 
-      /* 3×3  ~89 × 59mm — nine labels per page */
-      .print-page.layout-3x3 .ksb-label   { padding: 3mm 5mm !important; }
-      .print-page.layout-3x3 .ksb-logo    { width: 48px !important; top: 2mm !important; right: 3mm !important; }
+      .print-page.layout-3x3 .ksb-label   { padding: 3mm 4mm !important; }
+      .print-page.layout-3x3 .ksb-logo    { width: 50px !important; top: 2mm !important; right: 3mm !important; }
       .print-page.layout-3x3 .label-heading { font-size: 7pt !important; margin-bottom: 0.5mm !important; }
       .print-page.layout-3x3 .label-name    { font-size: 11pt !important; margin-bottom: 0.8mm !important; line-height: 1.15 !important; letter-spacing: 0.1px !important; }
       .print-page.layout-3x3 .label-attn    { font-size: 8pt !important; margin-bottom: 1mm !important; }
       .print-page.layout-3x3 .label-address { font-size: 8.5pt !important; line-height: 1.3 !important; }
       .print-page.layout-3x3 .label-phone   { font-size: 7pt !important; margin-top: 0.5mm !important; }
-    }
+    }    }
 
     .w95-list { border: 2px inset var(--w95-dark); background: var(--w95-light); max-height: 400px; overflow: auto; }
     .w95-list-item { padding: 6px 8px; border-bottom: 1px solid var(--w95-gray); display: flex; justify-content: space-between; align-items: center; font-size: 11px; }
@@ -1756,6 +1744,8 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
         return;
       }
       fitFontsToText();
+      // Remind user to select Landscape orientation in the print dialog
+      alert('Please select LANDSCAPE orientation in the print dialog, then click Print.');
       window.print();
     }
 
