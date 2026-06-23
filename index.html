@@ -733,7 +733,91 @@
       #scatterMine { bottom: 6%; right: 6%; --w: 150px; }
       .scatter-item .item-num { font-size: 20px; }
     }
-  </style>
+  
+    /* ══════════════════════════════════════════════════════
+       WINDOWS 95 START MENU
+       ══════════════════════════════════════════════════════ */
+    .start-menu {
+      display: none;
+      position: fixed;
+      bottom: 28px;
+      left: 2px;
+      background: var(--w95-gray);
+      border: 2px outset var(--w95-light);
+      box-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+      z-index: 1001;
+      width: 200px;
+      padding: 2px;
+    }
+    .start-menu.show {
+      display: block;
+    }
+    .start-menu-header {
+      background: linear-gradient(180deg, var(--w95-blue) 0%, var(--w95-blue-light) 100%);
+      color: var(--w95-light);
+      padding: 4px 6px;
+      font-weight: bold;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 2px;
+    }
+    .start-menu-header .start-logo-text {
+      font-family: 'VCR', monospace;
+      font-size: 14px;
+      letter-spacing: 1px;
+    }
+    .start-menu-item {
+      padding: 6px 8px;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .start-menu-item:hover {
+      background: var(--w95-blue);
+      color: var(--w95-light);
+    }
+    .start-menu-item .menu-icon {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .start-menu-sep {
+      height: 1px;
+      background: var(--w95-dark);
+      border-bottom: 1px solid var(--w95-light);
+      margin: 2px 4px;
+    }
+    .start-menu-label {
+      padding: 2px 8px;
+      font-size: 10px;
+      color: var(--w95-darker);
+      font-weight: bold;
+      pointer-events: none;
+    }
+    .w95-start-btn.active {
+      border: 2px inset var(--w95-light);
+      background: var(--w95-gray);
+    }
+    /* Click outside to close start menu */
+    .start-menu-backdrop {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 28px;
+      z-index: 1000;
+    }
+    .start-menu-backdrop.show {
+      display: block;
+    }
+</style>
 <base target="_blank">
 </head>
 <body>
@@ -1251,8 +1335,47 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
 
   <div id="printArea" style="display:none;"></div>
 
+  <!-- Start Menu -->
+  <div class="start-menu-backdrop" id="startMenuBackdrop" data-action="toggleStartMenu()"></div>
+  <div class="start-menu" id="startMenu">
+    <div class="start-menu-header">
+      <span class="start-logo-text">KSB</span>
+      <span>Labelmaker</span>
+    </div>
+    <div class="start-menu-label">Programs</div>
+    <div class="start-menu-item" data-action="openPage('single');toggleStartMenu()">
+      <span class="menu-icon">📄</span>
+      <span>Single Label</span>
+    </div>
+    <div class="start-menu-item" data-action="openPage('batch');toggleStartMenu()">
+      <span class="menu-icon">📑</span>
+      <span>Batch Label</span>
+    </div>
+    <div class="start-menu-item" data-action="openPage('history');toggleStartMenu()">
+      <span class="menu-icon">📂</span>
+      <span>Print History</span>
+    </div>
+    <div class="start-menu-sep"></div>
+    <div class="start-menu-label">Games</div>
+    <div class="start-menu-item" data-action="openPage('minesweeper');toggleStartMenu()">
+      <span class="menu-icon">💣</span>
+      <span>Minesweeper</span>
+    </div>
+    <div class="start-menu-sep"></div>
+    <div class="start-menu-label">Accessories</div>
+    <div class="start-menu-item" data-action="openPage('calculator');toggleStartMenu()">
+      <span class="menu-icon">🧮</span>
+      <span>Calculator</span>
+    </div>
+    <div class="start-menu-sep"></div>
+    <div class="start-menu-item" data-action="goHome();toggleStartMenu()">
+      <span class="menu-icon">🏠</span>
+      <span>Desktop</span>
+    </div>
+  </div>
+
   <div class="w95-taskbar" id="w95Taskbar" style="display: none;">
-    <button class="w95-start-btn" data-action="goHome()"><img src="https://file.garden/ad-wGPVIV3ilAD_L/WORK%20PROJECT/LABEL%20MAKER/Icon/Start.png" alt="Start" class="w95-start-icon" style="width:16px;height:16px;object-fit:contain;"><span>Start</span></button>
+    <button class="w95-start-btn" id="w95StartBtn" data-action="toggleStartMenu()"><img src="https://file.garden/ad-wGPVIV3ilAD_L/WORK%20PROJECT/LABEL%20MAKER/Icon/Start.png" alt="Start" class="w95-start-icon" style="width:16px;height:16px;object-fit:contain;"><span>Start</span></button>
     <div class="w95-taskbar-divider"></div>
     <div class="w95-taskbar-time" id="taskbarTime">12:00 PM</div>
   </div>
@@ -1272,6 +1395,8 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
     updateClock();
 
     function openPage(page) {
+      // Close start menu if open
+      if (startMenuOpen) toggleStartMenu();
       document.getElementById('homePage').style.display = 'none';
       document.querySelectorAll('.w95-desktop').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.minesweeper-desktop').forEach(p => p.classList.remove('active'));
@@ -1290,6 +1415,24 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
         if (!msGameState.started) msNewGame('beginner');
       } else if (page === 'calculator') {
         document.getElementById('calculatorPage').classList.add('active');
+      }
+    }
+
+    let startMenuOpen = false;
+
+    function toggleStartMenu() {
+      const menu = document.getElementById('startMenu');
+      const backdrop = document.getElementById('startMenuBackdrop');
+      const btn = document.getElementById('w95StartBtn');
+      startMenuOpen = !startMenuOpen;
+      if (startMenuOpen) {
+        menu.classList.add('show');
+        backdrop.classList.add('show');
+        btn.classList.add('active');
+      } else {
+        menu.classList.remove('show');
+        backdrop.classList.remove('show');
+        btn.classList.remove('active');
       }
     }
 
