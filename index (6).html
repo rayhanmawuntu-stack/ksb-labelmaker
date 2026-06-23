@@ -1,0 +1,2631 @@
+<!DOCTYPE html>
+<!--
+  ╔══════════════════════════════════════════════════════════════════════════════╗
+  ║  Labelmaker v4.2 — KSB Shipping Label System                                 ║
+  ║  Windows 95 Edition — Optimized for Desktop Print                            ║
+  ║                                                                              ║
+  ║  Hosted on: GitHub Pages                                                     ║
+  ║  Repository: https://github.com/YOUR_USERNAME/ksb-labelmaker                 ║
+  ║                                                                              ║
+  ║  Features:                                                                   ║
+  ║    • Single Label Printing                                                   ║
+  ║    • Batch Label Printing (Card + Paste modes)                               ║
+  ║    • Print History with Google Sheets sync                                   ║
+  ║    • Minesweeper (Beginner / Intermediate / Expert)                          ║
+  ║    • Calculator with memory functions                                        ║
+  ║                                                                              ║
+  ║  Note: Google Sheets integration requires CORS configuration on the          ║
+  ║        Apps Script side. See README.md for setup instructions.               ║
+  ╚══════════════════════════════════════════════════════════════════════════════╝
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Labelmaker — KSB</title>
+  <style>
+    @font-face {
+      font-family: 'VCR';
+      src: url('https://file.garden/ad-wGPVIV3ilAD_L/WORK%20PROJECT/LABEL%20MAKER/Font/VCR_OSD_MONO_1.001.woff2') format('woff2');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --w95-bg: #008080; --w95-gray: #c0c0c0; --w95-dark: #808080;
+      --w95-darker: #404040; --w95-light: #ffffff; --w95-blue: #000080;
+      --w95-blue-light: #0000a0; --w95-text: #000000; --w95-highlight: #000080;
+      --w95-window-bg: #c0c0c0;
+    }
+    html, body {
+      font-family: 'MS Sans Serif', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--w95-bg); color: var(--w95-text); min-height: 100vh;
+      overflow-x: hidden;
+      cursor: url('https://file.garden/ad-wGPVIV3ilAD_L/WORK%20PROJECT/LABEL%20MAKER/Icon/Cursor') 16 16, auto;
+      font-size: 11px;
+    }
+    a, button, .menu-item, .back-btn, .sender-option, .w95-btn, .desk-item, .desk-item-bottom, .history-btn, .title-bar-btn, .w95-menu-item {
+      cursor: url('https://file.garden/ad-wGPVIV3ilAD_L/WORK%20PROJECT/LABEL%20MAKER/Icon/Cursor') 16 16, pointer;
+    }
+    .home-page {
+      min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; padding: 40px 20px; position: relative;
+    }
+    .desk-row {
+      display: flex; align-items: flex-end; justify-content: center;
+      gap: 60px; margin-bottom: 10px; width: 100%; max-width: 900px;
+    }
+    .desk-item { position: relative; text-align: center; transition: transform 0.3s ease; }
+    .desk-item:hover { transform: translateY(-8px) rotate(-2deg); }
+    .desk-item .item-num {
+      position: absolute; font-size: 13px; color: var(--w95-light);
+      font-family: 'VCR', monospace; text-shadow: 1px 1px 0 #000;
+    }
+    .desk-item .item-img {
+      width: 140px; height: 140px; object-fit: contain;
+      filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.3)); transition: filter 0.3s ease;
+    }
+    .desk-item:hover .item-img { filter: drop-shadow(4px 8px 12px rgba(0,0,0,0.4)); }
+    .desk-item:nth-child(1) .item-num { bottom: -5px; left: -25px; }
+    .desk-item:nth-child(2) .item-num { bottom: -5px; right: -25px; }
+    .desk-title {
+      font-size: 72px; font-weight: normal; text-align: center;
+      margin: 30px 0 20px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      letter-spacing: -1px; color: var(--w95-light); text-shadow: 2px 2px 0 #000;
+    }
+    .desk-pill {
+      display: inline-block; padding: 10px 40px; border: 2px solid var(--w95-light);
+      border-radius: 30px; font-size: 14px; font-family: 'VCR', monospace;
+      text-transform: lowercase; background: rgba(0,0,0,0.3); color: var(--w95-light);
+      margin-bottom: 30px; letter-spacing: 1px;
+    }
+    .desk-row-bottom {
+      display: flex; align-items: flex-start; justify-content: center;
+      gap: 50px; width: 100%; max-width: 900px; flex-wrap: wrap;
+    }
+    .desk-item-bottom { position: relative; text-align: center; transition: transform 0.3s ease; }
+    .desk-item-bottom:hover { transform: translateY(-8px) rotate(2deg); }
+    .desk-item-bottom .item-num {
+      position: absolute; font-size: 13px; color: var(--w95-light);
+      font-family: 'VCR', monospace; text-shadow: 1px 1px 0 #000;
+    }
+    .desk-item-bottom .item-img {
+      width: 130px; height: 130px; object-fit: contain;
+      filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.3)); transition: filter 0.3s ease;
+    }
+    .desk-item-bottom:hover .item-img { filter: drop-shadow(4px 8px 12px rgba(0,0,0,0.4)); }
+    .desk-item-bottom:nth-child(1) .item-num { top: -5px; left: -20px; }
+    .desk-item-bottom:nth-child(2) .item-num { top: -5px; left: 50%; transform: translateX(-50%); }
+    .coming-soon-tooltip {
+      position: absolute; bottom: -35px; left: 50%; transform: translateX(-50%) scale(0);
+      background: var(--w95-blue); color: var(--w95-light); padding: 6px 14px;
+      font-size: 11px; font-family: 'MS Sans Serif', sans-serif; white-space: nowrap;
+      border: 2px outset var(--w95-gray); transition: transform 0.2s ease; z-index: 10;
+    }
+    .desk-item-bottom:hover .coming-soon-tooltip { transform: translateX(-50%) scale(1); }
+    .menu-item { position: absolute; inset: 0; z-index: 5; }
+
+    .w95-desktop { display: none; min-height: 100vh; padding: 20px; background: var(--w95-bg); position: relative; }
+    .w95-desktop.active { display: block; }
+    .w95-window {
+      background: var(--w95-gray); border: 2px outset var(--w95-light);
+      box-shadow: 2px 2px 0 rgba(0,0,0,0.3); margin-bottom: 16px;
+    }
+    .w95-title-bar {
+      background: linear-gradient(90deg, var(--w95-blue) 0%, var(--w95-blue-light) 100%);
+      color: var(--w95-light); padding: 3px 4px 3px 6px; display: flex;
+      align-items: center; justify-content: space-between; font-weight: bold;
+      font-size: 11px; letter-spacing: 0.5px;
+    }
+    .w95-title-bar.inactive {
+      background: linear-gradient(90deg, var(--w95-dark) 0%, var(--w95-gray) 100%);
+      color: var(--w95-darker);
+    }
+    .w95-title-text { display: flex; align-items: center; gap: 6px; }
+    .w95-title-btns { display: flex; gap: 2px; }
+    .title-bar-btn {
+      width: 16px; height: 14px; background: var(--w95-gray); border: 1px outset var(--w95-light);
+      display: flex; align-items: center; justify-content: center; font-size: 9px;
+      line-height: 1; color: var(--w95-text); padding: 0;
+    }
+    .title-bar-btn:active { border: 1px inset var(--w95-light); }
+    .w95-content { padding: 8px; }
+    .w95-menu-bar {
+      display: flex; gap: 0; padding: 2px 4px; border-bottom: 1px solid var(--w95-dark);
+      margin-bottom: 8px; position: relative;
+    }
+    .w95-menu-wrapper { position: relative; display: inline-block; }
+    .w95-menu-item {
+      padding: 2px 8px; font-size: 11px; text-decoration: underline;
+      text-underline-offset: 2px; text-decoration-color: var(--w95-text); cursor: pointer;
+    }
+    .w95-menu-item:hover {
+      background: var(--w95-blue); color: var(--w95-light); text-decoration-color: var(--w95-light);
+    }
+    .w95-dropdown {
+      display: none; position: absolute; top: 100%; left: 0; background: var(--w95-gray);
+      border: 2px outset var(--w95-light); box-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+      min-width: 160px; z-index: 100; padding: 2px;
+    }
+    .w95-dropdown.show { display: block; }
+    .w95-dropdown-item {
+      padding: 4px 8px; font-size: 11px; display: flex; align-items: center;
+      gap: 6px; cursor: pointer; white-space: nowrap;
+    }
+    .w95-dropdown-item:hover { background: var(--w95-blue); color: var(--w95-light); }
+    .w95-dropdown-item .check { width: 12px; display: inline-block; text-align: center; font-weight: bold; }
+    .w95-dropdown-sep { height: 1px; background: var(--w95-dark); border-bottom: 1px solid var(--w95-light); margin: 2px 4px; }
+    .w95-dropdown-label { padding: 2px 8px; font-size: 10px; color: var(--w95-darker); font-weight: bold; pointer-events: none; }
+    .w95-btn {
+      background: var(--w95-gray); border: 2px outset var(--w95-light); padding: 4px 12px;
+      font-family: 'MS Sans Serif', sans-serif; font-size: 11px; color: var(--w95-text);
+      display: inline-flex; align-items: center; gap: 4px; min-height: 24px;
+    }
+    .w95-btn:active { border: 2px inset var(--w95-light); padding: 5px 11px 3px 13px; }
+    .w95-btn.primary { background: var(--w95-gray); }
+    .w95-btn:disabled { color: var(--w95-dark); }
+    .w95-input, .w95-textarea {
+      background: var(--w95-light); border: 2px inset var(--w95-dark); padding: 3px 5px;
+      font-family: 'MS Sans Serif', sans-serif; font-size: 11px; color: var(--w95-text);
+      width: 100%; outline: none;
+    }
+    .w95-textarea { resize: vertical; min-height: 60px; }
+    .w95-input:focus, .w95-textarea:focus { outline: 1px dotted var(--w95-text); outline-offset: -3px; }
+    .w95-select {
+      background: var(--w95-light); border: 2px inset var(--w95-dark); padding: 2px 4px;
+      font-family: 'MS Sans Serif', sans-serif; font-size: 11px; width: 100%;
+    }
+    .w95-group {
+      border: 2px groove var(--w95-light); padding: 12px 10px 8px;
+      margin-bottom: 12px; position: relative;
+    }
+    .w95-group-label { position: absolute; top: -8px; left: 8px; background: var(--w95-gray); padding: 0 4px; font-size: 11px; color: var(--w95-text); }
+    .w95-radio-group { display: flex; flex-direction: column; gap: 6px; }
+    .w95-radio { display: flex; align-items: center; gap: 6px; font-size: 11px; }
+    .w95-radio input[type="radio"] {
+      appearance: none; width: 12px; height: 12px; border: 1px solid var(--w95-dark);
+      border-radius: 50%; background: var(--w95-light); position: relative; margin: 0;
+    }
+    .w95-radio input[type="radio"]:checked::after {
+      content: ''; position: absolute; top: 2px; left: 2px;
+      width: 6px; height: 6px; background: var(--w95-text); border-radius: 50%;
+    }
+    .w95-status-bar { border: 1px inset var(--w95-light); padding: 2px 6px; margin-top: 8px; display: flex; gap: 2px; }
+    .w95-status-panel { border: 1px inset var(--w95-light); padding: 2px 6px; flex: 1; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .w95-status-panel:first-child { flex: 2; }
+    .w95-sep { height: 2px; background: var(--w95-dark); border-bottom: 1px solid var(--w95-light); margin: 8px 0; }
+    .w95-scroll { overflow: auto; border: 2px inset var(--w95-dark); background: var(--w95-light); padding: 4px; }
+    .w95-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 1200px; margin: 0 auto; }
+    .w95-col { display: flex; flex-direction: column; gap: 16px; }
+    .w95-preview-frame {
+      background: var(--w95-light); border: 2px inset var(--w95-dark); padding: 12px;
+      min-height: 300px; display: flex; align-items: center; justify-content: center; overflow: auto;
+    }
+    .preview-grid-container { width: 100%; max-width: 100%; display: grid; gap: 8px; align-items: start; justify-items: center; }
+    .preview-grid-container .ksb-label { width: 100%; max-width: 220px; margin: 0; padding: 10px 12px; transform: scale(0.85); transform-origin: center top; }
+    .preview-grid-1x1 { grid-template-columns: 1fr; }
+    .preview-grid-1x2 { grid-template-columns: 1fr; grid-template-rows: repeat(2, auto); }
+    .preview-grid-2x2 { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, auto); }
+    .preview-grid-2x3 { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(3, auto); }
+    .preview-grid-3x2 { grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, auto); }
+    .preview-grid-3x3 { grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, auto); }
+    /* Scale down label preview more for denser layouts so they all fit the preview pane */
+    .preview-grid-1x1 .ksb-label  { transform: scale(1.0); max-width: 360px; }
+    .preview-grid-1x2 .ksb-label  { transform: scale(0.95); max-width: 320px; }
+    .preview-grid-2x2 .ksb-label  { transform: scale(0.85); max-width: 220px; }
+    .preview-grid-2x3 .ksb-label  { transform: scale(0.75); max-width: 200px; }
+    .preview-grid-3x2 .ksb-label  { transform: scale(0.7);  max-width: 180px; }
+    .preview-grid-3x3 .ksb-label  { transform: scale(0.62); max-width: 160px; }
+
+    .ksb-label {
+      width: 100%; max-width: 480px; background: var(--w95-light); border: 2px solid var(--w95-text);
+      padding: 14px 18px; position: relative; margin: 0 auto;
+      box-shadow: inset 0 0 0 1px var(--w95-light), inset 0 0 0 3px var(--w95-text), inset 0 0 0 4px var(--w95-light), inset 0 0 0 6px var(--w95-text);
+      page-break-inside: avoid; page-break-after: always;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; display: flex; flex-direction: column;
+    }
+    .ksb-label:last-child { page-break-after: auto; }
+    .ksb-label-inner { position: relative; display: flex; flex-direction: column; height: 100%; }
+    .ksb-logo { position: absolute; top: 0; right: 0; width: 70px; height: auto; opacity: 0.9; }
+    .label-section { margin-bottom: 10px; }
+    .label-section:last-child { margin-bottom: 0; }
+    .label-heading { font-size: 10px; text-transform: capitalize; margin-bottom: 2px; font-weight: 400; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: var(--w95-darker); }
+    .label-name { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 2px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 1.2; }
+    .label-attn { font-size: 10px; text-transform: uppercase; margin-bottom: 6px; font-style: italic; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: var(--w95-darker); line-height: 1.2; }
+    .label-address { font-size: 11px; line-height: 1.35; text-transform: uppercase; letter-spacing: 0.2px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 600; margin-top: 2px; }
+    .label-phone { font-size: 10px; font-style: italic; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: var(--w95-darker); margin-top: 2px; }
+    .label-divider { height: 2px; background: var(--w95-text); margin: 8px 0; }
+    .recipient-section { flex: 0 0 auto; display: flex; flex-direction: column; margin-bottom: 8px; }
+    .sender-section { flex-shrink: 0; margin-top: 6px; }
+
+    .print-grid-1x1 { display: block; }
+    .print-grid-1x2 { display: grid !important; grid-template-columns: 1fr; grid-template-rows: repeat(2, 1fr); gap: 8mm; height: 100%; }
+    .print-grid-2x2 { display: grid !important; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); gap: 8mm; height: 100%; }
+    .print-grid-2x3 { display: grid !important; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(3, 1fr); gap: 6mm; height: 100%; }
+    .print-grid-3x2 { display: grid !important; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); gap: 6mm; height: 100%; }
+    .print-grid-3x3 { display: grid !important; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); gap: 4mm; height: 100%; align-items: stretch; justify-items: stretch; }
+    .print-grid-3x3 .ksb-label { width: 100%; max-width: 100%; height: 100%; margin: 0; padding: 12px 14px; display: flex; flex-direction: column; justify-content: space-between; }
+    .print-grid-3x3 .ksb-logo { width: 50px; }
+
+    /* ══════════════════════════════════════════════════════
+       PRINT SYSTEM — fully rewritten for reliable grid sizing
+       
+       Root cause of labels-not-filling-page:
+       CSS grid with 1fr rows needs a DEFINITE height on the
+       container. position:absolute + calc() is NOT definite
+       in most print engines. Solution: use position:fixed so
+       the browser gives the element a real viewport height,
+       and back it up with explicit pixel-equivalent row heights
+       per layout as a fallback.
+       ══════════════════════════════════════════════════════ */
+
+    @page { size: A4 landscape; margin: 10mm; }
+
+
+    /* ══════════════════════════════════════════════════════
+       MINESWEEPER — KSB Edition (Windows 95 aesthetic)
+       ══════════════════════════════════════════════════════ */
+    .minesweeper-desktop { display: none; min-height: 100vh; padding: 20px; background: var(--w95-bg); position: relative; }
+    .minesweeper-desktop.active { display: block; }
+    .ms-window {
+      background: var(--w95-gray); border: 2px outset var(--w95-light);
+      box-shadow: 2px 2px 0 rgba(0,0,0,0.3); max-width: 420px; margin: 40px auto;
+    }
+    .ms-title-bar {
+      background: linear-gradient(90deg, var(--w95-blue) 0%, var(--w95-blue-light) 100%);
+      color: var(--w95-light); padding: 3px 4px 3px 6px; display: flex;
+      align-items: center; justify-content: space-between; font-weight: bold;
+      font-size: 11px; letter-spacing: 0.5px;
+    }
+    .ms-title-text { display: flex; align-items: center; gap: 6px; }
+    .ms-title-btns { display: flex; gap: 2px; }
+    .ms-content { padding: 8px; }
+    .ms-menu-bar {
+      display: flex; gap: 0; padding: 2px 4px; border-bottom: 1px solid var(--w95-dark);
+      margin-bottom: 8px; position: relative;
+    }
+    .ms-menu-wrapper { position: relative; display: inline-block; }
+    .ms-menu-item {
+      padding: 2px 8px; font-size: 11px; text-decoration: underline;
+      text-underline-offset: 2px; text-decoration-color: var(--w95-text); cursor: pointer;
+    }
+    .ms-menu-item:hover {
+      background: var(--w95-blue); color: var(--w95-light); text-decoration-color: var(--w95-light);
+    }
+    .ms-dropdown {
+      display: none; position: absolute; top: 100%; left: 0; background: var(--w95-gray);
+      border: 2px outset var(--w95-light); box-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+      min-width: 140px; z-index: 100; padding: 2px;
+    }
+    .ms-dropdown.show { display: block; }
+    .ms-dropdown-item {
+      padding: 4px 8px; font-size: 11px; display: flex; align-items: center;
+      gap: 6px; cursor: pointer; white-space: nowrap;
+    }
+    .ms-dropdown-item:hover { background: var(--w95-blue); color: var(--w95-light); }
+    .ms-dropdown-sep { height: 1px; background: var(--w95-dark); border-bottom: 1px solid var(--w95-light); margin: 2px 4px; }
+    .ms-dropdown-label { padding: 2px 8px; font-size: 10px; color: var(--w95-darker); font-weight: bold; pointer-events: none; }
+
+    .ms-status-panel {
+      border: 2px inset var(--w95-light); background: var(--w95-gray);
+      padding: 4px 8px; display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 8px; gap: 8px;
+    }
+    .ms-counter {
+      border: 2px inset var(--w95-dark); background: #000; color: #ff0000;
+      font-family: 'VCR', monospace; font-size: 18px; padding: 2px 6px;
+      min-width: 48px; text-align: center; letter-spacing: 2px;
+    }
+    .ms-face-btn {
+      width: 32px; height: 32px; background: var(--w95-gray);
+      border: 2px outset var(--w95-light); display: flex; align-items: center;
+      justify-content: center; font-size: 20px; cursor: pointer; flex-shrink: 0;
+    }
+    .ms-face-btn:active { border: 2px inset var(--w95-light); padding: 2px 0 0 2px; }
+    .ms-board {
+      border: 3px inset var(--w95-light); background: var(--w95-gray);
+      display: inline-block; user-select: none;
+    }
+    .ms-row { display: flex; }
+    .ms-cell {
+      width: 24px; height: 24px; background: var(--w95-gray);
+      border: 2px outset var(--w95-light); display: flex;
+      align-items: center; justify-content: center; font-size: 13px;
+      font-weight: bold; cursor: pointer; line-height: 1;
+    }
+    .ms-cell.revealed {
+      border: 1px solid var(--w95-dark); background: var(--w95-gray);
+      cursor: default;
+    }
+    .ms-cell.flagged { color: #ff0000; }
+    .ms-cell.mine-hit { background: #ff0000 !important; color: #fff; }
+    .ms-cell.mine-wrong { background: #ff0000 !important; color: #000; }
+    .ms-cell.mine-revealed { background: var(--w95-dark); color: #000; }
+    .ms-cell.num-1 { color: #0000ff; }
+    .ms-cell.num-2 { color: #008000; }
+    .ms-cell.num-3 { color: #ff0000; }
+    .ms-cell.num-4 { color: #000080; }
+    .ms-cell.num-5 { color: #800000; }
+    .ms-cell.num-6 { color: #008080; }
+    .ms-cell.num-7 { color: #000; }
+    .ms-cell.num-8 { color: #808080; }
+    .ms-cell:hover:not(.revealed):not(.flagged) { filter: brightness(1.05); }
+
+    .ms-game-over-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.4); display: none; align-items: center;
+      justify-content: center; z-index: 2000;
+    }
+    .ms-game-over-overlay.show { display: flex; }
+    .ms-game-over-box {
+      background: var(--w95-gray); border: 2px outset var(--w95-light);
+      padding: 20px 30px; text-align: center; max-width: 300px;
+    }
+    .ms-game-over-box h3 {
+      font-size: 16px; margin-bottom: 12px; font-family: 'VCR', monospace;
+    }
+    .ms-game-over-box.win h3 { color: #008000; }
+    .ms-game-over-box.lose h3 { color: #ff0000; }
+    .ms-game-over-box p { font-size: 11px; margin-bottom: 16px; color: var(--w95-darker); }
+    .ms-game-over-box .w95-btn { margin: 0 4px; }
+
+    .ms-best-times {
+      border: 2px inset var(--w95-light); background: var(--w95-light);
+      padding: 8px; margin-top: 8px; font-size: 11px;
+    }
+    .ms-best-times table { width: 100%; border-collapse: collapse; }
+    .ms-best-times th, .ms-best-times td { padding: 3px 8px; text-align: left; }
+    .ms-best-times th { border-bottom: 1px solid var(--w95-dark); }
+    .ms-best-times tr:nth-child(even) { background: #e8e8e8; }
+
+
+    /* ══════════════════════════════════════════════════════
+       GOOGLE SHEETS INTEGRATION
+       ══════════════════════════════════════════════════════ */
+    .gs-config-group {
+      border: 2px groove var(--w95-light); padding: 12px 10px 8px;
+      margin-bottom: 12px; position: relative; margin-top: 12px;
+    }
+    .gs-config-label { position: absolute; top: -8px; left: 8px; background: var(--w95-gray); padding: 0 4px; font-size: 11px; color: var(--w95-text); font-weight: bold; }
+    .gs-input-row { display: flex; gap: 6px; margin-bottom: 8px; align-items: center; }
+    .gs-input-row label { font-size: 11px; min-width: 80px; }
+    .gs-input-row .w95-input { flex: 1; }
+    .gs-status { font-size: 10px; padding: 4px 8px; border: 1px inset var(--w95-light); background: var(--w95-light); min-height: 22px; }
+    .gs-status.ok { color: #008000; }
+    .gs-status.err { color: #ff0000; }
+    .gs-status.warn { color: #808000; }
+    .gs-script-box {
+      border: 2px inset var(--w95-light); background: #000; color: #0f0;
+      padding: 8px; font-family: 'Courier New', monospace; font-size: 10px;
+      max-height: 200px; overflow: auto; white-space: pre; margin-top: 8px;
+    }
+    .gs-toggle-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+    .gs-toggle-row input[type="checkbox"] {
+      appearance: none; width: 14px; height: 14px; border: 1px solid var(--w95-dark);
+      background: var(--w95-light); position: relative; margin: 0; cursor: pointer;
+    }
+    .gs-toggle-row input[type="checkbox"]:checked::after {
+      content: '✓'; position: absolute; top: -2px; left: 1px; font-size: 12px; color: var(--w95-text);
+    }
+
+    @media print {
+      /* ══════════════════════════════════════════════════════
+         PRINT SYSTEM — reliable single-page-per-label layout
+
+         Key principles:
+         - Each .print-page is one physical sheet
+         - Use explicit mm heights for grid rows (1fr is unreliable in print)
+         - No position:fixed (causes content duplication in browsers)
+         - Single clean border, no outline tricks
+         - Logo sizes proportional to label dimensions
+         ══════════════════════════════════════════════════════ */
+
+      @page { size: A4 landscape; margin: 10mm; }
+
+      /* Hide everything except printArea */
+      body * { visibility: hidden !important; }
+      #printArea, #printArea * { visibility: visible !important; }
+
+      #printArea {
+        display: block !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      /* Each .print-page = one sheet. position:relative with explicit height.
+         A4 landscape printable: 277mm × 190mm (with 10mm margins) */
+      .print-page {
+        position: relative !important;
+        width: 277mm !important;
+        height: 190mm !important;
+        display: grid !important;
+        margin: 0 auto !important;
+        padding: 0 !important;
+        box-sizing: border-box !important;
+        page-break-after: always !important;
+        break-after: page !important;
+        align-items: stretch !important;
+        justify-items: stretch !important;
+        overflow: hidden !important;
+      }
+      .print-page:last-child {
+        page-break-after: auto !important;
+        break-after: auto !important;
+      }
+
+      /* ── Grid definitions with explicit mm row heights ── */
+      .print-page.layout-1x1 {
+        grid-template-columns: 1fr;
+        grid-template-rows: 190mm;
+        gap: 0;
+      }
+      .print-page.layout-1x2 {
+        grid-template-columns: 1fr;
+        grid-template-rows: 91mm 91mm;
+        gap: 8mm;
+      }
+      .print-page.layout-2x2 {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: 91mm 91mm;
+        gap: 8mm;
+      }
+      .print-page.layout-2x3 {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: 59mm 59mm 59mm;
+        gap: 6mm;
+      }
+      .print-page.layout-3x2 {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: 91mm 91mm;
+        gap: 8mm;
+      }
+      .print-page.layout-3x3 {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: 59mm 59mm 59mm;
+        gap: 6mm;
+      }
+
+      /* ── Base label reset ── */
+      .ksb-label {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 100% !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        border: 2pt solid #000 !important;
+        page-break-inside: avoid !important;
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        box-sizing: border-box !important;
+        position: relative !important;
+        overflow: hidden !important;
+      }
+      .ksb-label-inner {
+        position: relative !important;
+        display: flex !important;
+        flex-direction: column !important;
+        height: 100% !important;
+        min-height: 0 !important;
+      }
+      .recipient-section {
+        flex: 1 1 auto !important;
+        display: flex !important;
+        flex-direction: column !important;
+        min-height: 0 !important;
+      }
+      .sender-section {
+        flex: 0 0 auto !important;
+        margin-top: 0 !important;
+      }
+      .label-divider {
+        background: #000 !important;
+        flex: 0 0 auto !important;
+        margin: 3mm 0 !important;
+        height: 1.5pt !important;
+      }
+
+      /* ── Base element styling ── */
+      .label-name {
+        font-weight: 800 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.3px !important;
+      }
+      .label-address {
+        font-weight: 600 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.2px !important;
+      }
+      .label-attn {
+        font-style: italic !important;
+        text-transform: uppercase !important;
+      }
+      .label-heading {
+        color: #444 !important;
+        text-transform: capitalize !important;
+      }
+      .label-phone {
+        font-style: italic !important;
+        color: #333 !important;
+      }
+
+      /* ══════════════════════════════════════════════════════
+         LAYOUT-SPECIFIC TYPOGRAPHY, SPACING & LOGO SIZES
+         ══════════════════════════════════════════════════════ */
+
+      /* 1×1  ~277 × 190mm — one big label per page */
+      .print-page.layout-1x1 .ksb-label   { padding: 12mm 14mm !important; }
+      .print-page.layout-1x1 .ksb-logo    { width: 160px !important; top: 10mm !important; right: 12mm !important; }
+      .print-page.layout-1x1 .label-heading { font-size: 12pt !important; margin-bottom: 2mm !important; }
+      .print-page.layout-1x1 .label-name    { font-size: 28pt !important; margin-bottom: 3mm !important; letter-spacing: 0.5px !important; line-height: 1.15 !important; }
+      .print-page.layout-1x1 .label-attn    { font-size: 16pt !important; margin-bottom: 4mm !important; }
+      .print-page.layout-1x1 .label-address { font-size: 18pt !important; line-height: 1.45 !important; }
+      .print-page.layout-1x1 .label-phone   { font-size: 14pt !important; margin-top: 3mm !important; }
+
+      /* 1×2  ~277 × 91mm — two tall landscape labels */
+      .print-page.layout-1x2 .ksb-label   { padding: 7mm 10mm !important; }
+      .print-page.layout-1x2 .ksb-logo    { width: 110px !important; top: 5mm !important; right: 8mm !important; }
+      .print-page.layout-1x2 .label-heading { font-size: 10pt !important; margin-bottom: 1.5mm !important; }
+      .print-page.layout-1x2 .label-name    { font-size: 20pt !important; margin-bottom: 2mm !important; line-height: 1.15 !important; }
+      .print-page.layout-1x2 .label-attn    { font-size: 12pt !important; margin-bottom: 2.5mm !important; }
+      .print-page.layout-1x2 .label-address { font-size: 13pt !important; line-height: 1.4 !important; }
+      .print-page.layout-1x2 .label-phone   { font-size: 11pt !important; margin-top: 2mm !important; }
+
+      /* 2×2  ~133 × 91mm — four labels */
+      .print-page.layout-2x2 .ksb-label   { padding: 6mm 8mm !important; }
+      .print-page.layout-2x2 .ksb-logo    { width: 85px !important; top: 4mm !important; right: 6mm !important; }
+      .print-page.layout-2x2 .label-heading { font-size: 9pt !important; margin-bottom: 1mm !important; }
+      .print-page.layout-2x2 .label-name    { font-size: 16pt !important; margin-bottom: 1.5mm !important; line-height: 1.2 !important; }
+      .print-page.layout-2x2 .label-attn    { font-size: 11pt !important; margin-bottom: 2mm !important; }
+      .print-page.layout-2x2 .label-address { font-size: 11.5pt !important; line-height: 1.38 !important; }
+      .print-page.layout-2x2 .label-phone   { font-size: 10pt !important; margin-top: 1.5mm !important; }
+
+      /* 2×3  ~133 × 59mm — six labels, tight height */
+      .print-page.layout-2x3 .ksb-label   { padding: 4mm 6mm !important; }
+      .print-page.layout-2x3 .ksb-logo    { width: 65px !important; top: 3mm !important; right: 5mm !important; }
+      .print-page.layout-2x3 .label-heading { font-size: 7.5pt !important; margin-bottom: 0.5mm !important; }
+      .print-page.layout-2x3 .label-name    { font-size: 13pt !important; margin-bottom: 1mm !important; line-height: 1.15 !important; }
+      .print-page.layout-2x3 .label-attn    { font-size: 9pt !important; margin-bottom: 1mm !important; }
+      .print-page.layout-2x3 .label-address { font-size: 9.5pt !important; line-height: 1.3 !important; }
+      .print-page.layout-2x3 .label-phone   { font-size: 8pt !important; margin-top: 0.5mm !important; }
+
+      /* 3×2  ~89 × 91mm — six labels, tight width */
+      .print-page.layout-3x2 .ksb-label   { padding: 5mm 6mm !important; }
+      .print-page.layout-3x2 .ksb-logo    { width: 60px !important; top: 4mm !important; right: 4mm !important; }
+      .print-page.layout-3x2 .label-heading { font-size: 8pt !important; margin-bottom: 0.8mm !important; }
+      .print-page.layout-3x2 .label-name    { font-size: 13pt !important; margin-bottom: 1mm !important; line-height: 1.15 !important; }
+      .print-page.layout-3x2 .label-attn    { font-size: 9pt !important; margin-bottom: 1.5mm !important; }
+      .print-page.layout-3x2 .label-address { font-size: 9.5pt !important; line-height: 1.32 !important; }
+      .print-page.layout-3x2 .label-phone   { font-size: 8pt !important; margin-top: 0.8mm !important; }
+
+      /* 3×3  ~89 × 59mm — nine labels per page */
+      .print-page.layout-3x3 .ksb-label   { padding: 3mm 5mm !important; }
+      .print-page.layout-3x3 .ksb-logo    { width: 48px !important; top: 2mm !important; right: 3mm !important; }
+      .print-page.layout-3x3 .label-heading { font-size: 7pt !important; margin-bottom: 0.5mm !important; }
+      .print-page.layout-3x3 .label-name    { font-size: 11pt !important; margin-bottom: 0.8mm !important; line-height: 1.15 !important; letter-spacing: 0.1px !important; }
+      .print-page.layout-3x3 .label-attn    { font-size: 8pt !important; margin-bottom: 1mm !important; }
+      .print-page.layout-3x3 .label-address { font-size: 8.5pt !important; line-height: 1.3 !important; }
+      .print-page.layout-3x3 .label-phone   { font-size: 7pt !important; margin-top: 0.5mm !important; }
+    }
+
+    .w95-list { border: 2px inset var(--w95-dark); background: var(--w95-light); max-height: 400px; overflow: auto; }
+    .w95-list-item { padding: 6px 8px; border-bottom: 1px solid var(--w95-gray); display: flex; justify-content: space-between; align-items: center; font-size: 11px; }
+    .w95-list-item:hover { background: var(--w95-blue); color: var(--w95-light); }
+    .w95-list-item:hover .w95-list-actions button { color: var(--w95-light); border-color: var(--w95-light); }
+    .w95-list-empty { padding: 40px; text-align: center; color: var(--w95-dark); font-size: 11px; }
+
+    .w95-taskbar { position: fixed; bottom: 0; left: 0; right: 0; height: 28px; background: var(--w95-gray); border-top: 2px outset var(--w95-light); display: flex; align-items: center; padding: 0 2px; z-index: 1000; }
+    .w95-start-btn { display: flex; align-items: center; gap: 4px; padding: 2px 6px; border: 2px outset var(--w95-light); font-weight: bold; font-size: 11px; background: var(--w95-gray); }
+    .w95-start-btn:active { border: 2px inset var(--w95-light); }
+    .w95-start-icon { width: 16px; height: 16px; }
+    .w95-taskbar-divider { width: 2px; height: 22px; border-left: 1px solid var(--w95-dark); border-right: 1px solid var(--w95-light); margin: 0 4px; }
+    .w95-taskbar-time { margin-left: auto; border: 2px inset var(--w95-light); padding: 2px 8px; font-size: 11px; min-width: 60px; text-align: center; }
+    .app-footer { text-align: center; padding: 15px; font-size: 10px; color: var(--w95-light); margin-bottom: 28px; }
+
+    .bulk-cards-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; max-height: 420px; overflow-y: auto; padding: 4px; }
+    .bulk-card { background: var(--w95-light); border: 2px outset var(--w95-light); padding: 10px; position: relative; transition: border-color 0.2s; }
+    .bulk-card:hover { border-color: var(--w95-blue); }
+    .bulk-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--w95-dark); }
+    .bulk-card-num { font-family: 'VCR', monospace; font-size: 12px; color: var(--w95-blue); font-weight: bold; display: flex; align-items: center; gap: 6px; }
+    .bulk-card-num .card-badge { background: var(--w95-blue); color: var(--w95-light); width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 10px; border: 1px outset var(--w95-light); }
+    .bulk-card-remove { width: 18px; height: 18px; background: var(--w95-gray); border: 1px outset var(--w95-light); font-size: 10px; display: flex; align-items: center; justify-content: center; color: var(--w95-text); padding: 0; line-height: 1; }
+    .bulk-card-remove:active { border: 1px inset var(--w95-light); }
+    .bulk-card-field { margin-bottom: 6px; }
+    .bulk-card-field label { font-size: 10px; color: var(--w95-darker); display: block; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.3px; }
+    .bulk-card-field .w95-input, .bulk-card-field .w95-textarea { font-size: 11px; padding: 3px 5px; }
+    .bulk-card-field .w95-textarea { min-height: 40px; resize: vertical; }
+    .bulk-card-sender { margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--w95-dark); }
+    .bulk-card-sender label { font-size: 10px; color: var(--w95-darker); display: block; margin-bottom: 2px; text-transform: uppercase; }
+    .bulk-toolbar { display: flex; gap: 8px; margin-bottom: 12px; padding: 8px; background: var(--w95-gray); border: 2px inset var(--w95-light); align-items: center; flex-wrap: wrap; }
+    .bulk-toolbar .w95-btn { min-height: 26px; }
+    .bulk-toolbar-sep { width: 2px; height: 20px; background: var(--w95-dark); border-right: 1px solid var(--w95-light); }
+    .bulk-count { font-family: 'VCR', monospace; font-size: 12px; color: var(--w95-blue); margin-left: auto; }
+    .bulk-empty-state { text-align: center; padding: 60px 20px; color: var(--w95-dark); grid-column: 1 / -1; }
+    .bulk-empty-state .empty-icon { font-size: 32px; margin-bottom: 12px; opacity: 0.5; }
+    .bulk-empty-state p { font-size: 11px; margin-bottom: 16px; }
+    .batch-mode-btn.active { background: var(--w95-blue); color: var(--w95-light); }
+
+    /* ══════════════════════════════════════════════════════
+       CALCULATOR — KSB Edition (Windows 95 aesthetic)
+       ══════════════════════════════════════════════════════ */
+    .calculator-desktop { display: none; min-height: 100vh; padding: 20px; background: var(--w95-bg); position: relative; }
+    .calculator-desktop.active { display: block; }
+    .calc-window {
+      background: var(--w95-gray); border: 2px outset var(--w95-light);
+      box-shadow: 2px 2px 0 rgba(0,0,0,0.3); max-width: 320px; margin: 40px auto;
+    }
+    .calc-title-bar {
+      background: linear-gradient(90deg, var(--w95-blue) 0%, var(--w95-blue-light) 100%);
+      color: var(--w95-light); padding: 3px 4px 3px 6px; display: flex;
+      align-items: center; justify-content: space-between; font-weight: bold;
+      font-size: 11px; letter-spacing: 0.5px;
+    }
+    .calc-title-text { display: flex; align-items: center; gap: 6px; }
+    .calc-title-btns { display: flex; gap: 2px; }
+    .calc-menu-bar {
+      display: flex; gap: 0; padding: 2px 4px; border-bottom: 1px solid var(--w95-dark);
+      margin-bottom: 8px; position: relative;
+    }
+    .calc-menu-wrapper { position: relative; display: inline-block; }
+    .calc-menu-item {
+      padding: 2px 8px; font-size: 11px; text-decoration: underline;
+      text-underline-offset: 2px; text-decoration-color: var(--w95-text); cursor: pointer;
+    }
+    .calc-menu-item:hover {
+      background: var(--w95-blue); color: var(--w95-light); text-decoration-color: var(--w95-light);
+    }
+    .calc-dropdown {
+      display: none; position: absolute; top: 100%; left: 0; background: var(--w95-gray);
+      border: 2px outset var(--w95-light); box-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+      min-width: 140px; z-index: 100; padding: 2px;
+    }
+    .calc-dropdown.show { display: block; }
+    .calc-dropdown-item {
+      padding: 4px 8px; font-size: 11px; display: flex; align-items: center;
+      gap: 6px; cursor: pointer; white-space: nowrap;
+    }
+    .calc-dropdown-item:hover { background: var(--w95-blue); color: var(--w95-light); }
+    .calc-dropdown-sep { height: 1px; background: var(--w95-dark); border-bottom: 1px solid var(--w95-light); margin: 2px 4px; }
+    .calc-content { padding: 8px; }
+    .calc-display {
+      border: 2px inset var(--w95-light); background: #fff;
+      padding: 6px 8px; margin-bottom: 8px; text-align: right;
+    }
+    .calc-display-inner {
+      font-family: 'VCR', 'Courier New', monospace; font-size: 22px;
+      color: #000; min-height: 28px; overflow: hidden; text-overflow: ellipsis;
+      white-space: nowrap; direction: rtl; unicode-bidi: plaintext;
+    }
+    .calc-keypad {
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px;
+    }
+    .calc-btn {
+      background: var(--w95-gray); border: 2px outset var(--w95-light);
+      padding: 6px 4px; font-family: 'MS Sans Serif', sans-serif; font-size: 12px;
+      color: var(--w95-text); cursor: pointer; min-height: 32px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .calc-btn:active { border: 2px inset var(--w95-light); padding: 7px 3px 5px 5px; }
+    .calc-btn.calc-op { background: #d4d0c8; }
+    .calc-btn.calc-mem { font-size: 10px; background: #d4d0c8; }
+    .calc-btn.calc-eq { background: #d4d0c8; font-size: 16px; font-weight: bold; }
+    .calc-mem-indicator {
+      font-family: 'VCR', monospace; font-size: 10px; color: var(--w95-blue);
+      text-align: right; margin-top: 4px; min-height: 14px;
+    }
+
+    @media (max-width: 950px) {
+      .w95-layout { grid-template-columns: 1fr; }
+      .desk-title { font-size: 48px; }
+      .desk-item .item-img, .desk-item-bottom .item-img { width: 100px; height: 100px; }
+      .bulk-cards-container { grid-template-columns: 1fr; }
+      .desk-row-bottom { gap: 30px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HOME PAGE -->
+  <div class="home-page" id="homePage">
+    <div class="desk-row">
+      <div class="desk-item">
+        <span class="item-num">(01)</span>
+        <img src="https://file.garden/ad-wGPVIV3ilAD_L/WORK%20PROJECT/LABEL%20MAKER/Icon/single%20label.png" alt="Single Label" class="item-img">
+        <div class="menu-item" data-action="openPage:single" title="Single Label"></div>
+      </div>
+      <div class="desk-item">
+        <span class="item-num">(02)</span>
+        <img src="https://file.garden/ad-wGPVIV3ilAD_L/WORK%20PROJECT/LABEL%20MAKER/Icon/batch%20label.png" alt="Batch Label" class="item-img">
+        <div class="menu-item" data-action="openPage:batch" title="Batch Label Printing"></div>
+      </div>
+    </div>
+    <h1 class="desk-title">Labelmaker</h1>
+    <div class="desk-pill">ksb shipping labels</div>
+    <div class="desk-row-bottom">
+      <div class="desk-item-bottom">
+        <span class="item-num">(03)</span>
+        <img src="https://file.garden/ad-wGPVIV3ilAD_L/WORK%20PROJECT/LABEL%20MAKER/Icon/print%20history.png" alt="Print History" class="item-img">
+        <div class="menu-item" data-action="openPage:history" title="Print History"></div>
+      </div>
+      <div class="desk-item-bottom">
+        <span class="item-num">(04)</span>
+        <img src="https://file.garden/ad-wGPVIV3ilAD_L/WORK%20PROJECT/LABEL%20MAKER/Icon/Minesweeper.png" alt="Minesweeper" class="item-img">
+        <div class="menu-item" data-action="openPage:minesweeper" title="Minesweeper"></div>
+      </div>
+      <div class="desk-item-bottom">
+        <span class="item-num">(05)</span>
+        <img src="https://file.garden/ad-wGPVIV3ilAD_L/WORK%20PROJECT/LABEL%20MAKER/Icon/Calculator.png" alt="Calculator" class="item-img">
+        <div class="menu-item" data-action="openPage:calculator" title="Calculator"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SINGLE LABEL PAGE -->
+  <div class="w95-desktop" id="singlePage">
+    <div class="w95-window" style="max-width: 1200px; margin: 0 auto;">
+      <div class="w95-title-bar">
+        <div class="w95-title-text"><span style="font-size: 14px;">📄</span> Single Label — Labelmaker.exe</div>
+        <div class="w95-title-btns">
+          <button class="title-bar-btn" data-action="goHome()">_</button>
+          <button class="title-bar-btn" data-action="goHome()">□</button>
+          <button class="title-bar-btn" data-action="goHome()" style="font-weight: bold;">×</button>
+        </div>
+      </div>
+      <div class="w95-menu-bar">
+        <div class="w95-menu-wrapper">
+          <span class="w95-menu-item" data-action="toggleMenu(\'fileMenu\')">File</span>
+          <div class="w95-dropdown" id="fileMenu"><div class="w95-dropdown-item" data-action="goHome();closeMenus()">Exit to Desktop</div></div>
+        </div>
+        <div class="w95-menu-wrapper">
+          <span class="w95-menu-item" data-action="toggleMenu(\'editMenu\')">Edit</span>
+          <div class="w95-dropdown" id="editMenu">
+            <div class="w95-dropdown-label">Label Layout</div><div class="w95-dropdown-sep"></div>
+            <div class="w95-dropdown-item" data-action="setLayout(\'1x1\');closeMenus()"><span class="check" id="chk-1x1">✓</span> 1 × 1 (Default)</div>
+            <div class="w95-dropdown-item" data-action="setLayout(\'1x2\');closeMenus()"><span class="check" id="chk-1x2">&nbsp;</span> 1 × 2</div>
+            <div class="w95-dropdown-item" data-action="setLayout(\'2x2\');closeMenus()"><span class="check" id="chk-2x2">&nbsp;</span> 2 × 2</div>
+            <div class="w95-dropdown-item" data-action="setLayout(\'2x3\');closeMenus()"><span class="check" id="chk-2x3">&nbsp;</span> 2 × 3</div>
+            <div class="w95-dropdown-item" data-action="setLayout(\'3x2\');closeMenus()"><span class="check" id="chk-3x2">&nbsp;</span> 3 × 2</div>
+            <div class="w95-dropdown-item" data-action="setLayout(\'3x3\');closeMenus()"><span class="check" id="chk-3x3">&nbsp;</span> 3 × 3</div>
+          </div>
+        </div>
+        <div class="w95-menu-wrapper">
+          <span class="w95-menu-item" data-action="toggleMenu(\'viewMenu\')">View</span>
+          <div class="w95-dropdown" id="viewMenu">
+            <div class="w95-dropdown-item" data-action="goHome();closeMenus()">Home</div>
+            <div class="w95-dropdown-item" data-action="openPage(\'single\');closeMenus()">Single Label</div>
+            <div class="w95-dropdown-item" data-action="openPage(\'batch\');closeMenus()">Batch Label</div>
+            <div class="w95-dropdown-item" data-action="openPage(\'history\');closeMenus()">Print History</div>
+          </div>
+        </div>
+        <div class="w95-menu-wrapper">
+          <span class="w95-menu-item" data-action="toggleMenu(\'helpMenu\')">Help</span>
+          <div class="w95-dropdown" id="helpMenu">
+            <div class="w95-dropdown-item" data-action="alert(\'Labelmaker v4.2\nKSB Shipping Label System\nWindows 95 Edition\');closeMenus()">About...</div>
+          </div>
+        </div>
+      </div>
+      <div class="w95-content">
+        <div class="w95-layout">
+          <div class="w95-col">
+            <div class="w95-group">
+              <span class="w95-group-label">Penerima (Recipient)</span>
+              <div style="margin-bottom: 8px;">
+                <label style="font-size: 11px; display: block; margin-bottom: 2px;">Name:</label>
+                <div style="display: flex; gap: 4px;">
+                  <select class="w95-select" id="sToPrefix" style="width: auto; min-width: 70px; flex-shrink: 0;" data-change="generateSingle()">
+                    <option value="">—</option>
+                    <option value="PT" selected>PT</option>
+                    <option value="CV">CV</option>
+                    <option value="custom">Custom…</option>
+                  </select>
+                  <input type="text" class="w95-input" id="sCustomPrefix" style="display: none; width: 80px; flex-shrink: 0;" placeholder="Prefix" data-input="generateSingle()">
+                  <input type="text" class="w95-input" id="sToName" value="EMBLEM ASIA" placeholder="EMBLEM ASIA" style="flex: 1;">
+                </div>
+              </div>
+              <div style="margin-bottom: 8px;">
+                <label style="font-size: 11px; display: block; margin-bottom: 2px;">Attn:</label>
+                <input type="text" class="w95-input" id="sToAttn" value="IBU ARNETA" placeholder="IBU ARNETA">
+              </div>
+              <div>
+                <label style="font-size: 11px; display: block; margin-bottom: 2px;">Address & Phone:</label>
+                <textarea class="w95-textarea" id="sToAddressPhone" rows="3" placeholder="ADDRESS (0xxxxxxxx)">MM2100 INDUSTRIAL TOWN BLOK T-3 JL. BALI CIKARANG BARAT BEKASI 17520 (85781486063)</textarea>
+              </div>
+            </div>
+            <div class="w95-group">
+              <span class="w95-group-label">Pengirim (Sender)</span>
+              <div class="w95-radio-group" id="singleSenderGroup">
+                <label class="w95-radio"><input type="radio" name="sSender" value="KSB Indonesia" checked data-change="setSender('single', 'KSB Indonesia')"><span>KSB Indonesia</span></label>
+                <label class="w95-radio"><input type="radio" name="sSender" value="KSB Sales Indonesia" data-change="setSender('single', 'KSB Sales Indonesia')"><span>KSB Sales Indonesia</span></label>
+                <label class="w95-radio"><input type="radio" name="sSender" value="custom" data-change="setSender('single', 'custom')"><span>Custom...</span></label>
+              </div>
+              <input type="text" class="w95-input" id="sCustomSender" style="margin-top: 8px; display: none;" placeholder="Enter custom sender name...">
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button class="w95-btn primary" data-action="generateSingle()"><span>▶</span> Generate</button>
+              <button class="w95-btn" data-action="printLabels()"><span>🖨</span> Print</button>
+              <button class="w95-btn" data-action="clearSingle()"><span>🗑</span> Clear</button>
+            </div>
+            <div class="w95-status-bar">
+              <div class="w95-status-panel" id="sStatusPanel">Ready · Layout: 1×1</div>
+              <div class="w95-status-panel">1 object(s)</div>
+            </div>
+          </div>
+          <div class="w95-col">
+            <div class="w95-group">
+              <span class="w95-group-label">Preview</span>
+              <div class="w95-preview-frame" id="singlePreviewArea">
+                <div style="color: var(--w95-dark); font-size: 11px; text-align: center; padding: 40px 0;">Click "Generate" to preview label</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BATCH LABEL PAGE -->
+  <div class="w95-desktop" id="batchPage">
+    <div class="w95-window" style="max-width: 1200px; margin: 0 auto;">
+      <div class="w95-title-bar">
+        <div class="w95-title-text"><span style="font-size: 14px;">📑</span> Batch Label — Labelmaker.exe</div>
+        <div class="w95-title-btns">
+          <button class="title-bar-btn" data-action="goHome()">_</button>
+          <button class="title-bar-btn" data-action="goHome()">□</button>
+          <button class="title-bar-btn" data-action="goHome()" style="font-weight: bold;">×</button>
+        </div>
+      </div>
+      <div class="w95-menu-bar">
+        <div class="w95-menu-wrapper">
+          <span class="w95-menu-item" data-action="toggleMenu(\'fileMenu2\')">File</span>
+          <div class="w95-dropdown" id="fileMenu2"><div class="w95-dropdown-item" data-action="goHome();closeMenus()">Exit to Desktop</div></div>
+        </div>
+        <div class="w95-menu-wrapper">
+          <span class="w95-menu-item" data-action="toggleMenu(\'editMenu2\')">Edit</span>
+          <div class="w95-dropdown" id="editMenu2">
+            <div class="w95-dropdown-label">Label Layout</div><div class="w95-dropdown-sep"></div>
+            <div class="w95-dropdown-item" data-action="setLayout(\'1x1\');closeMenus()"><span class="check" id="chk2-1x1">✓</span> 1 × 1 (Default)</div>
+            <div class="w95-dropdown-item" data-action="setLayout(\'1x2\');closeMenus()"><span class="check" id="chk2-1x2">&nbsp;</span> 1 × 2</div>
+            <div class="w95-dropdown-item" data-action="setLayout(\'2x2\');closeMenus()"><span class="check" id="chk2-2x2">&nbsp;</span> 2 × 2</div>
+            <div class="w95-dropdown-item" data-action="setLayout(\'2x3\');closeMenus()"><span class="check" id="chk2-2x3">&nbsp;</span> 2 × 3</div>
+            <div class="w95-dropdown-item" data-action="setLayout(\'3x2\');closeMenus()"><span class="check" id="chk2-3x2">&nbsp;</span> 3 × 2</div>
+            <div class="w95-dropdown-item" data-action="setLayout(\'3x3\');closeMenus()"><span class="check" id="chk2-3x3">&nbsp;</span> 3 × 3</div>
+          </div>
+        </div>
+        <div class="w95-menu-wrapper">
+          <span class="w95-menu-item" data-action="toggleMenu(\'viewMenu2\')">View</span>
+          <div class="w95-dropdown" id="viewMenu2">
+            <div class="w95-dropdown-item" data-action="goHome();closeMenus()">Home</div>
+            <div class="w95-dropdown-item" data-action="openPage(\'single\');closeMenus()">Single Label</div>
+            <div class="w95-dropdown-item" data-action="openPage(\'batch\');closeMenus()">Batch Label</div>
+            <div class="w95-dropdown-item" data-action="openPage(\'history\');closeMenus()">Print History</div>
+          </div>
+        </div>
+        <div class="w95-menu-wrapper">
+          <span class="w95-menu-item" data-action="toggleMenu(\'helpMenu2\')">Help</span>
+          <div class="w95-dropdown" id="helpMenu2">
+            <div class="w95-dropdown-item" data-action="alert(\'Labelmaker v4.2\nKSB Shipping Label System\nWindows 95 Edition\');closeMenus()">About...</div>
+          </div>
+        </div>
+      </div>
+      <div class="w95-content">
+        <div class="w95-layout">
+          <div class="w95-col">
+            <!-- Mode Toggle -->
+            <div class="w95-group" style="padding: 6px 10px; margin-bottom: 8px;">
+              <div style="display: flex; gap: 4px;">
+                <button class="w95-btn batch-mode-btn active" id="btnCardMode" data-action="setBatchMode(\'cards\')" style="flex:1;"><span>🗂️</span> Card Entry</button>
+                <button class="w95-btn batch-mode-btn" id="btnPasteMode" data-action="setBatchMode(\'paste\')" style="flex:1;"><span>📋</span> Paste Excel</button>
+              </div>
+            </div>
+
+            <!-- CARD MODE -->
+            <div id="batchCardMode">
+              <div class="bulk-toolbar">
+                <button class="w95-btn primary" data-action="addBatchCard()"><span>➕</span> Add Label</button>
+                <button class="w95-btn" data-action="addBatchCards(5)"><span>➕➕</span> Add 5</button>
+                <div class="bulk-toolbar-sep"></div>
+                <button class="w95-btn" data-action="pasteExcelToCards()"><span>📋</span> Paste Excel</button>
+                <button class="w95-btn" data-action="clearAllBatchCards()"><span>🗑</span> Clear</button>
+                <div class="bulk-count" id="batchCardCount">0 label(s)</div>
+              </div>
+              <div class="w95-group" style="margin-bottom: 0; padding: 6px;">
+                <div class="bulk-cards-container" id="batchCardsContainer">
+                  <div class="bulk-empty-state" id="batchEmptyState">
+                    <div class="empty-icon">🗂️</div>
+                    <p>No labels yet. Click "Add Label" to start.</p>
+                    <button class="w95-btn primary" data-action="addBatchCard()">➕ Add First Label</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PASTE MODE -->
+            <div id="batchPasteMode" style="display: none;">
+              <div class="w95-group">
+                <span class="w95-group-label">Batch Data (Excel A-G)</span>
+                <div style="margin-bottom: 8px; font-size: 10px; color: var(--w95-darker);">Paste from Excel columns A-G. Format: Skip | Penerima | Skip | Skip | Skip | Address (Phone) | Attn</div>
+                <textarea class="w95-textarea" id="batchInput" rows="12" placeholder="Paste Excel data here..."></textarea>
+              </div>
+              <div class="w95-group">
+                <span class="w95-group-label">Pengirim (Sender)</span>
+                <div class="w95-radio-group" id="batchSenderGroup">
+                  <label class="w95-radio"><input type="radio" name="bSender" value="KSB Indonesia" checked data-change="setSender('batch', 'KSB Indonesia')"><span>KSB Indonesia</span></label>
+                  <label class="w95-radio"><input type="radio" name="bSender" value="KSB Sales Indonesia" data-change="setSender('batch', 'KSB Sales Indonesia')"><span>KSB Sales Indonesia</span></label>
+                  <label class="w95-radio"><input type="radio" name="bSender" value="custom" data-change="setSender('batch', 'custom')"><span>Custom...</span></label>
+                </div>
+                <input type="text" class="w95-input" id="bCustomSender" style="margin-top: 8px; display: none;" placeholder="Enter custom sender name...">
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 8px; margin-top: 12px;">
+              <button class="w95-btn primary" data-action="generateBatch()"><span>▶</span> Generate</button>
+              <button class="w95-btn" data-action="printLabels()"><span>🖨</span> Print All</button>
+              <button class="w95-btn" data-action="clearBatch()"><span>🗑</span> Clear</button>
+            </div>
+            <div class="w95-status-bar">
+              <div class="w95-status-panel" id="bStatusPanel">Ready · Layout: 1×1 · Card Mode</div>
+              <div class="w95-status-panel" id="batchCountPanel">0 label(s)</div>
+            </div>
+          </div>
+          <div class="w95-col">
+            <div class="w95-group">
+              <span class="w95-group-label">Preview</span>
+              <div class="w95-preview-frame" id="batchPreviewArea" style="max-height: 500px; overflow: auto;">
+                <div style="color: var(--w95-dark); font-size: 11px; text-align: center; padding: 40px 0;">Add labels and click "Generate" to preview</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRINT HISTORY PAGE -->
+  <div class="w95-desktop" id="historyPage">
+    <div class="w95-window" style="max-width: 800px; margin: 0 auto;">
+      <div class="w95-title-bar">
+        <div class="w95-title-text"><span style="font-size: 14px;">📂</span> Print History — Labelmaker.exe</div>
+        <div class="w95-title-btns">
+          <button class="title-bar-btn" data-action="goHome()">_</button>
+          <button class="title-bar-btn" data-action="goHome()">□</button>
+          <button class="title-bar-btn" data-action="goHome()" style="font-weight: bold;">×</button>
+        </div>
+      </div>
+      <div class="w95-menu-bar">
+        <div class="w95-menu-wrapper">
+          <span class="w95-menu-item" data-action="toggleMenu(\'fileMenu3\')">File</span>
+          <div class="w95-dropdown" id="fileMenu3"><div class="w95-dropdown-item" data-action="goHome();closeMenus()">Exit to Desktop</div></div>
+        </div>
+        <div class="w95-menu-wrapper">
+          <span class="w95-menu-item" data-action="toggleMenu(\'editMenu3\')">Edit</span>
+          <div class="w95-dropdown" id="editMenu3">
+            <div class="w95-dropdown-label">Label Layout</div><div class="w95-dropdown-sep"></div>
+            <div class="w95-dropdown-item" data-action="setLayout(\'1x1\');closeMenus()"><span class="check" id="chk3-1x1">✓</span> 1 × 1 (Default)</div>
+            <div class="w95-dropdown-item" data-action="setLayout(\'1x2\');closeMenus()"><span class="check" id="chk3-1x2">&nbsp;</span> 1 × 2</div>
+            <div class="w95-dropdown-item" data-action="setLayout(\'2x2\');closeMenus()"><span class="check" id="chk3-2x2">&nbsp;</span> 2 × 2</div>
+            <div class="w95-dropdown-item" data-action="setLayout(\'2x3\');closeMenus()"><span class="check" id="chk3-2x3">&nbsp;</span> 2 × 3</div>
+            <div class="w95-dropdown-item" data-action="setLayout(\'3x2\');closeMenus()"><span class="check" id="chk3-3x2">&nbsp;</span> 3 × 2</div>
+            <div class="w95-dropdown-item" data-action="setLayout(\'3x3\');closeMenus()"><span class="check" id="chk3-3x3">&nbsp;</span> 3 × 3</div>
+          </div>
+        </div>
+        <div class="w95-menu-wrapper">
+          <span class="w95-menu-item" data-action="toggleMenu(\'viewMenu3\')">View</span>
+          <div class="w95-dropdown" id="viewMenu3">
+            <div class="w95-dropdown-item" data-action="goHome();closeMenus()">Home</div>
+            <div class="w95-dropdown-item" data-action="openPage(\'single\');closeMenus()">Single Label</div>
+            <div class="w95-dropdown-item" data-action="openPage(\'batch\');closeMenus()">Batch Label</div>
+            <div class="w95-dropdown-item" data-action="openPage(\'history\');closeMenus()">Print History</div>
+          </div>
+        </div>
+        <div class="w95-menu-wrapper">
+          <span class="w95-menu-item" data-action="toggleMenu(\'helpMenu3\')">Help</span>
+          <div class="w95-dropdown" id="helpMenu3">
+            <div class="w95-dropdown-item" data-action="alert(\'Labelmaker v4.2\nKSB Shipping Label System\nWindows 95 Edition\');closeMenus()">About...</div>
+          </div>
+        </div>
+      </div>
+      <div class="w95-content">
+        <div class="w95-group">
+          <span class="w95-group-label">History</span>
+          <div class="w95-list" id="historyList" style="max-height: 300px;">
+            <div class="w95-list-empty">No print history yet. Generate and print some labels!</div>
+          </div>
+        </div>
+        <div class="gs-config-group">
+          <span class="gs-config-label">Google Sheets Backup</span>
+          <div class="gs-input-row" style="display:none;">
+            <input type="hidden" id="gsUrl" value="https://script.google.com/macros/s/AKfycbzh0K2qq8BgulOqmUQkhhMNpycO-vmo3cWe_FCXzlDzwLV9LbklhPuXyWix4GPMx38CJA/exec">
+          </div>
+          <div class="gs-input-row">
+            <label>Status:</label>
+            <div class="gs-status ok" id="gsStatus">Auto-sync active</div>
+          </div>
+          <div style="display: flex; gap: 6px; margin-top: 8px;">
+            <button class="w95-btn" data-action="gsSyncAll()"><span>☁️</span> Sync All to Sheets</button>
+          </div>
+          <div class="gs-toggle-row" style="display: none;">
+            <input type="checkbox" id="gsAutoSync" checked data-change="gsSaveConfig()">
+          </div>
+          <div class="gs-script-box" id="gsScriptBox" style="display: none;">
+// STEP 1: Create a blank Google Sheet (sheets.google.com)
+// STEP 2: Open script.google.com → New Project bound to that sheet
+// STEP 3: Paste this code, SAVE (Ctrl+S), then Deploy → New deployment
+// STEP 4: Type: Web app | Execute as: Me | Who has access: Anyone
+// STEP 5: Copy the Web App URL into the field above
+
+function doPost(e) {
+  var lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    var raw = e.parameter.data || '{}';
+    var payload = JSON.parse(raw);
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheets()[0];
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow(['Timestamp','Recipient','Attn','Address','Phone','Sender','Type']);
+    }
+    sheet.appendRow([
+      payload.date || '', payload.toName || '', payload.toAttn || '',
+      payload.toAddress || '', payload.toPhone || '', payload.fromName || '', payload.type || ''
+    ]);
+    lock.releaseLock();
+    return ContentService.createTextOutput(JSON.stringify({success:true}))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch(err) {
+    lock.releaseLock();
+    return ContentService.createTextOutput(JSON.stringify({success:false,error:String(err)}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function doGet(e) {
+  return ContentService.createTextOutput(JSON.stringify({status:'ok'}))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px; margin-top: 12px;">
+          <button class="w95-btn" data-action="goHome()"><span>←</span> Back</button>
+          <button class="w95-btn" data-action="clearHistory()"><span>🗑</span> Clear History</button>
+        </div>
+        <div class="w95-status-bar">
+          <div class="w95-status-panel" id="hStatusPanel">0 item(s)</div>
+          <div class="w95-status-panel">History</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- MINESWEEPER PAGE -->
+  <div class="minesweeper-desktop" id="minesweeperPage">
+    <div class="ms-window">
+      <div class="ms-title-bar">
+        <div class="ms-title-text"><span style="font-size: 14px;">💣</span> Minesweeper — KSB Edition</div>
+        <div class="ms-title-btns">
+          <button class="title-bar-btn" data-action="goHome()">_</button>
+          <button class="title-bar-btn" data-action="goHome()">□</button>
+          <button class="title-bar-btn" data-action="goHome()" style="font-weight: bold;">×</button>
+        </div>
+      </div>
+      <div class="ms-menu-bar">
+        <div class="ms-menu-wrapper">
+          <span class="ms-menu-item" data-action="toggleMsMenu(\'msGameMenu\')">Game</span>
+          <div class="ms-dropdown" id="msGameMenu">
+            <div class="ms-dropdown-item" data-action="msNewGame(\'beginner\');closeMsMenus()">New Game — Beginner</div>
+            <div class="ms-dropdown-item" data-action="msNewGame(\'intermediate\');closeMsMenus()">New Game — Intermediate</div>
+            <div class="ms-dropdown-item" data-action="msNewGame(\'expert\');closeMsMenus()">New Game — Expert</div>
+            <div class="ms-dropdown-sep"></div>
+            <div class="ms-dropdown-item" data-action="goHome();closeMsMenus()">Exit to Desktop</div>
+          </div>
+        </div>
+        <div class="ms-menu-wrapper">
+          <span class="ms-menu-item" data-action="toggleMsMenu(\'msHelpMenu\')">Help</span>
+          <div class="ms-dropdown" id="msHelpMenu">
+            <div class="ms-dropdown-item" data-action="alert(\'Minesweeper KSB Edition 💣\n\nLeft-click to reveal a cell.\nRight-click to flag a bomb.\n\nClear all safe cells to win!\');closeMsMenus()">How to Play</div>
+            <div class="ms-dropdown-item" data-action="alert(\'Minesweeper KSB Edition v1.0 💣\nWindows 95 Aesthetic\n\nBuilt for Labelmaker\');closeMsMenus()">About...</div>
+          </div>
+        </div>
+      </div>
+      <div class="ms-content">
+        <div class="ms-status-panel">
+          <div class="ms-counter" id="msMineCounter">010</div>
+          <button class="ms-face-btn" id="msFaceBtn" data-action="msRestartCurrent()" title="Restart">💣</button>
+          <div class="ms-counter" id="msTimer">000</div>
+        </div>
+        <div style="text-align: center;">
+          <div class="ms-board" id="msBoard"></div>
+        </div>
+        <div class="ms-best-times">
+          <div style="font-weight: bold; margin-bottom: 4px; font-size: 10px; text-transform: uppercase;">Best Times</div>
+          <table>
+            <thead><tr><th>Difficulty</th><th>Time</th><th>Date</th></tr></thead>
+            <tbody id="msBestTimesBody">
+              <tr><td colspan="3" style="text-align:center;color:var(--w95-darker);">No records yet</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Over Overlay -->
+  <div class="ms-game-over-overlay" id="msGameOverOverlay">
+    <div class="ms-game-over-box" id="msGameOverBox">
+      <h3 id="msGameOverTitle">Game Over</h3>
+      <p id="msGameOverMsg">You hit a mine!</p>
+      <div>
+        <button class="w95-btn primary" data-action="msRestartCurrent(); hideMsGameOver()">New Game</button>
+        <button class="w95-btn" data-action="hideMsGameOver()">Close</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- CALCULATOR PAGE -->
+  <div class="calculator-desktop" id="calculatorPage">
+    <div class="calc-window">
+      <div class="calc-title-bar">
+        <div class="calc-title-text"><span style="font-size: 14px;">🧮</span> Calculator — KSB Edition</div>
+        <div class="calc-title-btns">
+          <button class="title-bar-btn" data-action="goHome()">_</button>
+          <button class="title-bar-btn" data-action="goHome()">□</button>
+          <button class="title-bar-btn" data-action="goHome()" style="font-weight: bold;">×</button>
+        </div>
+      </div>
+      <div class="calc-menu-bar">
+        <div class="calc-menu-wrapper">
+          <span class="calc-menu-item" data-action="toggleCalcMenu(\'calcEditMenu\')">Edit</span>
+          <div class="calc-dropdown" id="calcEditMenu">
+            <div class="calc-dropdown-item" data-action="calcCopy();closeCalcMenus()">Copy</div>
+            <div class="calc-dropdown-item" data-action="calcPaste();closeCalcMenus()">Paste</div>
+            <div class="calc-dropdown-sep"></div>
+            <div class="calc-dropdown-item" data-action="goHome();closeCalcMenus()">Exit to Desktop</div>
+          </div>
+        </div>
+        <div class="calc-menu-wrapper">
+          <span class="calc-menu-item" data-action="toggleCalcMenu(\'calcHelpMenu\')">Help</span>
+          <div class="calc-dropdown" id="calcHelpMenu">
+            <div class="calc-dropdown-item" data-action="alert(\'Calculator KSB Edition 🧮
+
+Standard calculator with memory functions.
+Use keyboard or click buttons.\');closeCalcMenus()">How to Use</div>
+            <div class="calc-dropdown-item" data-action="alert(\'Calculator KSB Edition v1.0 🧮
+Windows 95 Aesthetic
+
+Built for Labelmaker\');closeCalcMenus()">About...</div>
+          </div>
+        </div>
+      </div>
+      <div class="calc-content">
+        <div class="calc-display">
+          <div class="calc-display-inner" id="calcDisplay">0</div>
+        </div>
+        <div class="calc-keypad">
+          <button class="calc-btn calc-mem" data-action="calcMC()">MC</button>
+          <button class="calc-btn calc-mem" data-action="calcMR()">MR</button>
+          <button class="calc-btn calc-mem" data-action="calcMS()">MS</button>
+          <button class="calc-btn calc-mem" data-action="calcMPlus()">M+</button>
+          <button class="calc-btn calc-mem" data-action="calcMMinus()">M−</button>
+          <button class="calc-btn" data-action="calcBackspace()">←</button>
+          <button class="calc-btn" data-action="calcClearEntry()">CE</button>
+          <button class="calc-btn" data-action="calcClear()">C</button>
+          <button class="calc-btn calc-op" data-action="calcOperator(\'/\')">÷</button>
+          <button class="calc-btn calc-op" data-action="calcSqrt()">√</button>
+          <button class="calc-btn" data-action="calcDigit(\'7\')">7</button>
+          <button class="calc-btn" data-action="calcDigit(\'8\')">8</button>
+          <button class="calc-btn" data-action="calcDigit(\'9\')">9</button>
+          <button class="calc-btn calc-op" data-action="calcOperator(\'*\')">×</button>
+          <button class="calc-btn calc-op" data-action="calcPercent()">%</button>
+          <button class="calc-btn" data-action="calcDigit(\'4\')">4</button>
+          <button class="calc-btn" data-action="calcDigit(\'5\')">5</button>
+          <button class="calc-btn" data-action="calcDigit(\'6\')">6</button>
+          <button class="calc-btn calc-op" data-action="calcOperator(\'-\')">−</button>
+          <button class="calc-btn calc-op" data-action="calcReciprocal()">1/x</button>
+          <button class="calc-btn" data-action="calcDigit(\'1\')">1</button>
+          <button class="calc-btn" data-action="calcDigit(\'2\')">2</button>
+          <button class="calc-btn" data-action="calcDigit(\'3\')">3</button>
+          <button class="calc-btn calc-op" data-action="calcOperator(\'+\')">+</button>
+          <button class="calc-btn calc-eq" data-action="calcEquals()" style="grid-row: span 2;">=</button>
+          <button class="calc-btn" data-action="calcDigit(\'0\')" style="grid-column: span 2;">0</button>
+          <button class="calc-btn" data-action="calcDigit(\'.\')">.</button>
+          <button class="calc-btn calc-op" data-action="calcToggleSign()">±</button>
+        </div>
+        <div class="calc-mem-indicator" id="calcMemIndicator">&nbsp;</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="printArea" style="display:none;"></div>
+
+  <div class="w95-taskbar" id="w95Taskbar" style="display: none;">
+    <button class="w95-start-btn" data-action="goHome()"><span style="font-size: 14px;">🪟</span><span>Start</span></button>
+    <div class="w95-taskbar-divider"></div>
+    <div class="w95-taskbar-time" id="taskbarTime">12:00 PM</div>
+  </div>
+
+  <div class="app-footer" id="appFooter" style="display:none;">
+    Labelmaker v4.2 — KSB Shipping Label — Windows 95 Edition — Optimized for Desktop Print
+  </div>
+
+  <script>
+    function updateClock() {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }
+);
+      document.getElementById('taskbarTime').textContent = timeStr;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    function openPage(page) {
+      document.getElementById('homePage').style.display = 'none';
+      document.querySelectorAll('.w95-desktop').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.minesweeper-desktop').forEach(p => p.classList.remove('active'));
+      document.getElementById('appFooter').style.display = 'block';
+      document.getElementById('w95Taskbar').style.display = 'flex';
+      if (page === 'single') {
+        document.getElementById('singlePage').classList.add('active');
+        generateSingle();
+      } else if (page === 'batch') {
+        document.getElementById('batchPage').classList.add('active');
+      } else if (page === 'history') {
+        document.getElementById('historyPage').classList.add('active');
+        renderHistory();
+      } else if (page === 'minesweeper') {
+        document.getElementById('minesweeperPage').classList.add('active');
+        if (!msGameState.started) msNewGame('beginner');
+      } else if (page === 'calculator') {
+        document.getElementById('calculatorPage').classList.add('active');
+      }
+    }
+
+    function goHome() {
+      document.getElementById('homePage').style.display = 'flex';
+      document.querySelectorAll('.w95-desktop').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.minesweeper-desktop').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.calculator-desktop').forEach(p => p.classList.remove('active'));
+      document.getElementById('appFooter').style.display = 'none';
+      document.getElementById('w95Taskbar').style.display = 'none';
+    }
+
+    const senderState = { single: 'KSB Indonesia', batch: 'KSB Indonesia' };
+    let currentLayout = '1x1';
+    let batchMode = 'cards';
+
+    function toggleMenu(id) {
+      const menu = document.getElementById(id);
+      const isOpen = menu.classList.contains('show');
+      closeMenus();
+      if (!isOpen) menu.classList.add('show');
+    }
+    function closeMenus() {
+      document.querySelectorAll('.w95-dropdown').forEach(m => m.classList.remove('show'));
+    }
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.w95-menu-bar')) closeMenus();
+    });
+
+    function setBatchMode(mode) {
+      batchMode = mode;
+      document.getElementById('btnCardMode').classList.toggle('active', mode === 'cards');
+      document.getElementById('btnPasteMode').classList.toggle('active', mode === 'paste');
+      document.getElementById('batchCardMode').style.display = mode === 'cards' ? 'block' : 'none';
+      document.getElementById('batchPasteMode').style.display = mode === 'paste' ? 'block' : 'none';
+      const status = document.getElementById('bStatusPanel');
+      const layoutText = 'Layout: ' + currentLayout.replace('x', '×');
+      status.textContent = 'Ready · ' + layoutText + ' · ' + (mode === 'cards' ? 'Card Mode' : 'Paste Mode');
+    }
+
+    function setLayout(layout) {
+      currentLayout = layout;
+      ['1x1','1x2','2x2','2x3','3x2','3x3'].forEach(l => {
+        for (let i = 1; i <= 3; i++) {
+          const chk = document.getElementById('chk' + (i === 1 ? '' : i) + '-' + l);
+          if (chk) chk.innerHTML = l === layout ? '✓' : '&nbsp;';
+        }
+      });
+      const layoutText = 'Layout: ' + layout.replace('x', '×');
+      const sStatus = document.getElementById('sStatusPanel');
+      const bStatus = document.getElementById('bStatusPanel');
+      if (sStatus && !sStatus.textContent.includes('Form cleared')) {
+        sStatus.textContent = sStatus.textContent.replace(/Layout: [^·]+/, layoutText);
+        if (!sStatus.textContent.includes('Layout')) sStatus.textContent += ' · ' + layoutText;
+      }
+      if (bStatus && !bStatus.textContent.includes('Form cleared')) {
+        bStatus.textContent = bStatus.textContent.replace(/Layout: [^·]+/, layoutText);
+        if (!bStatus.textContent.includes('Layout')) bStatus.textContent += ' · ' + layoutText;
+      }
+      const printArea = document.getElementById('printArea');
+      if (printArea.innerHTML.trim()) {
+        applyLayoutToPrintArea();
+      }
+      const batchPreview = document.querySelector('#batchPreviewArea .preview-grid-container');
+      if (batchPreview) {
+        batchPreview.className = 'preview-grid-container preview-grid-' + layout;
+      }
+      const singlePreview = document.querySelector('#singlePreviewArea .preview-grid-container');
+      if (singlePreview) {
+        singlePreview.className = 'preview-grid-container preview-grid-' + layout;
+      }
+    }
+    function getLayout() { return currentLayout; }
+    function applyLayoutToPrintArea() {
+      const printArea = document.getElementById('printArea');
+      if (!printArea.innerHTML.trim()) return;
+
+      // Always collect raw .ksb-label elements regardless of current wrapping
+      const labels = Array.from(printArea.querySelectorAll('.ksb-label'));
+      if (labels.length === 0) return;
+
+      const layout = currentLayout || '1x1';
+      const labelsPerPage = {
+        '1x1': 1, '1x2': 2, '2x2': 4,
+        '2x3': 6, '3x2': 6, '3x3': 9
+      }[layout] || 1;
+
+      // Snapshot outerHTML before we clear the DOM
+      const labelSnapshots = labels.map(l => l.outerHTML);
+
+      let pagesHTML = '';
+      for (let i = 0; i < labelSnapshots.length; i += labelsPerPage) {
+        const pageContent = labelSnapshots.slice(i, i + labelsPerPage).join('');
+        pagesHTML += '<div class="print-page layout-' + layout + '">' + pageContent + '</div>';
+      }
+
+      printArea.innerHTML = pagesHTML;
+    }
+
+    function getSender(page) {
+      if (senderState[page] === 'custom') {
+        const input = page === 'single' ? document.getElementById('sCustomSender') : document.getElementById('bCustomSender');
+        return input.value.trim() || 'KSB SALES INDONESIA';
+      }
+      return senderState[page];
+    }
+
+    function setSender(page, sender) {
+      senderState[page] = sender;
+      const customInput = page === 'single' ? document.getElementById('sCustomSender') : document.getElementById('bCustomSender');
+      if (sender === 'custom') {
+        customInput.style.display = 'block';
+        customInput.focus();
+      } else {
+        customInput.style.display = 'none';
+        customInput.value = '';
+      }
+    }
+
+    const KSB_LOGO_URL = 'https://file.garden/ad-wGPVIV3ilAD_L/WORK%20PROJECT/LABEL%20MAKER/KSB_SVG.svg.png';
+    let printHistory = [];
+
+    function createLabelHTML(data, index) {
+      const toName = data.toName || 'PT EMBLEM ASIA';
+      const toAttn = data.toAttn || '';
+      const toAddress = (data.toAddress || 'MM2100 INDUSTRIAL TOWN BLOK T-3 JL. BALI CIKARANG BARAT BEKASI 17520').replace(/\n/g, '<br>');
+      const toPhone = data.toPhone || '';
+      const fromName = data.fromName || 'KSB SALES INDONESIA';
+      return `<div class="ksb-label" data-index="${index}"><div class="ksb-label-inner"><img src="${KSB_LOGO_URL}" alt="KSB" class="ksb-logo" data-error="this.style.display=none"><div class="label-section recipient-section"><div class="label-heading">Penerima :</div><div class="label-name">${escapeHtml(toName)}</div>${toAttn ? `<div class="label-attn">Attn: ${escapeHtml(toAttn)}</div>` : ''}<div class="label-address">${toAddress}</div>${toPhone ? `<div class="label-phone">(${escapeHtml(toPhone)})</div>` : ''}</div><div class="label-divider"></div><div class="label-section sender-section"><div class="label-heading">Pengirim :</div><div class="label-name">${escapeHtml(fromName)}</div></div></div></div>`;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function parseAddressPhone(str) {
+      str = str.trim();
+      const match = str.match(/^(.*?)\s*\((0\d+)\)$/);
+      if (match) return { address: match[1].trim(), phone: match[2] };
+      const fallback = str.match(/^(.*?)\s*\((\d+)\)$/);
+      if (fallback) return { address: fallback[1].trim(), phone: fallback[2] };
+      return { address: str, phone: '' };
+    }
+
+    function generateSingle() {
+      const raw = document.getElementById('sToAddressPhone').value.trim();
+      const parsed = parseAddressPhone(raw);
+      const prefixEl = document.getElementById('sToPrefix');
+      const customPrefixEl = document.getElementById('sCustomPrefix');
+      const prefix = prefixEl ? prefixEl.value : '';
+      const customPrefix = customPrefixEl ? customPrefixEl.value.trim() : '';
+      const rawName = document.getElementById('sToName').value.trim();
+      const data = {
+        toName: buildFullName(prefix, customPrefix, rawName),
+        toAttn: document.getElementById('sToAttn').value.trim(),
+        toAddress: parsed.address,
+        toPhone: parsed.phone,
+        fromName: getSender('single')
+      };
+      const html = createLabelHTML(data, 0);
+      document.getElementById('singlePreviewArea').innerHTML = '<div class="preview-grid-container preview-grid-' + currentLayout + '">' + html + '</div>';
+      document.getElementById('printArea').innerHTML = html;
+      applyLayoutToPrintArea();
+      fitFontsToText();
+      addToHistory(data, 'single');
+      document.getElementById('sStatusPanel').textContent = 'Label generated successfully · Layout: ' + currentLayout.replace('x', '×');
+    }
+
+    function clearSingle() {
+      document.getElementById('sToName').value = '';
+      document.getElementById('sToAttn').value = '';
+      document.getElementById('sToAddressPhone').value = '';
+      document.getElementById('singlePreviewArea').innerHTML = '<div style="color: var(--w95-dark); font-size: 11px; text-align: center; padding: 40px 0;">Click "Generate" to preview label</div>';
+      document.getElementById('printArea').innerHTML = '';
+      document.getElementById('sStatusPanel').textContent = 'Form cleared · Layout: ' + currentLayout.replace('x', '×');
+    }
+
+    // ==================== BATCH CARD SYSTEM ====================
+    let batchCardCount = 0;
+
+    function addBatchCard() {
+      const container = document.getElementById('batchCardsContainer');
+      const emptyState = document.getElementById('batchEmptyState');
+      if (emptyState) emptyState.style.display = 'none';
+      batchCardCount++;
+      const cardId = 'batchCard_' + batchCardCount;
+      const card = document.createElement('div');
+      card.className = 'bulk-card';
+      card.id = cardId;
+      card.innerHTML = `<div class="bulk-card-header"><div class="bulk-card-num"><span class="card-badge">${batchCardCount}</span><span>Label No. ${batchCardCount}</span></div><button class="bulk-card-remove" data-action="removeBatchCard(\'${cardId}\')" title="Remove">×</button></div><div class="bulk-card-field"><label>Penerima (Company / Entity)</label><div style="display: flex; gap: 4px;"><select class="w95-select" id="${cardId}_prefix" style="width: auto; min-width: 60px; flex-shrink: 0;" data-change="handleCardPrefixChange('${cardId}'); debounceBatchPreview()"><option value="">—</option><option value="PT" selected>PT</option><option value="CV">CV</option><option value="custom">Custom…</option></select><input type="text" class="w95-input" id="${cardId}_customPrefix" style="display: none; width: 70px; flex-shrink: 0;" placeholder="Prefix" data-input="debounceBatchPreview()"><input type="text" class="w95-input" id="${cardId}_name" placeholder="e.g. EMBLEM ASIA" style="flex: 1;" data-input="debounceBatchPreview()"></div></div><div class="bulk-card-field"><label>Attn (Person Name)</label><input type="text" class="w95-input" id="${cardId}_attn" placeholder="e.g. Ibu Arneta" data-input="debounceBatchPreview()"></div><div class="bulk-card-field"><label>Phone Number</label><input type="text" class="w95-input" id="${cardId}_phone" placeholder="e.g. 08123456789" data-input="debounceBatchPreview()"></div><div class="bulk-card-field"><label>Address</label><textarea class="w95-textarea" id="${cardId}_address" rows="2" placeholder="Full street address..." data-input="debounceBatchPreview()"></textarea></div><div class="bulk-card-sender"><label>Pengirim (Sender)</label><select class="w95-select" id="${cardId}_sender" data-change="handleCardSenderChange('${cardId}'); debounceBatchPreview()"><option value="KSB Indonesia">KSB Indonesia</option><option value="KSB Sales Indonesia">KSB Sales Indonesia</option><option value="custom">Custom...</option></select><input type="text" class="w95-input" id="${cardId}_customSender" style="margin-top: 4px; display: none;" placeholder="Enter custom sender..." data-input="debounceBatchPreview()"></div>`;
+      container.appendChild(card);
+      updateBatchCount();
+      setTimeout(() => { const firstInput = card.querySelector(`#${cardId}_name`); if (firstInput) firstInput.focus(); }, 50);
+    }
+
+    function addBatchCards(n) {
+      for (let i = 0; i < n; i++) addBatchCard();
+    }
+
+    function removeBatchCard(cardId) {
+      const card = document.getElementById(cardId);
+      if (card) {
+        card.remove();
+        const cards = document.querySelectorAll('.bulk-card');
+        cards.forEach((c, idx) => {
+          const badge = c.querySelector('.card-badge');
+          const numText = c.querySelector('.bulk-card-num span:last-child');
+          if (badge) badge.textContent = idx + 1;
+          if (numText) numText.textContent = 'Label No. ' + (idx + 1);
+        });
+        batchCardCount = cards.length;
+        updateBatchCount();
+        if (cards.length === 0) {
+          document.getElementById('batchEmptyState').style.display = 'block';
+        }
+        debounceBatchPreview();
+      }
+    }
+
+    function clearAllBatchCards() {
+      document.getElementById('batchCardsContainer').innerHTML = `<div class="bulk-empty-state" id="batchEmptyState"><div class="empty-icon">὜2</div><p>No labels yet. Click "Add Label" to start.</p><button class="w95-btn primary" data-action="addBatchCard()">➕ Add First Label</button></div>`;
+      batchCardCount = 0;
+      updateBatchCount();
+      document.getElementById('bStatusPanel').textContent = 'All cards cleared · Layout: ' + currentLayout.replace('x', '×');
+    }
+
+    function updateBatchCount() {
+      const count = document.querySelectorAll('.bulk-card').length;
+      document.getElementById('batchCardCount').textContent = count + ' label(s)';
+      document.getElementById('batchCountPanel').textContent = count + ' label(s)';
+    }
+
+    function handleCardSenderChange(cardId) {
+      const select = document.getElementById(cardId + '_sender');
+      const customInput = document.getElementById(cardId + '_customSender');
+      if (select.value === 'custom') {
+        customInput.style.display = 'block';
+        customInput.focus();
+      } else {
+        customInput.style.display = 'none';
+        customInput.value = '';
+      }
+    }
+
+    let batchPreviewDebounce;
+    function debounceBatchPreview() {
+      clearTimeout(batchPreviewDebounce);
+      batchPreviewDebounce = setTimeout(generateBatchPreview, 300);
+    }
+
+    function generateBatchPreview() {
+      const cards = document.querySelectorAll('.bulk-card');
+      if (cards.length === 0) return;
+      const labels = [];
+      cards.forEach(card => {
+        const id = card.id;
+        const prefix = card.querySelector(`#${id}_prefix`).value;
+        const customPrefix = card.querySelector(`#${id}_customPrefix`).value.trim();
+        const rawName = card.querySelector(`#${id}_name`).value.trim();
+        const name = buildFullName(prefix, customPrefix, rawName);
+        const attn = card.querySelector(`#${id}_attn`).value.trim();
+        const phone = card.querySelector(`#${id}_phone`).value.trim();
+        const address = card.querySelector(`#${id}_address`).value.trim();
+        const senderSelect = card.querySelector(`#${id}_sender`);
+        let sender = senderSelect.value;
+        if (sender === 'custom') {
+          sender = card.querySelector(`#${id}_customSender`).value.trim() || 'KSB SALES INDONESIA';
+        }
+        if (name || address) {
+          labels.push({ toName: name || '—', toAttn: attn, toAddress: address, toPhone: phone, fromName: sender });
+        }
+      });
+      if (labels.length > 0) {
+        const previewHTML = labels.map((data, i) => createLabelHTML(data, i)).join('');
+        document.getElementById('printArea').innerHTML = previewHTML;
+        applyLayoutToPrintArea();
+      }
+    }
+
+    function pasteExcelToCards() {
+      const text = prompt('Paste Excel data here (tab-separated columns):');
+      if (!text || !text.trim()) return;
+      const lines = text.trim().split('\n').filter(l => l.trim());
+      let added = 0;
+      for (const line of lines) {
+        const cols = line.split('\t');
+        if (cols.length < 2) continue;
+        addBatchCard();
+        const cards = document.querySelectorAll('.bulk-card');
+        const card = cards[cards.length - 1];
+        const id = card.id;
+        if (cols[1]) {
+          const parsedName = parseCompanyPrefix(cols[1].trim());
+          card.querySelector(`#${id}_prefix`).value = parsedName.prefix;
+          if (parsedName.prefix === 'custom') {
+            card.querySelector(`#${id}_customPrefix`).value = parsedName.customPrefix;
+            card.querySelector(`#${id}_customPrefix`).style.display = 'block';
+          }
+          card.querySelector(`#${id}_name`).value = parsedName.name;
+        }
+        if (cols[6]) card.querySelector(`#${id}_attn`).value = cols[6].trim();
+        if (cols[5]) {
+          const parsed = parseAddressPhone(cols[5].trim());
+          card.querySelector(`#${id}_address`).value = parsed.address;
+          card.querySelector(`#${id}_phone`).value = parsed.phone;
+        }
+        added++;
+      }
+      if (added > 0) {
+        document.getElementById('bStatusPanel').textContent = `Pasted ${added} label(s) from Excel · Layout: ` + currentLayout.replace('x', '×');
+        debounceBatchPreview();
+      }
+    }
+
+    function parseBatchInput(text) {
+      const labels = [];
+      const lines = text.trim().split('\n').filter(l => l.trim());
+      for (const line of lines) {
+        const cols = line.split('\t');
+        if (cols.length < 2) continue;
+        const label = { toName: '', toAttn: '', toAddress: '', toPhone: '', fromName: getSender('batch') };
+        if (cols[1] && cols[1].trim()) {
+          const parsed = parseCompanyPrefix(cols[1].trim());
+          label.toName = buildFullName(parsed.prefix, parsed.customPrefix, parsed.name);
+        }
+        if (cols[5] && cols[5].trim()) {
+          const parsed = parseAddressPhone(cols[5].trim());
+          label.toAddress = parsed.address;
+          label.toPhone = parsed.phone;
+        }
+        if (cols[6] && cols[6].trim()) label.toAttn = cols[6].trim();
+        if (!label.toName && cols.length >= 2) {
+          label.toName = cols[0].trim();
+          const parsed = parseAddressPhone(cols[1].trim());
+          label.toAddress = parsed.address;
+          label.toPhone = parsed.phone;
+          if (cols[2]) label.toAttn = cols[2].trim();
+        }
+        if (label.toName || label.toAddress) labels.push(label);
+      }
+      return labels;
+    }
+
+    function generateBatch() {
+      if (batchMode === 'cards') {
+        generateBatchFromCards();
+      } else {
+        generateBatchFromPaste();
+      }
+    }
+
+    function generateBatchFromCards() {
+      const cards = document.querySelectorAll('.bulk-card');
+      if (cards.length === 0) {
+        document.getElementById('bStatusPanel').textContent = 'Error: No cards to generate';
+        return;
+      }
+      const labels = [];
+      cards.forEach(card => {
+        const id = card.id;
+        const prefix = card.querySelector(`#${id}_prefix`).value;
+        const customPrefix = card.querySelector(`#${id}_customPrefix`).value.trim();
+        const rawName = card.querySelector(`#${id}_name`).value.trim();
+        const name = buildFullName(prefix, customPrefix, rawName);
+        const attn = card.querySelector(`#${id}_attn`).value.trim();
+        const phone = card.querySelector(`#${id}_phone`).value.trim();
+        const address = card.querySelector(`#${id}_address`).value.trim();
+        const senderSelect = card.querySelector(`#${id}_sender`);
+        let sender = senderSelect.value;
+        if (sender === 'custom') {
+          sender = card.querySelector(`#${id}_customSender`).value.trim() || 'KSB SALES INDONESIA';
+        }
+        if (name || address) {
+          const data = { toName: name || '—', toAttn: attn, toAddress: address, toPhone: phone, fromName: sender };
+          labels.push(data);
+          addToHistory(data, 'batch');
+        }
+      });
+      if (labels.length === 0) {
+        document.getElementById('bStatusPanel').textContent = 'Error: No valid labels found';
+        return;
+      }
+      const previewHTML = labels.map((data, i) => createLabelHTML(data, i)).join('');
+      document.getElementById('batchPreviewArea').innerHTML = '<div class="preview-grid-container preview-grid-' + currentLayout + '">' + previewHTML + '</div>';
+      document.getElementById('printArea').innerHTML = previewHTML;
+      applyLayoutToPrintArea();
+      fitFontsToText();
+      document.getElementById('bStatusPanel').textContent = `Generated ${labels.length} label(s) · Layout: ` + currentLayout.replace('x', '×');
+    }
+
+    function generateBatchFromPaste() {
+      const batchText = document.getElementById('batchInput').value.trim();
+      if (!batchText) {
+        document.getElementById('bStatusPanel').textContent = 'Error: Please paste batch data first';
+        return;
+      }
+      const labels = parseBatchInput(batchText);
+      if (labels.length === 0) {
+        document.getElementById('bStatusPanel').textContent = 'Error: No valid labels found';
+        return;
+      }
+      // Switch to card mode and populate cards
+      setBatchMode('cards');
+      const container = document.getElementById('batchCardsContainer');
+      container.innerHTML = '';
+      batchCardCount = 0;
+      labels.forEach((data) => {
+        batchCardCount++;
+        const cardId = 'batchCard_' + batchCardCount;
+        const card = document.createElement('div');
+        card.className = 'bulk-card';
+        card.id = cardId;
+        const isCustom = data.fromName !== 'KSB Indonesia' && data.fromName !== 'KSB Sales Indonesia';
+        const parsedName2 = parseCompanyPrefix(data.toName);
+        const isCustomPrefix2 = parsedName2.prefix === 'custom';
+        card.innerHTML = `<div class="bulk-card-header"><div class="bulk-card-num"><span class="card-badge">${batchCardCount}</span><span>Label No. ${batchCardCount}</span></div><button class="bulk-card-remove" data-action="removeBatchCard(\'${cardId}\')" title="Remove">×</button></div><div class="bulk-card-field"><label>Penerima (Company / Entity)</label><div style="display: flex; gap: 4px;"><select class="w95-select" id="${cardId}_prefix" style="width: auto; min-width: 60px; flex-shrink: 0;" data-change="handleCardPrefixChange('${cardId}'); debounceBatchPreview()"><option value="" ${parsedName2.prefix === '' ? 'selected' : ''}>—</option><option value="PT" ${parsedName2.prefix === 'PT' ? 'selected' : ''}>PT</option><option value="CV" ${parsedName2.prefix === 'CV' ? 'selected' : ''}>CV</option><option value="custom" ${isCustomPrefix2 ? 'selected' : ''}>Custom…</option></select><input type="text" class="w95-input" id="${cardId}_customPrefix" style="display: ${isCustomPrefix2 ? 'block' : 'none'}; width: 70px; flex-shrink: 0;" value="${escapeHtml(isCustomPrefix2 ? parsedName2.customPrefix : '')}" placeholder="Prefix" data-input="debounceBatchPreview()"><input type="text" class="w95-input" id="${cardId}_name" value="${escapeHtml(parsedName2.name)}" placeholder="e.g. EMBLEM ASIA" style="flex: 1;" data-input="debounceBatchPreview()"></div></div><div class="bulk-card-field"><label>Attn (Person Name)</label><input type="text" class="w95-input" id="${cardId}_attn" value="${escapeHtml(data.toAttn)}" placeholder="e.g. Ibu Arneta" data-input="debounceBatchPreview()"></div><div class="bulk-card-field"><label>Phone Number</label><input type="text" class="w95-input" id="${cardId}_phone" value="${escapeHtml(data.toPhone)}" placeholder="e.g. 08123456789" data-input="debounceBatchPreview()"></div><div class="bulk-card-field"><label>Address</label><textarea class="w95-textarea" id="${cardId}_address" rows="2" placeholder="Full street address..." data-input="debounceBatchPreview()">${escapeHtml(data.toAddress)}</textarea></div><div class="bulk-card-sender"><label>Pengirim (Sender)</label><select class="w95-select" id="${cardId}_sender" data-change="handleCardSenderChange('${cardId}'); debounceBatchPreview()"><option value="KSB Indonesia" ${data.fromName === 'KSB Indonesia' ? 'selected' : ''}>KSB Indonesia</option><option value="KSB Sales Indonesia" ${data.fromName === 'KSB Sales Indonesia' ? 'selected' : ''}>KSB Sales Indonesia</option><option value="custom" ${isCustom ? 'selected' : ''}>Custom...</option></select><input type="text" class="w95-input" id="${cardId}_customSender" style="margin-top: 4px; display: ${isCustom ? 'block' : 'none'};" value="${isCustom ? escapeHtml(data.fromName) : ''}" placeholder="Enter custom sender..." data-input="debounceBatchPreview()"></div>`;
+        container.appendChild(card);
+      });
+      updateBatchCount();
+      const previewHTML = labels.map((data, i) => createLabelHTML(data, i)).join('');
+      document.getElementById('batchPreviewArea').innerHTML = '<div class="preview-grid-container preview-grid-' + currentLayout + '">' + previewHTML + '</div>';
+      document.getElementById('printArea').innerHTML = previewHTML;
+      applyLayoutToPrintArea();
+      fitFontsToText();
+      labels.forEach(data => addToHistory(data, 'batch'));
+      document.getElementById('bStatusPanel').textContent = `Generated ${labels.length} label(s) in cards · Layout: ` + currentLayout.replace('x', '×');
+    }
+
+    function clearBatch() {
+      if (batchMode === 'cards') {
+        clearAllBatchCards();
+      } else {
+        document.getElementById('batchInput').value = '';
+      }
+      document.getElementById('batchPreviewArea').innerHTML = '<div style="color: var(--w95-dark); font-size: 11px; text-align: center; padding: 40px 0;">Add labels and click "Generate" to preview</div>';
+      document.getElementById('printArea').innerHTML = '';
+      document.getElementById('batchCountPanel').textContent = '0 label(s)';
+      document.getElementById('bStatusPanel').textContent = 'Form cleared · Layout: ' + currentLayout.replace('x', '×');
+    }
+
+    function printLabels() {
+      const printContent = document.getElementById('printArea').innerHTML;
+      if (!printContent.trim()) {
+        const activePage = document.querySelector('.w95-desktop.active');
+        if (activePage.id === 'singlePage') {
+          document.getElementById('sStatusPanel').textContent = 'Error: Generate labels first!';
+        } else {
+          document.getElementById('bStatusPanel').textContent = 'Error: Generate labels first!';
+        }
+        return;
+      }
+      fitFontsToText();
+      window.print();
+    }
+
+    function addToHistory(data, type) {
+      const entry = {
+        toName: data.toName, toAttn: data.toAttn, toAddress: data.toAddress,
+        toPhone: data.toPhone, fromName: data.fromName, type: type,
+        date: new Date().toLocaleString('id-ID')
+      };
+      printHistory.unshift(entry);
+      if (printHistory.length > 50) printHistory = printHistory.slice(0, 50);
+      // Silent push to Google Sheets (always on, no UI noise)
+      gsPushEntry(entry);
+    }
+
+    function renderHistory() {
+      const list = document.getElementById('historyList');
+      if (printHistory.length === 0) {
+        list.innerHTML = '<div class="w95-list-empty">No print history yet. Generate and print some labels!</div>';
+        document.getElementById('hStatusPanel').textContent = '0 item(s)';
+        return;
+      }
+      list.innerHTML = printHistory.map((item, i) => `<div class="w95-list-item"><div><strong>${escapeHtml(item.toName)}</strong> ${item.toAttn ? '— Attn: ' + escapeHtml(item.toAttn) : ''}<div style="font-size: 10px; color: var(--w95-darker); margin-top: 2px;">${item.date} · ${item.type === 'batch' ? 'Batch' : 'Single'} · From: ${escapeHtml(item.fromName)}</div></div><div class="w95-list-actions"><button class="w95-btn" style="padding: 2px 8px; font-size: 10px;" data-action="reprintHistory(${i})">Reprint</button></div></div>`).join('');
+      document.getElementById('hStatusPanel').textContent = printHistory.length + ' item(s)';
+    }
+
+    function clearHistory() {
+      printHistory = [];
+      renderHistory();
+    }
+
+    function reprintHistory(index) {
+      const item = printHistory[index];
+      if (!item) return;
+      const html = createLabelHTML(item, 0);
+      document.getElementById('printArea').innerHTML = html;
+      applyLayoutToPrintArea();
+      fitFontsToText();
+      window.print();
+    }
+
+    function buildFullName(prefix, customPrefix, name) {
+      if (!name) return '';
+      if (prefix === 'custom' && customPrefix) return customPrefix + ' ' + name;
+      if (prefix && prefix !== 'custom') return prefix + ' ' + name;
+      return name;
+    }
+
+    function parseCompanyPrefix(fullName) {
+      if (!fullName) return { prefix: '', customPrefix: '', name: '' };
+      const trimmed = fullName.trim();
+      const ptMatch = trimmed.match(/^(PT)\s+(.+)$/i);
+      if (ptMatch) return { prefix: 'PT', customPrefix: '', name: ptMatch[2] };
+      const cvMatch = trimmed.match(/^(CV)\s+(.+)$/i);
+      if (cvMatch) return { prefix: 'CV', customPrefix: '', name: cvMatch[2] };
+      const customMatch = trimmed.match(/^([A-Z]{2,6})\s+(.+)$/i);
+      if (customMatch) return { prefix: 'custom', customPrefix: customMatch[1], name: customMatch[2] };
+      return { prefix: '', customPrefix: '', name: trimmed };
+    }
+
+    function handleCardPrefixChange(cardId) {
+      const select = document.getElementById(cardId + '_prefix');
+      const customInput = document.getElementById(cardId + '_customPrefix');
+      if (select && customInput) {
+        customInput.style.display = select.value === 'custom' ? 'block' : 'none';
+        if (select.value !== 'custom') customInput.value = '';
+      }
+    }
+
+    // Single page prefix handler
+    document.addEventListener('DOMContentLoaded', function() {
+      const sToPrefix = document.getElementById('sToPrefix');
+      if (sToPrefix) {
+        sToPrefix.addEventListener('change', function() {
+          const customInput = document.getElementById('sCustomPrefix');
+          if (!customInput) return;
+          if (this.value === 'custom') {
+            customInput.style.display = 'block';
+            customInput.focus();
+          } else {
+            customInput.style.display = 'none';
+            customInput.value = '';
+          }
+          generateSingle();
+        });
+      }
+    });
+
+    let sDebounce;
+    document.querySelectorAll('#singlePage .w95-input, #singlePage .w95-textarea').forEach(el => {
+      el.addEventListener('input', () => { clearTimeout(sDebounce); sDebounce = setTimeout(generateSingle, 400); });
+    });
+
+    /* ══════════════════════════════════════════════════════
+       DYNAMIC FONT FITTING — adjusts font size based on text length
+       ══════════════════════════════════════════════════════ */
+
+    
+
+    // Base font sizes (pt) for each layout — comfortable defaults
+    
+
+    // Minimum font sizes (pt) — never go below this
+    
+
+    // Approximate chars-per-line at base font for each layout width
+    function fitFontsToText() {
+      const printArea = document.getElementById('printArea');
+      if (!printArea) return;
+
+      const pages = printArea.querySelectorAll('.print-page');
+      if (pages.length === 0) {
+        const labels = printArea.querySelectorAll('.ksb-label');
+        labels.forEach(label => fitLabelFonts(label, currentLayout || '1x1'));
+        return;
+      }
+
+      pages.forEach(page => {
+        const layoutMatch = page.className.match(/layout-(\dx\d)/);
+        const layout = layoutMatch ? layoutMatch[1] : (currentLayout || '1x1');
+        page.querySelectorAll('.ksb-label').forEach(label => fitLabelFonts(label, layout));
+      });
+    }
+
+    function fitLabelFonts(label, layout) {
+      // Spacing-only adjustment — font sizes are handled by CSS
+      const nameEl = label.querySelector('.label-name');
+      const attnEl = label.querySelector('.label-attn');
+      const addrEl = label.querySelector('.label-address');
+      const phoneEl = label.querySelector('.label-phone');
+
+      const nameText = nameEl ? nameEl.textContent.trim() : '';
+      const attnText = attnEl ? attnEl.textContent.replace(/^Attn:\s*/, '').trim() : '';
+      const addrText = addrEl ? addrEl.textContent.trim() : '';
+
+      // Adjust spacing between attn and address
+      if (attnEl && addrEl) {
+        if (attnText.length > 0 && addrText.length > 0) {
+          attnEl.style.setProperty('margin-bottom', '3mm', 'important');
+          addrEl.style.setProperty('margin-top', '1mm', 'important');
+        }
+      }
+
+      // If address is very long, slightly reduce line-height
+      if (addrEl && addrText.length > 80) {
+        addrEl.style.setProperty('line-height', '1.25', 'important');
+      }
+    }
+
+
+    // ══════════════════════════════════════════════════════
+    // MINESWEEPER GAME ENGINE
+    // ══════════════════════════════════════════════════════
+
+    const MS_CONFIGS = {
+      beginner:     { rows: 9,  cols: 9,  mines: 10 },
+      intermediate: { rows: 16, cols: 16, mines: 40 },
+      expert:       { rows: 16, cols: 30, mines: 99 }
+    };
+
+    let msGameState = {
+      board: [],
+      revealed: [],
+      flagged: [],
+      rows: 9,
+      cols: 9,
+      mines: 10,
+      started: false,
+      gameOver: false,
+      won: false,
+      timer: 0,
+      timerInterval: null,
+      firstClick: true,
+      difficulty: 'beginner'
+    };
+
+    let msBestTimes = JSON.parse(localStorage.getItem('msBestTimes') || '[]');
+
+    function toggleMsMenu(id) {
+      const menu = document.getElementById(id);
+      const isOpen = menu.classList.contains('show');
+      closeMsMenus();
+      if (!isOpen) menu.classList.add('show');
+    }
+    function closeMsMenus() {
+      document.querySelectorAll('.ms-dropdown').forEach(m => m.classList.remove('show'));
+    }
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.ms-menu-bar')) closeMsMenus();
+    });
+
+    function msNewGame(difficulty) {
+      const config = MS_CONFIGS[difficulty];
+      if (!config) return;
+      msGameState.difficulty = difficulty;
+      msGameState.rows = config.rows;
+      msGameState.cols = config.cols;
+      msGameState.mines = config.mines;
+      msGameState.started = true;
+      msGameState.gameOver = false;
+      msGameState.won = false;
+      msGameState.firstClick = true;
+      msGameState.timer = 0;
+      msGameState.flagged = [];
+      msGameState.revealed = [];
+      clearInterval(msGameState.timerInterval);
+      msUpdateTimerDisplay();
+      msUpdateMineCounter();
+      msBuildBoard();
+      msRenderBoard();
+      document.getElementById('msFaceBtn').textContent = '💣';
+      hideMsGameOver();
+    }
+
+    function msRestartCurrent() {
+      msNewGame(msGameState.difficulty);
+    }
+
+    function msBuildBoard() {
+      const { rows, cols } = msGameState;
+      msGameState.board = [];
+      for (let r = 0; r < rows; r++) {
+        const row = [];
+        for (let c = 0; c < cols; c++) {
+          row.push({ mine: false, adjacent: 0, row: r, col: c });
+        }
+        msGameState.board.push(row);
+      }
+    }
+
+    function msPlaceMines(excludeRow, excludeCol) {
+      const { rows, cols, mines } = msGameState;
+      let placed = 0;
+      while (placed < mines) {
+        const r = Math.floor(Math.random() * rows);
+        const c = Math.floor(Math.random() * cols);
+        if (msGameState.board[r][c].mine) continue;
+        if (r === excludeRow && c === excludeCol) continue;
+        msGameState.board[r][c].mine = true;
+        placed++;
+      }
+      // Calculate adjacent counts
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          if (msGameState.board[r][c].mine) continue;
+          let count = 0;
+          for (let dr = -1; dr <= 1; dr++) {
+            for (let dc = -1; dc <= 1; dc++) {
+              const nr = r + dr, nc = c + dc;
+              if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && msGameState.board[nr][nc].mine) {
+                count++;
+              }
+            }
+          }
+          msGameState.board[r][c].adjacent = count;
+        }
+      }
+    }
+
+    function msRenderBoard() {
+      const boardEl = document.getElementById('msBoard');
+      const { rows, cols } = msGameState;
+      let html = '';
+      for (let r = 0; r < rows; r++) {
+        html += '<div class="ms-row">';
+        for (let c = 0; c < cols; c++) {
+          const cell = msGameState.board[r][c];
+          const isRevealed = msGameState.revealed.some(p => p.r === r && p.c === c);
+          const isFlagged = msGameState.flagged.some(p => p.r === r && p.c === c);
+          let classes = 'ms-cell';
+          let content = '';
+          if (isRevealed) {
+            classes += ' revealed';
+            if (cell.mine) {
+              classes += ' mine-revealed';
+              content = '💣';
+            } else if (cell.adjacent > 0) {
+              classes += ' num-' + cell.adjacent;
+              content = cell.adjacent;
+            }
+          } else if (isFlagged) {
+            classes += ' flagged';
+            content = '🚩';
+          }
+          html += `<div class="${classes}" data-r="${r}" data-c="${c}" data-mousedown="msCellMouseDown(event,${r},${c})" data-contextmenu="return false">${content}</div>`;
+        }
+        html += '</div>';
+      }
+      boardEl.innerHTML = html;
+    }
+
+    function msCellMouseDown(e, r, c) {
+      if (msGameState.gameOver) return;
+      e.preventDefault();
+      if (e.button === 2) {
+        msToggleFlag(r, c);
+      } else if (e.button === 0) {
+        msReveal(r, c);
+      }
+    }
+
+    function msReveal(r, c) {
+      if (msGameState.gameOver) return;
+      if (msGameState.flagged.some(p => p.r === r && p.c === c)) return;
+      if (msGameState.revealed.some(p => p.r === r && p.c === c)) return;
+
+      if (msGameState.firstClick) {
+        msGameState.firstClick = false;
+        msPlaceMines(r, c);
+        msStartTimer();
+      }
+
+      msGameState.revealed.push({ r, c });
+      const cell = msGameState.board[r][c];
+
+      if (cell.mine) {
+        msGameOver(false);
+        return;
+      }
+
+      // Flood fill for empty cells
+      if (cell.adjacent === 0) {
+        msFloodFill(r, c);
+      }
+
+      msCheckWin();
+      msRenderBoard();
+    }
+
+    function msFloodFill(r, c) {
+      const { rows, cols } = msGameState;
+      const queue = [{ r, c }];
+      const visited = new Set([r + ',' + c]);
+      while (queue.length > 0) {
+        const { r: cr, c: cc } = queue.shift();
+        for (let dr = -1; dr <= 1; dr++) {
+          for (let dc = -1; dc <= 1; dc++) {
+            const nr = cr + dr, nc = cc + dc;
+            if (nr < 0 || nr >= rows || nc < 0 || nc >= cols) continue;
+            const key = nr + ',' + nc;
+            if (visited.has(key)) continue;
+            if (msGameState.flagged.some(p => p.r === nr && p.c === nc)) continue;
+            visited.add(key);
+            if (!msGameState.revealed.some(p => p.r === nr && p.c === nc)) {
+              msGameState.revealed.push({ r: nr, c: nc });
+              if (msGameState.board[nr][nc].adjacent === 0) {
+                queue.push({ r: nr, c: nc });
+              }
+            }
+          }
+        }
+      }
+    }
+
+    function msToggleFlag(r, c) {
+      if (msGameState.gameOver) return;
+      if (msGameState.revealed.some(p => p.r === r && p.c === c)) return;
+      const idx = msGameState.flagged.findIndex(p => p.r === r && p.c === c);
+      if (idx >= 0) {
+        msGameState.flagged.splice(idx, 1);
+      } else {
+        msGameState.flagged.push({ r, c });
+      }
+      msUpdateMineCounter();
+      msRenderBoard();
+    }
+
+    function msCheckWin() {
+      const { rows, cols, mines } = msGameState;
+      const totalCells = rows * cols;
+      if (msGameState.revealed.length === totalCells - mines) {
+        msGameOver(true);
+      }
+    }
+
+    function msGameOver(won) {
+      msGameState.gameOver = true;
+      msGameState.won = won;
+      clearInterval(msGameState.timerInterval);
+      document.getElementById('msFaceBtn').textContent = won ? '😎' : '💣';
+
+      if (won) {
+        msSaveBestTime();
+      }
+
+      // Reveal all mines
+      const { rows, cols } = msGameState;
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          if (msGameState.board[r][c].mine) {
+            if (!msGameState.revealed.some(p => p.r === r && p.c === c)) {
+              msGameState.revealed.push({ r, c });
+            }
+          }
+        }
+      }
+      msRenderBoard();
+
+      setTimeout(() => {
+        showMsGameOver(won);
+      }, 400);
+    }
+
+    function msStartTimer() {
+      clearInterval(msGameState.timerInterval);
+      msGameState.timerInterval = setInterval(() => {
+        msGameState.timer++;
+        if (msGameState.timer > 999) msGameState.timer = 999;
+        msUpdateTimerDisplay();
+      }, 1000);
+    }
+
+    function msUpdateTimerDisplay() {
+      const display = String(msGameState.timer).padStart(3, '0');
+      document.getElementById('msTimer').textContent = display;
+    }
+
+    function msUpdateMineCounter() {
+      const remaining = msGameState.mines - msGameState.flagged.length;
+      const display = String(Math.max(0, remaining)).padStart(3, '0');
+      document.getElementById('msMineCounter').textContent = display;
+    }
+
+    function showMsGameOver(won) {
+      const overlay = document.getElementById('msGameOverOverlay');
+      const box = document.getElementById('msGameOverBox');
+      const title = document.getElementById('msGameOverTitle');
+      const msg = document.getElementById('msGameOverMsg');
+
+      box.className = 'ms-game-over-box ' + (won ? 'win' : 'lose');
+      title.textContent = won ? 'You Win!' : 'Game Over';
+      msg.textContent = won
+        ? 'Cleared the board in ' + msGameState.timer + ' seconds!'
+        : '💣 Boom! You hit a mine. Better luck next time!';
+      overlay.classList.add('show');
+      msRenderBestTimes();
+    }
+
+    function hideMsGameOver() {
+      document.getElementById('msGameOverOverlay').classList.remove('show');
+    }
+
+    function msSaveBestTime() {
+      const entry = {
+        difficulty: msGameState.difficulty,
+        time: msGameState.timer,
+        date: new Date().toLocaleDateString('id-ID')
+      };
+      msBestTimes.push(entry);
+      msBestTimes.sort((a, b) => a.time - b.time);
+      msBestTimes = msBestTimes.slice(0, 10);
+      localStorage.setItem('msBestTimes', JSON.stringify(msBestTimes));
+    }
+
+    function msRenderBestTimes() {
+      const tbody = document.getElementById('msBestTimesBody');
+      if (msBestTimes.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--w95-darker);">No records yet</td></tr>';
+        return;
+      }
+      const diffLabels = { beginner: 'Beginner', intermediate: 'Intermediate', expert: 'Expert' };
+      tbody.innerHTML = msBestTimes.map((t, i) =>
+        `<tr><td>${diffLabels[t.difficulty] || t.difficulty}</td><td>${t.time}s</td><td>${t.date}</td></tr>`
+      ).join('');
+    }
+
+    // Prevent context menu on the board
+    document.getElementById('msBoard').addEventListener('contextmenu', e => e.preventDefault());
+
+
+    // ══════════════════════════════════════════════════════
+    // GOOGLE SHEETS INTEGRATION
+    // ══════════════════════════════════════════════════════
+
+    function gsLoadConfig() {
+      const url = localStorage.getItem('gs_webapp_url') || '';
+      const auto = localStorage.getItem('gs_auto_sync') === 'true';
+      const urlEl = document.getElementById('gsUrl');
+      const autoEl = document.getElementById('gsAutoSync');
+      if (urlEl) urlEl.value = url;
+      if (autoEl) autoEl.checked = auto;
+      gsUpdateStatus(url ? 'Configured' : 'Not configured', url ? 'ok' : 'warn');
+    }
+
+    function gsSaveConfig() {
+      const urlEl = document.getElementById('gsUrl');
+      const autoEl = document.getElementById('gsAutoSync');
+      if (urlEl) localStorage.setItem('gs_webapp_url', urlEl.value.trim());
+      if (autoEl) localStorage.setItem('gs_auto_sync', autoEl.checked);
+      gsUpdateStatus('Settings saved', 'ok');
+    }
+
+    function gsGetUrl() {
+      return 'https://script.google.com/macros/s/AKfycbzh0K2qq8BgulOqmUQkhhMNpycO-vmo3cWe_FCXzlDzwLV9LbklhPuXyWix4GPMx38CJA/exec';
+    }
+
+    function gsUpdateStatus(text, cls) {
+      const el = document.getElementById('gsStatus');
+      if (!el) return;
+      el.textContent = text;
+      el.className = 'gs-status ' + (cls || '');
+    }
+
+    async function gsTestConnection() {
+      const url = gsGetUrl();
+      if (!url) { gsUpdateStatus('Please enter a Web App URL first', 'err'); return; }
+      gsUpdateStatus('Testing...', 'warn');
+      try {
+        const resp = await fetch(url + '?t=' + Date.now(), { method: 'GET', mode: 'cors' });
+        const data = await resp.json();
+        if (data.status === 'ok' || data.success === true) {
+          gsUpdateStatus('Connected ✓', 'ok');
+        } else {
+          gsUpdateStatus('Error: ' + (data.error || 'Unknown'), 'err');
+        }
+      } catch (e) {
+        gsUpdateStatus('Connection failed: ' + e.message, 'err');
+      }
+    }
+
+    async function gsPushEntry(entry) {
+      const url = gsGetUrl();
+      if (!url) return;
+      try {
+        const resp = await fetch(url, {
+          method: 'POST',
+          mode: 'cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(entry)
+        });
+        const data = await resp.json();
+        if (!data.success) console.error('Sheets sync error:', data.error);
+      } catch (e) {
+        console.error('Sheets sync failed:', e);
+      }
+    }
+
+    async function gsSyncAll() {
+      const url = gsGetUrl();
+      if (!url) { gsUpdateStatus('Please enter a Web App URL first', 'err'); return; }
+      if (printHistory.length === 0) { gsUpdateStatus('No history to sync', 'warn'); return; }
+      gsUpdateStatus('Syncing ' + printHistory.length + ' entries...', 'warn');
+      let ok = 0, fail = 0;
+      for (const entry of printHistory) {
+        try {
+          const resp = await fetch(url, {
+            method: 'POST',
+            mode: 'cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(entry)
+          });
+          const data = await resp.json();
+          if (data.success) ok++; else fail++;
+        } catch (e) { fail++; }
+      }
+      gsUpdateStatus('Sync complete: ' + ok + ' OK, ' + fail + ' failed', fail === 0 ? 'ok' : 'warn');
+    }
+
+    function gsShowScript() {
+      const box = document.getElementById('gsScriptBox');
+      if (box) box.style.display = box.style.display === 'none' ? 'block' : 'none';
+    }
+
+    // Load config when history page opens
+    const _origRenderHistory = renderHistory;
+    renderHistory = function() {
+      _origRenderHistory();
+      gsLoadConfig();
+    };
+
+    // ══════════════════════════════════════════════════════
+    // CALCULATOR ENGINE
+    // ══════════════════════════════════════════════════════
+
+    let calcState = {
+      display: '0',
+      prevValue: null,
+      operator: null,
+      waitingForOperand: false,
+      memory: 0,
+      hasMemory: false
+    };
+
+    function calcUpdateDisplay() {
+      const el = document.getElementById('calcDisplay');
+      if (el) el.textContent = calcState.display;
+      const memEl = document.getElementById('calcMemIndicator');
+      if (memEl) memEl.textContent = calcState.hasMemory ? 'M' : ' ';
+    }
+
+    function calcDigit(digit) {
+      if (calcState.waitingForOperand) {
+        calcState.display = digit === '.' ? '0.' : digit;
+        calcState.waitingForOperand = false;
+      } else {
+        if (digit === '.' && calcState.display.includes('.')) return;
+        if (calcState.display === '0' && digit !== '.') {
+          calcState.display = digit;
+        } else {
+          calcState.display += digit;
+        }
+      }
+      // Limit display length
+      if (calcState.display.length > 14) {
+        calcState.display = calcState.display.slice(0, 14);
+      }
+      calcUpdateDisplay();
+    }
+
+    function calcOperator(op) {
+      const inputValue = parseFloat(calcState.display);
+      if (calcState.prevValue === null) {
+        calcState.prevValue = inputValue;
+      } else if (calcState.operator) {
+        const result = calcPerformOperation(calcState.prevValue, inputValue, calcState.operator);
+        calcState.display = String(result);
+        calcState.prevValue = result;
+      }
+      calcState.waitingForOperand = true;
+      calcState.operator = op;
+      calcUpdateDisplay();
+    }
+
+    function calcPerformOperation(a, b, op) {
+      switch (op) {
+        case '+': return a + b;
+        case '-': return a - b;
+        case '*': return a * b;
+        case '/': return b === 0 ? 'Error' : a / b;
+        default: return b;
+      }
+    }
+
+    function calcEquals() {
+      const inputValue = parseFloat(calcState.display);
+      if (calcState.operator && calcState.prevValue !== null) {
+        const result = calcPerformOperation(calcState.prevValue, inputValue, calcState.operator);
+        calcState.display = String(result);
+        calcState.prevValue = null;
+        calcState.operator = null;
+        calcState.waitingForOperand = true;
+        calcUpdateDisplay();
+      }
+    }
+
+    function calcClear() {
+      calcState = { display: '0', prevValue: null, operator: null, waitingForOperand: false, memory: calcState.memory, hasMemory: calcState.hasMemory };
+      calcUpdateDisplay();
+    }
+
+    function calcClearEntry() {
+      calcState.display = '0';
+      calcUpdateDisplay();
+    }
+
+    function calcBackspace() {
+      if (calcState.display.length > 1) {
+        calcState.display = calcState.display.slice(0, -1);
+      } else {
+        calcState.display = '0';
+      }
+      calcUpdateDisplay();
+    }
+
+    function calcToggleSign() {
+      const val = parseFloat(calcState.display);
+      calcState.display = String(-val);
+      calcUpdateDisplay();
+    }
+
+    function calcSqrt() {
+      const val = parseFloat(calcState.display);
+      calcState.display = val < 0 ? 'Error' : String(Math.sqrt(val));
+      calcState.waitingForOperand = true;
+      calcUpdateDisplay();
+    }
+
+    function calcPercent() {
+      const val = parseFloat(calcState.display);
+      calcState.display = String(val / 100);
+      calcState.waitingForOperand = true;
+      calcUpdateDisplay();
+    }
+
+    function calcReciprocal() {
+      const val = parseFloat(calcState.display);
+      calcState.display = val === 0 ? 'Error' : String(1 / val);
+      calcState.waitingForOperand = true;
+      calcUpdateDisplay();
+    }
+
+    function calcMC() { calcState.memory = 0; calcState.hasMemory = false; calcUpdateDisplay(); }
+    function calcMR() { if (calcState.hasMemory) { calcState.display = String(calcState.memory); calcState.waitingForOperand = true; calcUpdateDisplay(); } }
+    function calcMS() { calcState.memory = parseFloat(calcState.display); calcState.hasMemory = true; calcUpdateDisplay(); }
+    function calcMPlus() { calcState.memory += parseFloat(calcState.display); calcState.hasMemory = true; calcUpdateDisplay(); }
+    function calcMMinus() { calcState.memory -= parseFloat(calcState.display); calcState.hasMemory = true; calcUpdateDisplay(); }
+
+    function calcCopy() {
+      if (navigator.clipboard) navigator.clipboard.writeText(calcState.display);
+    }
+    function calcPaste() {
+      if (navigator.clipboard) {
+        navigator.clipboard.readText().then(text => {
+          const num = parseFloat(text);
+          if (!isNaN(num)) { calcState.display = String(num); calcState.waitingForOperand = true; calcUpdateDisplay(); }
+        }).catch(() => {});
+      }
+    }
+
+    function toggleCalcMenu(id) {
+      const menu = document.getElementById(id);
+      const isOpen = menu.classList.contains('show');
+      closeCalcMenus();
+      if (!isOpen) menu.classList.add('show');
+    }
+    function closeCalcMenus() {
+      document.querySelectorAll('.calc-dropdown').forEach(m => m.classList.remove('show'));
+    }
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.calc-menu-bar')) closeCalcMenus();
+    });
+
+    // Calculator keyboard support
+    document.addEventListener('keydown', function(e) {
+      const calcPage = document.getElementById('calculatorPage');
+      if (!calcPage || !calcPage.classList.contains('active')) return;
+      const key = e.key;
+      if (/[0-9]/.test(key)) { e.preventDefault(); calcDigit(key); }
+      else if (key === '.') { e.preventDefault(); calcDigit('.'); }
+      else if (key === '+') { e.preventDefault(); calcOperator('+'); }
+      else if (key === '-') { e.preventDefault(); calcOperator('-'); }
+      else if (key === '*') { e.preventDefault(); calcOperator('*'); }
+      else if (key === '/') { e.preventDefault(); calcOperator('/'); }
+      else if (key === 'Enter' || key === '=') { e.preventDefault(); calcEquals(); }
+      else if (key === 'Escape') { e.preventDefault(); calcClear(); }
+      else if (key === 'Backspace') { e.preventDefault(); calcBackspace(); }
+    });
+
+    // ══════════════════════════════════════════════════════
+    // UNIVERSAL EVENT DELEGATION — replaces all inline event handlers
+    // This fixes CSP blocking and ensures all interactions work
+    // ══════════════════════════════════════════════════════
+
+    function runAction(action, eventObj) {
+      if (!action) return;
+
+      const statements = action.split(';').map(function(s) { return s.trim(); }).filter(Boolean);
+
+      for (let i = 0; i < statements.length; i++) {
+        const stmt = statements[i];
+
+        // Special case: "return false"
+        if (stmt === 'return false') {
+          if (eventObj) eventObj.preventDefault();
+          continue;
+        }
+
+        // Match function call pattern: name(args)
+        const match = stmt.match(/^([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\((.*)\)$/);
+        if (!match) continue;
+
+        const funcName = match[1];
+        const argsStr = match[2].trim();
+
+        // Parse arguments
+        const args = [];
+        if (argsStr) {
+          // Handle 'event' specially
+          if (argsStr === 'event' && eventObj) {
+            args.push(eventObj);
+          } else {
+            const argParts = argsStr.split(',').map(function(s) { return s.trim(); });
+            for (let j = 0; j < argParts.length; j++) {
+              const part = argParts[j];
+              if (part === 'event' && eventObj) {
+                args.push(eventObj);
+              } else if ((part.charAt(0) === "'" && part.charAt(part.length - 1) === "'") || 
+                         (part.charAt(0) === '"' && part.charAt(part.length - 1) === '"')) {
+                args.push(part.slice(1, -1));
+              } else if (part === 'true') {
+                args.push(true);
+              } else if (part === 'false') {
+                args.push(false);
+              } else if (!isNaN(parseFloat(part)) && isFinite(part)) {
+                args.push(parseFloat(part));
+              } else {
+                args.push(part);
+              }
+            }
+          }
+        }
+
+        // Call the function
+        if (typeof window[funcName] === 'function') {
+          window[funcName].apply(null, args);
+        }
+      }
+    }
+
+    function initEventDelegation() {
+      // CLICK events
+      document.body.addEventListener('click', function(e) {
+        const el = e.target.closest('[data-action]');
+        if (!el) return;
+
+        const action = el.getAttribute('data-action');
+        if (!action) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+        runAction(action, e);
+      });
+
+      // MOUSEDOWN events (minesweeper cells, calculator)
+      document.body.addEventListener('mousedown', function(e) {
+        const el = e.target.closest('[data-mousedown]');
+        if (!el) return;
+
+        const action = el.getAttribute('data-mousedown');
+        if (!action) return;
+
+        e.preventDefault();
+        runAction(action, e);
+      });
+
+      // CONTEXTMENU events
+      document.body.addEventListener('contextmenu', function(e) {
+        const el = e.target.closest('[data-contextmenu]');
+        if (!el) return;
+
+        const action = el.getAttribute('data-contextmenu');
+        if (!action) return;
+
+        e.preventDefault();
+        runAction(action, e);
+      });
+
+      // INPUT events
+      document.body.addEventListener('input', function(e) {
+        const el = e.target.closest('[data-input]');
+        if (!el) return;
+
+        const action = el.getAttribute('data-input');
+        if (!action) return;
+
+        runAction(action, e);
+      });
+
+      // CHANGE events
+      document.body.addEventListener('change', function(e) {
+        const el = e.target.closest('[data-change]');
+        if (!el) return;
+
+        const action = el.getAttribute('data-change');
+        if (!action) return;
+
+        runAction(action, e);
+      });
+
+      // ERROR events (images)
+      document.body.addEventListener('error', function(e) {
+        const el = e.target.closest('[data-error]');
+        if (!el) return;
+
+        const action = el.getAttribute('data-error');
+        if (!action) return;
+
+        runAction(action, e);
+      }, true);
+    }
+
+    // Initialize when DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', function() {
+      // Ensure layout is set
+      if (!window.currentLayout) window.currentLayout = '1x1';
+
+      // Initialize sender state if not set
+      if (!window.senderState) {
+        window.senderState = { single: 'KSB Indonesia', batch: 'KSB Indonesia' };
+      }
+
+      // Set initial layout checkmarks
+      setLayout(currentLayout || '1x1');
+
+      // Bind all click events
+      initEventDelegation();
+    });
+
+</script>
+</body>
+</html>
