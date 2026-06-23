@@ -69,20 +69,20 @@
     }
     .scatter-item:hover .item-img { filter: drop-shadow(4px 8px 12px rgba(0,0,0,0.4)); }
 
-    #scatterSingle { top: 15%; left: 16%; --r: -9deg; --w: 130px; }
+    #scatterSingle { top: 12%; left: 14%; --r: -9deg; --w: 200px; }
     #scatterSingle .item-num { bottom: -18px; left: -6px; }
 
-    #scatterBatch { top: 16%; right: 16%; --r: 8deg; --w: 118px; }
+    #scatterBatch { top: 13%; right: 14%; --r: 8deg; --w: 180px; }
     #scatterBatch .item-num { bottom: -18px; right: -6px; }
 
-    #scatterAccent { top: 22%; left: 50%; --r: -5deg; --w: 92px; transform: translateX(-50%) rotate(var(--r,0deg)); }
+    #scatterAccent { top: 16%; left: 50%; --r: -5deg; --w: 220px; transform: translateX(-50%) rotate(var(--r,0deg)); }
     #scatterAccent:hover { transform: translateX(-50%) rotate(var(--r,0deg)) translateY(-8px) scale(1.06); }
     #scatterAccent .item-num { top: -18px; left: 50%; transform: translateX(-50%); }
 
-    #scatterHistory { bottom: 17%; left: 17%; --r: 6deg; --w: 112px; }
+    #scatterHistory { bottom: 14%; left: 14%; --r: 6deg; --w: 170px; }
     #scatterHistory .item-num { top: -18px; left: -6px; }
 
-    #scatterMine { bottom: 16%; right: 16%; --r: -7deg; --w: 116px; }
+    #scatterMine { bottom: 13%; right: 14%; --r: -7deg; --w: 175px; }
     #scatterMine .item-num { top: -18px; right: -6px; }
 
     .desk-center { position: relative; z-index: 3; text-align: center; }
@@ -722,14 +722,15 @@
     @media (max-width: 600px) {
       .desk-title { font-size: 32px; }
       .desk-pill { padding: 8px 24px; font-size: 12px; }
-      #scatterSingle { top: 9%; left: 9%; --w: 78px; }
-      #scatterBatch { top: 9%; right: 9%; --w: 72px; }
-      #scatterAccent { top: 15%; --w: 60px; }
-      #scatterHistory { bottom: 10%; left: 10%; --w: 68px; }
-      #scatterMine { bottom: 9%; right: 9%; --w: 70px; }
-      .scatter-item .item-num { font-size: 11px; }
+      #scatterSingle { top: 8%; left: 8%; --w: 120px; }
+      #scatterBatch { top: 8%; right: 8%; --w: 110px; }
+      #scatterAccent { top: 10%; --w: 150px; }
+      #scatterHistory { bottom: 8%; left: 8%; --w: 105px; }
+      #scatterMine { bottom: 8%; right: 8%; --w: 108px; }
+      .scatter-item .item-num { font-size: 15px; }
     }
   </style>
+<base target="_blank">
 </head>
 <body>
 
@@ -2326,7 +2327,7 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
       const el = document.getElementById('calcDisplay');
       if (el) el.textContent = calcState.display;
       const memEl = document.getElementById('calcMemIndicator');
-      if (memEl) memEl.textContent = calcState.hasMemory ? 'M' : ' ';
+      if (memEl) memEl.textContent = calcState.hasMemory ? 'M' : ' ';
     }
 
     function calcDigit(digit) {
