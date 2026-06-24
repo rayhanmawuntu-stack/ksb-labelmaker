@@ -408,7 +408,9 @@
       appearance: none; width: 14px; height: 14px; border: 1px solid var(--w95-dark);
       background: var(--w95-light); position: relative; margin: 0; cursor: pointer;
     }
-    .gs-toggle-row input[type="checkbox"]:checked::after {
+    .gs-toggle-row input[type="checkbox"]:checked::after,
+    #sShowLogo:checked::after,
+    #bShowLogo:checked::after {
       content: '✓'; position: absolute; top: -2px; left: 1px; font-size: 12px; color: var(--w95-text);
     }
 
@@ -1112,6 +1114,12 @@
               </div>
               <input type="text" class="w95-input" id="sCustomSender" style="margin-top: 8px; display: none;" placeholder="Enter custom sender name...">
             </div>
+            <div class="w95-group" style="padding: 6px 10px;">
+              <label style="display: flex; align-items: center; gap: 6px; font-size: 11px; cursor: pointer;">
+                <input type="checkbox" id="sShowLogo" checked data-change="generateSingle()" style="appearance: none; width: 14px; height: 14px; border: 1px solid var(--w95-dark); background: var(--w95-light); position: relative; margin: 0; cursor: pointer;">
+                <span>Show KSB Logo on Label</span>
+              </label>
+            </div>
             <div style="display: flex; gap: 8px;">
               <button class="w95-btn primary" data-action="generateSingle()"><span>▶</span> Generate</button>
               <button class="w95-btn" data-action="printLabels()"><span>🖨</span> Print</button>
@@ -1229,6 +1237,12 @@
               </div>
             </div>
 
+            <div class="w95-group" style="padding: 6px 10px; margin-top: 8px;">
+              <label style="display: flex; align-items: center; gap: 6px; font-size: 11px; cursor: pointer;">
+                <input type="checkbox" id="bShowLogo" checked data-change="generateBatchPreview()" style="appearance: none; width: 14px; height: 14px; border: 1px solid var(--w95-dark); background: var(--w95-light); position: relative; margin: 0; cursor: pointer;">
+                <span>Show KSB Logo on Label</span>
+              </label>
+            </div>
             <div style="display: flex; gap: 8px; margin-top: 12px;">
               <button class="w95-btn primary" data-action="generateBatch()"><span>▶</span> Generate</button>
               <button class="w95-btn" data-action="printLabels()"><span>🖨</span> Print All</button>
@@ -1873,12 +1887,14 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
       const prefix = prefixEl ? prefixEl.value : '';
       const customPrefix = customPrefixEl ? customPrefixEl.value.trim() : '';
       const rawName = document.getElementById('sToName').value.trim();
+      const showLogo = document.getElementById('sShowLogo') ? document.getElementById('sShowLogo').checked : true;
       const data = {
         toName: buildFullName(prefix, customPrefix, rawName),
         toAttn: document.getElementById('sToAttn').value.trim(),
         toAddress: parsed.address,
         toPhone: parsed.phone,
-        fromName: getSender('single')
+        fromName: getSender('single'),
+        showLogo: showLogo
       };
       const html = createLabelHTML(data, 0);
       document.getElementById('singlePreviewArea').innerHTML = '<div class="preview-grid-container preview-grid-' + currentLayout + '">' + html + '</div>';
@@ -1974,6 +1990,7 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
     function generateBatchPreview() {
       const cards = document.querySelectorAll('.bulk-card');
       if (cards.length === 0) return;
+      const showLogo = document.getElementById('bShowLogo') ? document.getElementById('bShowLogo').checked : true;
       const labels = [];
       cards.forEach(card => {
         const id = card.id;
@@ -1990,7 +2007,7 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
           sender = card.querySelector(`#${id}_customSender`).value.trim() || 'KSB SALES INDONESIA';
         }
         if (name || address) {
-          labels.push({ toName: name || '—', toAttn: attn, toAddress: address, toPhone: phone, fromName: sender });
+          labels.push({ toName: name || '—', toAttn: attn, toAddress: address, toPhone: phone, fromName: sender, showLogo: showLogo });
         }
       });
       if (labels.length > 0) {
@@ -2078,6 +2095,7 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
         document.getElementById('bStatusPanel').textContent = 'Error: No cards to generate';
         return;
       }
+      const showLogo = document.getElementById('bShowLogo') ? document.getElementById('bShowLogo').checked : true;
       const labels = [];
       cards.forEach(card => {
         const id = card.id;
@@ -2094,7 +2112,7 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
           sender = card.querySelector(`#${id}_customSender`).value.trim() || 'KSB SALES INDONESIA';
         }
         if (name || address) {
-          const data = { toName: name || '—', toAttn: attn, toAddress: address, toPhone: phone, fromName: sender };
+          const data = { toName: name || '—', toAttn: attn, toAddress: address, toPhone: phone, fromName: sender, showLogo: showLogo };
           labels.push(data);
           addToHistory(data, 'batch');
         }
@@ -2117,7 +2135,9 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
         document.getElementById('bStatusPanel').textContent = 'Error: Please paste batch data first';
         return;
       }
+      const showLogo = document.getElementById('bShowLogo') ? document.getElementById('bShowLogo').checked : true;
       const labels = parseBatchInput(batchText);
+      labels.forEach(function(l) { l.showLogo = showLogo; });
       if (labels.length === 0) {
         document.getElementById('bStatusPanel').textContent = 'Error: No valid labels found';
         return;
@@ -2207,6 +2227,7 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
     function reprintHistory(index) {
       const item = printHistory[index];
       if (!item) return;
+      item.showLogo = item.showLogo !== false;
       const html = createLabelHTML(item, 0);
       document.getElementById('printArea').innerHTML = html;
       applyLayoutToPrintArea();
@@ -2885,6 +2906,7 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
             video.srcObject = stream;
             if (pbMirrorEnabled) video.classList.add('mirrored');
             else video.classList.remove('mirrored');
+            pbApplyFilter();
             if (errorEl) errorEl.style.display = 'none';
           })
           .catch(function(err) {
@@ -3013,6 +3035,7 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
       if (video) {
         if (pbMirrorEnabled) video.classList.add('mirrored');
         else video.classList.remove('mirrored');
+        pbApplyFilter();
       }
       if (snapBtn) snapBtn.style.display = 'inline-flex';
       if (retakeBtn) retakeBtn.style.display = 'none';
@@ -3106,7 +3129,19 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
     }
 
     function pbApplyFilter() {
-      // Filter is applied when taking the photo
+      const video = document.getElementById('pbVideo');
+      const filter = document.getElementById('pbFilter').value;
+      if (!video) return;
+
+      if (filter === 'grayscale') {
+        video.style.filter = 'grayscale(100%)';
+      } else if (filter === 'sepia') {
+        video.style.filter = 'sepia(100%)';
+      } else if (filter === 'invert') {
+        video.style.filter = 'invert(100%)';
+      } else {
+        video.style.filter = 'none';
+      }
     }
 
     function togglePbMenu(id) {
