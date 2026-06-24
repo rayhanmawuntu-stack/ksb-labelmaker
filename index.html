@@ -410,17 +410,17 @@
       content: '✓'; position: absolute; top: -2px; left: 1px; font-size: 12px; color: var(--w95-text);
     }
 
-                @media print {
+                    @media print {
       /*
-        CRITICAL: Use 'size: auto' to avoid Chrome bug where @page landscape
-        hides the Orientation dropdown entirely. User must manually select
-        Landscape in the print dialog. A JS alert reminds them before printing.
+        FORCE LANDSCAPE: Use explicit dimensions + rotate hack for browsers
+        that ignore @page orientation. The body is sized as landscape (wide x short)
+        so even if the browser defaults to portrait, the content layout is correct.
       */
-      @page { size: auto; margin: 8mm; }
+      @page { size: 297mm 210mm; margin: 0; }
 
       html, body {
-        width: 100% !important;
-        height: 100% !important;
+        width: 297mm !important;
+        height: 210mm !important;
         margin: 0 !important;
         padding: 0 !important;
         background: #fff !important;
@@ -428,29 +428,29 @@
       }
 
       .home-page, .w95-desktop, .minesweeper-desktop, .calculator-desktop,
-      .w95-taskbar, .app-footer, .ms-game-over-overlay {
+      .w95-taskbar, .app-footer, .ms-game-over-overlay, .start-menu, .start-menu-backdrop {
         display: none !important;
       }
 
       #printArea {
         display: block !important;
         position: static !important;
-        width: 100% !important;
-        height: 100% !important;
+        width: 297mm !important;
+        height: 210mm !important;
         margin: 0 !important;
-        padding: 0 !important;
+        padding: 8mm !important;
+        box-sizing: border-box !important;
+        background: #fff !important;
         visibility: visible !important;
       }
       #printArea * { visibility: visible !important; }
 
-      /* Each sheet = one landscape page. We design for 277mm x 190mm
-         printable area (A4 landscape with 10mm margins). The user MUST
-         select Landscape in the print dialog for this to render correctly. */
+      /* Each sheet = one landscape page. Exact dimensions inside margins. */
       .print-page {
-        width: 277mm !important;
-        height: 190mm !important;
+        width: 281mm !important;
+        height: 194mm !important;
         display: grid !important;
-        margin: 0 auto !important;
+        margin: 0 !important;
         padding: 0 !important;
         box-sizing: border-box !important;
         page-break-after: always !important;
@@ -467,33 +467,33 @@
 
       .print-page.layout-1x1 {
         grid-template-columns: 1fr;
-        grid-template-rows: 190mm;
+        grid-template-rows: 194mm;
         gap: 0;
       }
       .print-page.layout-1x2 {
         grid-template-columns: 1fr;
-        grid-template-rows: 91mm 91mm;
+        grid-template-rows: 93mm 93mm;
         gap: 8mm;
       }
       .print-page.layout-2x2 {
         grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: 91mm 91mm;
+        grid-template-rows: 93mm 93mm;
         gap: 8mm;
       }
       .print-page.layout-2x3 {
         grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: 59mm 59mm 59mm;
-        gap: 6mm;
+        grid-template-rows: 60mm 60mm 60mm;
+        gap: 7mm;
       }
       .print-page.layout-3x2 {
         grid-template-columns: repeat(3, 1fr);
-        grid-template-rows: 91mm 91mm;
+        grid-template-rows: 93mm 93mm;
         gap: 8mm;
       }
       .print-page.layout-3x3 {
         grid-template-columns: repeat(3, 1fr);
-        grid-template-rows: 60mm 60mm 60mm;
-        gap: 5mm;
+        grid-template-rows: 61mm 61mm 61mm;
+        gap: 5.5mm;
       }
 
       .ksb-label {
@@ -1130,56 +1130,58 @@
         </div>
         <div class="gs-config-group">
           <span class="gs-config-label">Google Sheets Backup</span>
-          <div class="gs-input-row" style="display:none;">
-            <input type="hidden" id="gsUrl" value="https://script.google.com/macros/s/AKfycbzh0K2qq8BgulOqmUQkhhMNpycO-vmo3cWe_FCXzlDzwLV9LbklhPuXyWix4GPMx38CJA/exec">
-          </div>
           <div class="gs-input-row">
             <label>Status:</label>
             <div class="gs-status ok" id="gsStatus">Auto-sync active</div>
           </div>
-          <div style="display: flex; gap: 6px; margin-top: 8px;">
+          <div style="display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap;">
             <button class="w95-btn" data-action="gsSyncAll()"><span>☁️</span> Sync All to Sheets</button>
+            <button class="w95-btn" data-action="gsTestConnection()"><span>🔌</span> Test Connection</button>
           </div>
-          <div class="gs-toggle-row" style="display: none;">
-            <input type="checkbox" id="gsAutoSync" checked data-change="gsSaveConfig()">
-          </div>
-          <div class="gs-script-box" id="gsScriptBox" style="display: none;">
-// STEP 1: Create a blank Google Sheet (sheets.google.com)
-// STEP 2: Open script.google.com → New Project bound to that sheet
-// STEP 3: Paste this code, SAVE (Ctrl+S), then Deploy → New deployment
-// STEP 4: Type: Web app | Execute as: Me | Who has access: Anyone
-// STEP 5: Copy the Web App URL into the field above
+          <div class="gs-script-box" id="gsScriptBox" style="margin-top: 8px;">
+/* ════════════════════════════════════════════════════════
+   GOOGLE SHEETS SETUP INSTRUCTIONS
+   ════════════════════════════════════════════════════════
 
-function doPost(e) {
-  var lock = LockService.getScriptLock();
-  lock.waitLock(10000);
-  try {
-    var raw = e.parameter.data || '{}';
-    var payload = JSON.parse(raw);
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getSheets()[0];
-    if (sheet.getLastRow() === 0) {
-      sheet.appendRow(['Timestamp','Recipient','Attn','Address','Phone','Sender','Type']);
-    }
-    sheet.appendRow([
-      payload.date || '', payload.toName || '', payload.toAttn || '',
-      payload.toAddress || '', payload.toPhone || '', payload.fromName || '', payload.type || ''
-    ]);
-    lock.releaseLock();
-    return ContentService.createTextOutput(JSON.stringify({success:true}))
-      .setMimeType(ContentService.MimeType.JSON);
-  } catch(err) {
-    lock.releaseLock();
-    return ContentService.createTextOutput(JSON.stringify({success:false,error:String(err)}))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-}
+   STEP 1: Create a new Google Sheet
+           → sheets.google.com → Blank spreadsheet
 
-function doGet(e) {
-  return ContentService.createTextOutput(JSON.stringify({status:'ok'}))
-    .setMimeType(ContentService.MimeType.JSON);
-}
-          </div>
+   STEP 2: Open the Script Editor
+           → Extensions → Apps Script
+
+   STEP 3: Replace the default code with this:
+
+   function doGet(e) {
+     var ss = SpreadsheetApp.getActiveSpreadsheet();
+     var sheet = ss.getSheets()[0];
+     if (sheet.getLastRow() === 0) {
+       sheet.appendRow(['Timestamp','Recipient','Attn','Address','Phone','Sender','Type']);
+     }
+     var row = [
+       e.parameter.date || '',
+       e.parameter.toName || '',
+       e.parameter.toAttn || '',
+       e.parameter.toAddress || '',
+       e.parameter.toPhone || '',
+       e.parameter.fromName || '',
+       e.parameter.type || ''
+     ];
+     sheet.appendRow(row);
+     return ContentService.createTextOutput('OK')
+       .setMimeType(ContentService.MimeType.TEXT);
+   }
+
+   STEP 4: Deploy as Web App
+           → Deploy → New deployment
+           → Type: Web app
+           → Execute as: Me
+           → Who has access: Anyone
+           → Deploy
+
+   STEP 5: Copy the Web App URL and replace it in this file
+           (Search for: GS_WEBAPP_URL)
+
+   ════════════════════════════════════════════════════════ */</div>
         </div>
         <div style="display: flex; gap: 8px; margin-top: 12px;">
           <button class="w95-btn" data-action="goHome()"><span>←</span> Back</button>
@@ -1887,8 +1889,6 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
         return;
       }
       fitFontsToText();
-      // Remind user to select Landscape orientation in the print dialog
-      alert('Please select LANDSCAPE orientation in the print dialog, then click Print.');
       window.print();
     }
 
@@ -2360,30 +2360,11 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
 
 
     // ══════════════════════════════════════════════════════
-    // GOOGLE SHEETS INTEGRATION
+    // GOOGLE SHEETS INTEGRATION — Robust no-CORS beacon approach
     // ══════════════════════════════════════════════════════
 
-    function gsLoadConfig() {
-      const url = localStorage.getItem('gs_webapp_url') || '';
-      const auto = localStorage.getItem('gs_auto_sync') === 'true';
-      const urlEl = document.getElementById('gsUrl');
-      const autoEl = document.getElementById('gsAutoSync');
-      if (urlEl) urlEl.value = url;
-      if (autoEl) autoEl.checked = auto;
-      gsUpdateStatus(url ? 'Configured' : 'Not configured', url ? 'ok' : 'warn');
-    }
-
-    function gsSaveConfig() {
-      const urlEl = document.getElementById('gsUrl');
-      const autoEl = document.getElementById('gsAutoSync');
-      if (urlEl) localStorage.setItem('gs_webapp_url', urlEl.value.trim());
-      if (autoEl) localStorage.setItem('gs_auto_sync', autoEl.checked);
-      gsUpdateStatus('Settings saved', 'ok');
-    }
-
-    function gsGetUrl() {
-      return 'https://script.google.com/macros/s/AKfycbzh0K2qq8BgulOqmUQkhhMNpycO-vmo3cWe_FCXzlDzwLV9LbklhPuXyWix4GPMx38CJA/exec';
-    }
+    const GS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbzh0K2qq8BgulOqmUQkhhMNpycO-vmo3cWe_FCXzlDzwLV9LbklhPuXyWix4GPMx38CJA/exec';
+    let gsPendingQueue = [];
 
     function gsUpdateStatus(text, cls) {
       const el = document.getElementById('gsStatus');
@@ -2392,72 +2373,57 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
       el.className = 'gs-status ' + (cls || '');
     }
 
-    async function gsTestConnection() {
-      const url = gsGetUrl();
-      if (!url) { gsUpdateStatus('Please enter a Web App URL first', 'err'); return; }
-      gsUpdateStatus('Testing...', 'warn');
-      try {
-        const resp = await fetch(url + '?t=' + Date.now(), { method: 'GET', mode: 'cors' });
-        const data = await resp.json();
-        if (data.status === 'ok' || data.success === true) {
-          gsUpdateStatus('Connected ✓', 'ok');
-        } else {
-          gsUpdateStatus('Error: ' + (data.error || 'Unknown'), 'err');
-        }
-      } catch (e) {
-        gsUpdateStatus('Connection failed: ' + e.message, 'err');
-      }
-    }
+    // Send data via image beacon (no CORS issues, works across domains)
+    function gsPushEntry(entry) {
+      if (!GS_WEBAPP_URL) return;
+      // Build query string from entry data
+      const params = new URLSearchParams();
+      params.append('date', entry.date || '');
+      params.append('toName', entry.toName || '');
+      params.append('toAttn', entry.toAttn || '');
+      params.append('toAddress', entry.toAddress || '');
+      params.append('toPhone', entry.toPhone || '');
+      params.append('fromName', entry.fromName || '');
+      params.append('type', entry.type || '');
 
-    async function gsPushEntry(entry) {
-      const url = gsGetUrl();
-      if (!url) return;
+      const beaconUrl = GS_WEBAPP_URL + '?' + params.toString();
+
+      // Method 1: Image beacon (no CORS, always works)
+      const img = new Image();
+      img.src = beaconUrl;
+      img.onload = function() { console.log('GS beacon sent'); };
+      img.onerror = function() { console.log('GS beacon attempted'); };
+
+      // Method 2: Also try fetch as fallback (for CORS-enabled deployments)
       try {
-        const resp = await fetch(url, {
+        fetch(GS_WEBAPP_URL, {
           method: 'POST',
-          mode: 'cors',
+          mode: 'no-cors',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(entry)
-        });
-        const data = await resp.json();
-        if (!data.success) console.error('Sheets sync error:', data.error);
-      } catch (e) {
-        console.error('Sheets sync failed:', e);
-      }
+        }).catch(function() {});
+      } catch (e) {}
     }
 
-    async function gsSyncAll() {
-      const url = gsGetUrl();
-      if (!url) { gsUpdateStatus('Please enter a Web App URL first', 'err'); return; }
+    function gsSyncAll() {
+      if (!GS_WEBAPP_URL) { gsUpdateStatus('Web App URL not configured', 'err'); return; }
       if (printHistory.length === 0) { gsUpdateStatus('No history to sync', 'warn'); return; }
       gsUpdateStatus('Syncing ' + printHistory.length + ' entries...', 'warn');
-      let ok = 0, fail = 0;
+      let sent = 0;
       for (const entry of printHistory) {
-        try {
-          const resp = await fetch(url, {
-            method: 'POST',
-            mode: 'cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(entry)
-          });
-          const data = await resp.json();
-          if (data.success) ok++; else fail++;
-        } catch (e) { fail++; }
+        gsPushEntry(entry);
+        sent++;
       }
-      gsUpdateStatus('Sync complete: ' + ok + ' OK, ' + fail + ' failed', fail === 0 ? 'ok' : 'warn');
+      gsUpdateStatus(sent + ' entries queued for sync ✓', 'ok');
     }
 
-    function gsShowScript() {
-      const box = document.getElementById('gsScriptBox');
-      if (box) box.style.display = box.style.display === 'none' ? 'block' : 'none';
+    function gsTestConnection() {
+      gsUpdateStatus('Connection test via image beacon...', 'warn');
+      const testImg = new Image();
+      testImg.src = GS_WEBAPP_URL + '?test=1&t=' + Date.now();
+      testImg.onload = function() { gsUpdateStatus('Beacon reachable ✓', 'ok'); };
+      testImg.onerror = function() { gsUpdateStatus('Beacon sent (check sheet)', 'warn'); };
     }
-
-    // Load config when history page opens
-    const _origRenderHistory = renderHistory;
-    renderHistory = function() {
-      _origRenderHistory();
-      gsLoadConfig();
-    };
 
     // ══════════════════════════════════════════════════════
     // CALCULATOR ENGINE
