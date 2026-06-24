@@ -654,6 +654,64 @@
     .batch-mode-btn.active { background: var(--w95-blue); color: var(--w95-light); }
 
     /* ══════════════════════════════════════════════════════
+       NOTES / NOTEPAD — KSB Edition (Windows 95 aesthetic)
+       ══════════════════════════════════════════════════════ */
+    .notes-desktop { display: none; min-height: 100vh; padding: 20px; background: var(--w95-bg); position: relative; }
+    .notes-desktop.active { display: block; }
+    .notes-window {
+      background: var(--w95-gray); border: 2px outset var(--w95-light);
+      box-shadow: 2px 2px 0 rgba(0,0,0,0.3); max-width: 800px; margin: 40px auto;
+      display: flex; flex-direction: column; height: calc(100vh - 80px);
+    }
+    .notes-title-bar {
+      background: linear-gradient(90deg, var(--w95-blue) 0%, var(--w95-blue-light) 100%);
+      color: var(--w95-light); padding: 3px 4px 3px 6px; display: flex;
+      align-items: center; justify-content: space-between; font-weight: bold;
+      font-size: 11px; letter-spacing: 0.5px; flex-shrink: 0;
+    }
+    .notes-title-text { display: flex; align-items: center; gap: 6px; }
+    .notes-title-btns { display: flex; gap: 2px; }
+    .notes-menu-bar {
+      display: flex; gap: 0; padding: 2px 4px; border-bottom: 1px solid var(--w95-dark);
+      margin-bottom: 0; position: relative; flex-shrink: 0;
+    }
+    .notes-menu-wrapper { position: relative; display: inline-block; }
+    .notes-menu-item {
+      padding: 2px 8px; font-size: 11px; text-decoration: underline;
+      text-underline-offset: 2px; text-decoration-color: var(--w95-text); cursor: pointer;
+    }
+    .notes-menu-item:hover {
+      background: var(--w95-blue); color: var(--w95-light); text-decoration-color: var(--w95-light);
+    }
+    .notes-dropdown {
+      display: none; position: absolute; top: 100%; left: 0; background: var(--w95-gray);
+      border: 2px outset var(--w95-light); box-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+      min-width: 160px; z-index: 100; padding: 2px;
+    }
+    .notes-dropdown.show { display: block; }
+    .notes-dropdown-item {
+      padding: 4px 8px; font-size: 11px; display: flex; align-items: center;
+      gap: 6px; cursor: pointer; white-space: nowrap;
+    }
+    .notes-dropdown-item:hover { background: var(--w95-blue); color: var(--w95-light); }
+    .notes-dropdown-sep { height: 1px; background: var(--w95-dark); border-bottom: 1px solid var(--w95-light); margin: 2px 4px; }
+    .notes-content { padding: 8px; display: flex; flex-direction: column; flex: 1; min-height: 0; }
+    .notes-editor {
+      flex: 1; background: var(--w95-light); border: 2px inset var(--w95-dark);
+      padding: 8px; font-family: 'Courier New', Courier, monospace; font-size: 13px;
+      color: var(--w95-text); resize: none; outline: none; line-height: 1.5;
+      white-space: pre; overflow: auto; tab-size: 4;
+    }
+    .notes-editor.wrap { white-space: pre-wrap; word-wrap: break-word; }
+    .notes-editor.sans { font-family: 'MS Sans Serif', 'Segoe UI', Tahoma, sans-serif; }
+    .notes-status-bar {
+      border: 1px inset var(--w95-light); padding: 2px 6px; margin-top: 4px;
+      display: flex; gap: 2px; flex-shrink: 0;
+    }
+    .notes-status-panel { border: 1px inset var(--w95-light); padding: 2px 6px; flex: 1; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .notes-status-panel:first-child { flex: 2; }
+
+    /* ══════════════════════════════════════════════════════
        CALCULATOR — KSB Edition (Windows 95 aesthetic)
        ══════════════════════════════════════════════════════ */
     .calculator-desktop { display: none; min-height: 100vh; padding: 20px; background: var(--w95-bg); position: relative; }
@@ -1044,8 +1102,13 @@
         <img src="https://file.garden/ad-wGPVIV3ilAD_L/WORK%20PROJECT/LABEL%20MAKER/Icon/Photo-Camera.png" alt="Photobooth" class="item-img">
         <div class="menu-item" data-action="openPage('photobooth')" title="Photobooth"></div>
       </div>
-      <div class="scatter-item" id="scatterAccent">
+      <div class="scatter-item" id="scatterNotes">
         <span class="item-num">(06)</span>
+        <img src="https://file.garden/ad-wGPVIV3ilAD_L/WORK%20PROJECT/LABEL%20MAKER/Icon/Notes.png" alt="Notepad" class="item-img">
+        <div class="menu-item" data-action="openPage('notes')" title="Notepad"></div>
+      </div>
+      <div class="scatter-item" id="scatterAccent">
+        <span class="item-num">(07)</span>
         <img src="https://file.garden/ad-wGPVIV3ilAD_L/WORK%20PROJECT/LABEL%20MAKER/Icon/Calculator.png" alt="Calculator" class="item-img">
         <div class="menu-item" data-action="openPage('calculator')" title="Calculator"></div>
       </div>
@@ -1570,6 +1633,68 @@ Built for Labelmaker');closePbMenus()">About...</div>
     </div>
   </div>
 
+  <!-- NOTES PAGE -->
+  <div class="notes-desktop" id="notesPage">
+    <div class="notes-window">
+      <div class="notes-title-bar">
+        <div class="notes-title-text"><span style="font-size: 14px;">📝</span> Notepad — KSB Edition</div>
+        <div class="notes-title-btns">
+          <button class="title-bar-btn" data-action="goHome()">_</button>
+          <button class="title-bar-btn" data-action="goHome()">□</button>
+          <button class="title-bar-btn" data-action="goHome()" style="font-weight: bold;">×</button>
+        </div>
+      </div>
+      <div class="notes-menu-bar">
+        <div class="notes-menu-wrapper">
+          <span class="notes-menu-item" data-action="toggleNotesMenu('notesFileMenu')">File</span>
+          <div class="notes-dropdown" id="notesFileMenu">
+            <div class="notes-dropdown-item" data-action="notesNew();closeNotesMenus()">New</div>
+            <div class="notes-dropdown-item" data-action="notesOpen();closeNotesMenus()">Open…</div>
+            <div class="notes-dropdown-item" data-action="notesSave();closeNotesMenus()">Save</div>
+            <div class="notes-dropdown-sep"></div>
+            <div class="notes-dropdown-item" data-action="notesDownload();closeNotesMenus()">Download .txt</div>
+            <div class="notes-dropdown-sep"></div>
+            <div class="notes-dropdown-item" data-action="goHome();closeNotesMenus()">Exit to Desktop</div>
+          </div>
+        </div>
+        <div class="notes-menu-wrapper">
+          <span class="notes-menu-item" data-action="toggleNotesMenu('notesEditMenu')">Edit</span>
+          <div class="notes-dropdown" id="notesEditMenu">
+            <div class="notes-dropdown-item" data-action="notesUndo();closeNotesMenus()">Undo</div>
+            <div class="notes-dropdown-sep"></div>
+            <div class="notes-dropdown-item" data-action="notesCut();closeNotesMenus()">Cut</div>
+            <div class="notes-dropdown-item" data-action="notesCopy();closeNotesMenus()">Copy</div>
+            <div class="notes-dropdown-item" data-action="notesPaste();closeNotesMenus()">Paste</div>
+            <div class="notes-dropdown-sep"></div>
+            <div class="notes-dropdown-item" data-action="notesSelectAll();closeNotesMenus()">Select All</div>
+          </div>
+        </div>
+        <div class="notes-menu-wrapper">
+          <span class="notes-menu-item" data-action="toggleNotesMenu('notesFormatMenu')">Format</span>
+          <div class="notes-dropdown" id="notesFormatMenu">
+            <div class="notes-dropdown-item" data-action="notesWordWrap();closeNotesMenus()"><span class="check" id="chkWordWrap">✓</span> Word Wrap</div>
+            <div class="notes-dropdown-item" data-action="notesSetFont('monospace');closeNotesMenus()"><span class="check" id="chkFontMono">✓</span> Monospace</div>
+            <div class="notes-dropdown-item" data-action="notesSetFont('sans-serif');closeNotesMenus()"><span class="check" id="chkFontSans">&nbsp;</span> Sans-Serif</div>
+          </div>
+        </div>
+        <div class="notes-menu-wrapper">
+          <span class="notes-menu-item" data-action="toggleNotesMenu('notesHelpMenu')">Help</span>
+          <div class="notes-dropdown" id="notesHelpMenu">
+            <div class="notes-dropdown-item" data-action="alert('Notepad KSB Edition 📝\n\nA simple text editor.\nUse File > Save to store notes locally.');closeNotesMenus()">How to Use</div>
+            <div class="notes-dropdown-item" data-action="alert('Notepad KSB Edition v1.0 📝\nWindows 95 Aesthetic\n\nBuilt for Labelmaker');closeNotesMenus()">About...</div>
+          </div>
+        </div>
+      </div>
+      <div class="notes-content">
+        <textarea class="notes-editor" id="notesEditor" placeholder="Type your notes here..."></textarea>
+        <div class="notes-status-bar">
+          <div class="notes-status-panel" id="notesStatus">Untitled · 0 chars · 0 lines</div>
+          <div class="notes-status-panel" id="notesCursorPos">Ln 1, Col 1</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- CALCULATOR PAGE -->
   <div class="calculator-desktop" id="calculatorPage">
     <div class="calc-window">
@@ -1678,6 +1803,10 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
       <span class="menu-icon">📷</span>
       <span>Photobooth</span>
     </div>
+    <div class="start-menu-item" data-action="openPage('notes');toggleStartMenu()">
+      <span class="menu-icon">📝</span>
+      <span>Notepad</span>
+    </div>
     <div class="start-menu-item" data-action="openPage('calculator');toggleStartMenu()">
       <span class="menu-icon">🧮</span>
       <span>Calculator</span>
@@ -1716,6 +1845,7 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
       document.querySelectorAll('.w95-desktop').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.minesweeper-desktop').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.photobooth-desktop').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.notes-desktop').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.calculator-desktop').forEach(p => p.classList.remove('active'));
       document.getElementById('appFooter').style.display = 'block';
       document.getElementById('w95Taskbar').style.display = 'flex';
@@ -1733,6 +1863,12 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
       } else if (page === 'photobooth') {
         document.getElementById('photoboothPage').classList.add('active');
         pbInit();
+      } else if (page === 'photobooth') {
+        document.getElementById('photoboothPage').classList.add('active');
+        pbInit();
+      } else if (page === 'notes') {
+        document.getElementById('notesPage').classList.add('active');
+        notesInit();
       } else if (page === 'calculator') {
         document.getElementById('calculatorPage').classList.add('active');
       }
@@ -1762,6 +1898,7 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
       document.querySelectorAll('.w95-desktop').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.minesweeper-desktop').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.photobooth-desktop').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.notes-desktop').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.calculator-desktop').forEach(p => p.classList.remove('active'));
       document.getElementById('appFooter').style.display = 'none';
       document.getElementById('w95Taskbar').style.display = 'none';
@@ -3350,6 +3487,208 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
       else if (key === 'Enter' || key === '=') { e.preventDefault(); calcEquals(); }
       else if (key === 'Escape') { e.preventDefault(); calcClear(); }
       else if (key === 'Backspace') { e.preventDefault(); calcBackspace(); }
+    });
+
+    // ══════════════════════════════════════════════════════
+    // NOTES / NOTEPAD ENGINE
+    // ══════════════════════════════════════════════════════
+
+    let notesState = {
+      content: '',
+      filename: 'Untitled',
+      wordWrap: true,
+      font: 'monospace',
+      undoStack: [],
+      undoIndex: -1
+    };
+
+    function notesInit() {
+      const editor = document.getElementById('notesEditor');
+      if (!editor) return;
+      notesPushUndo();
+      editor.addEventListener('input', notesOnInput);
+      editor.addEventListener('keydown', notesOnKeydown);
+      editor.addEventListener('click', notesUpdateCursor);
+      editor.addEventListener('keyup', notesUpdateCursor);
+      notesUpdateStatus();
+    }
+
+    function notesOnInput() {
+      notesPushUndo();
+      notesUpdateStatus();
+    }
+
+    function notesOnKeydown(e) {
+      if (e.ctrlKey && e.key === 'z') {
+        e.preventDefault();
+        notesUndo();
+      }
+      notesUpdateCursor();
+    }
+
+    function notesPushUndo() {
+      const editor = document.getElementById('notesEditor');
+      if (!editor) return;
+      const text = editor.value;
+      if (notesState.undoIndex >= 0 && notesState.undoStack[notesState.undoIndex] === text) return;
+      notesState.undoIndex++;
+      notesState.undoStack = notesState.undoStack.slice(0, notesState.undoIndex);
+      notesState.undoStack.push(text);
+      if (notesState.undoStack.length > 50) {
+        notesState.undoStack.shift();
+        notesState.undoIndex--;
+      }
+    }
+
+    function notesUndo() {
+      if (notesState.undoIndex > 0) {
+        notesState.undoIndex--;
+        const editor = document.getElementById('notesEditor');
+        if (editor) editor.value = notesState.undoStack[notesState.undoIndex];
+        notesUpdateStatus();
+      }
+    }
+
+    function notesNew() {
+      const editor = document.getElementById('notesEditor');
+      if (editor) editor.value = '';
+      notesState.filename = 'Untitled';
+      notesState.undoStack = [];
+      notesState.undoIndex = -1;
+      notesPushUndo();
+      notesUpdateStatus();
+    }
+
+    function notesSave() {
+      const editor = document.getElementById('notesEditor');
+      if (!editor) return;
+      notesState.content = editor.value;
+      localStorage.setItem('ksb_notes_' + notesState.filename, notesState.content);
+      notesUpdateStatus();
+    }
+
+    function notesOpen() {
+      const keys = Object.keys(localStorage).filter(k => k.startsWith('ksb_notes_'));
+      if (keys.length === 0) {
+        alert('No saved notes found.');
+        return;
+      }
+      const list = keys.map((k, i) => (i + 1) + '. ' + k.replace('ksb_notes_', '')).join('\n');
+      const choice = prompt('Saved notes:\n' + list + '\n\nEnter number to open:');
+      const idx = parseInt(choice, 10);
+      if (idx > 0 && idx <= keys.length) {
+        const key = keys[idx - 1];
+        const content = localStorage.getItem(key) || '';
+        const editor = document.getElementById('notesEditor');
+        if (editor) editor.value = content;
+        notesState.filename = key.replace('ksb_notes_', '');
+        notesState.undoStack = [];
+        notesState.undoIndex = -1;
+        notesPushUndo();
+        notesUpdateStatus();
+      }
+    }
+
+    function notesDownload() {
+      const editor = document.getElementById('notesEditor');
+      if (!editor) return;
+      const blob = new Blob([editor.value], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = (notesState.filename || 'notes') + '.txt';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function notesUpdateStatus() {
+      const editor = document.getElementById('notesEditor');
+      const status = document.getElementById('notesStatus');
+      if (!editor || !status) return;
+      const chars = editor.value.length;
+      const lines = editor.value.split('\n').length;
+      status.textContent = notesState.filename + ' · ' + chars + ' chars · ' + lines + ' lines';
+    }
+
+    function notesUpdateCursor() {
+      const editor = document.getElementById('notesEditor');
+      const posEl = document.getElementById('notesCursorPos');
+      if (!editor || !posEl) return;
+      const text = editor.value.substring(0, editor.selectionStart);
+      const lines = text.split('\n');
+      const line = lines.length;
+      const col = lines[lines.length - 1].length + 1;
+      posEl.textContent = 'Ln ' + line + ', Col ' + col;
+    }
+
+    function notesCut() {
+      const editor = document.getElementById('notesEditor');
+      if (!editor) return;
+      notesCopy();
+      const start = editor.selectionStart;
+      const end = editor.selectionEnd;
+      editor.value = editor.value.substring(0, start) + editor.value.substring(end);
+      editor.selectionStart = editor.selectionEnd = start;
+      notesPushUndo();
+      notesUpdateStatus();
+    }
+
+    function notesCopy() {
+      const editor = document.getElementById('notesEditor');
+      if (!editor) return;
+      const text = editor.value.substring(editor.selectionStart, editor.selectionEnd);
+      if (navigator.clipboard) navigator.clipboard.writeText(text);
+    }
+
+    function notesPaste() {
+      const editor = document.getElementById('notesEditor');
+      if (!editor || !navigator.clipboard) return;
+      navigator.clipboard.readText().then(function(text) {
+        const start = editor.selectionStart;
+        const end = editor.selectionEnd;
+        editor.value = editor.value.substring(0, start) + text + editor.value.substring(end);
+        editor.selectionStart = editor.selectionEnd = start + text.length;
+        notesPushUndo();
+        notesUpdateStatus();
+      }).catch(function() {});
+    }
+
+    function notesSelectAll() {
+      const editor = document.getElementById('notesEditor');
+      if (editor) { editor.select(); notesUpdateCursor(); }
+    }
+
+    function notesWordWrap() {
+      const editor = document.getElementById('notesEditor');
+      if (!editor) return;
+      notesState.wordWrap = !notesState.wordWrap;
+      editor.classList.toggle('wrap', notesState.wordWrap);
+      const chk = document.getElementById('chkWordWrap');
+      if (chk) chk.innerHTML = notesState.wordWrap ? '✓' : '&nbsp;';
+    }
+
+    function notesSetFont(font) {
+      const editor = document.getElementById('notesEditor');
+      if (!editor) return;
+      notesState.font = font;
+      editor.classList.toggle('sans', font === 'sans-serif');
+      const chkMono = document.getElementById('chkFontMono');
+      const chkSans = document.getElementById('chkFontSans');
+      if (chkMono) chkMono.innerHTML = font === 'monospace' ? '✓' : '&nbsp;';
+      if (chkSans) chkSans.innerHTML = font === 'sans-serif' ? '✓' : '&nbsp;';
+    }
+
+    function toggleNotesMenu(id) {
+      const menu = document.getElementById(id);
+      const isOpen = menu.classList.contains('show');
+      closeNotesMenus();
+      if (!isOpen) menu.classList.add('show');
+    }
+    function closeNotesMenus() {
+      document.querySelectorAll('.notes-dropdown').forEach(function(m) { m.classList.remove('show'); });
+    }
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.notes-menu-bar')) closeNotesMenus();
     });
 
     // ══════════════════════════════════════════════════════
