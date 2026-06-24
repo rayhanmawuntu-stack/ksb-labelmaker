@@ -13,7 +13,6 @@
   ║    • Print History with Google Sheets sync                                   ║
   ║    • Minesweeper (Beginner / Intermediate / Expert)                          ║
   ║    • Calculator with memory functions                                        ║
-  ║    • Photobox function                                                       ║
   ║                                                                              ║
   ║  Note: Google Sheets integration requires CORS configuration on the          ║
   ║        Apps Script side. See README.md for setup instructions.               ║
@@ -70,21 +69,25 @@
     }
     .scatter-item:hover .item-img { filter: drop-shadow(4px 8px 12px rgba(0,0,0,0.4)); }
 
-    #scatterSingle { top: 10%; left: 12%; --r: -9deg; --w: 280px; }
-    #scatterSingle .item-num { bottom: -18px; left: -6px; }
+    #scatterSingle { top: 8%; left: 8%; --r: -6deg; --w: 240px; }
+    #scatterSingle .item-num { bottom: -16px; left: -4px; }
 
-    #scatterBatch { top: 10%; right: 12%; --r: 8deg; --w: 260px; }
-    #scatterBatch .item-num { bottom: -18px; right: -6px; }
+    #scatterBatch { top: 8%; left: 50%; --r: 3deg; --w: 240px; transform: translateX(-50%) rotate(var(--r,0deg)); }
+    #scatterBatch:hover { transform: translateX(-50%) rotate(var(--r,0deg)) translateY(-8px) scale(1.06); }
+    #scatterBatch .item-num { bottom: -16px; left: 50%; transform: translateX(-50%); }
 
-    #scatterAccent { top: 12%; left: 50%; --r: -5deg; --w: 320px; transform: translateX(-50%) rotate(var(--r,0deg)); }
-    #scatterAccent:hover { transform: translateX(-50%) rotate(var(--r,0deg)) translateY(-8px) scale(1.06); }
-    #scatterAccent .item-num { top: -18px; left: 50%; transform: translateX(-50%); }
+    #scatterHistory { top: 8%; right: 8%; --r: 7deg; --w: 240px; }
+    #scatterHistory .item-num { bottom: -16px; right: -4px; }
 
-    #scatterHistory { bottom: 10%; left: 12%; --r: 6deg; --w: 250px; }
-    #scatterHistory .item-num { top: -18px; left: -6px; }
+    #scatterMine { bottom: 8%; left: 8%; --r: 5deg; --w: 240px; }
+    #scatterMine .item-num { top: -16px; left: -4px; }
 
-    #scatterMine { bottom: 10%; right: 12%; --r: -7deg; --w: 260px; }
-    #scatterMine .item-num { top: -18px; right: -6px; }
+    #scatterPhoto { bottom: 8%; left: 50%; --r: -4deg; --w: 240px; transform: translateX(-50%) rotate(var(--r,0deg)); }
+    #scatterPhoto:hover { transform: translateX(-50%) rotate(var(--r,0deg)) translateY(-8px) scale(1.06); }
+    #scatterPhoto .item-num { top: -16px; left: 50%; transform: translateX(-50%); }
+
+    #scatterAccent { bottom: 8%; right: 8%; --r: -8deg; --w: 240px; }
+    #scatterAccent .item-num { top: -16px; right: -4px; }
 
     .desk-center { position: relative; z-index: 3; text-align: center; }
     .desk-title {
@@ -727,12 +730,13 @@
     @media (max-width: 600px) {
       .desk-title { font-size: 32px; }
       .desk-pill { padding: 8px 24px; font-size: 12px; }
-      #scatterSingle { top: 6%; left: 6%; --w: 160px; }
-      #scatterBatch { top: 6%; right: 6%; --w: 150px; }
-      #scatterAccent { top: 8%; --w: 180px; }
-      #scatterHistory { bottom: 6%; left: 6%; --w: 140px; }
-      #scatterMine { bottom: 6%; right: 6%; --w: 150px; }
-      .scatter-item .item-num { font-size: 20px; }
+      #scatterSingle { top: 4%; left: 4%; --w: 130px; }
+      #scatterBatch { top: 4%; left: 50%; --w: 130px; }
+      #scatterHistory { top: 4%; right: 4%; --w: 130px; }
+      #scatterMine { bottom: 4%; left: 4%; --w: 130px; }
+      #scatterPhoto { bottom: 4%; left: 50%; --w: 130px; }
+      #scatterAccent { bottom: 4%; right: 4%; --w: 130px; }
+      .scatter-item .item-num { font-size: 16px; }
     }
   
     /* ══════════════════════════════════════════════════════
@@ -927,6 +931,28 @@
       background: var(--w95-light); border: 2px inset var(--w95-dark);
       padding: 2px 4px; font-family: 'MS Sans Serif', sans-serif; font-size: 11px;
     }
+    .pb-viewport video.mirrored,
+    .pb-viewport canvas.mirrored {
+      transform: scaleX(-1);
+    }
+    .pb-options input[type="checkbox"] {
+      appearance: none; width: 14px; height: 14px; border: 1px solid var(--w95-dark);
+      background: var(--w95-light); position: relative; margin: 0; cursor: pointer;
+      vertical-align: middle;
+    }
+    .pb-options input[type="checkbox"]:checked::after {
+      content: '✓'; position: absolute; top: -2px; left: 1px; font-size: 12px; color: var(--w95-text);
+    }
+    .pb-strip-counter {
+      position: absolute; top: 8px; right: 8px;
+      background: rgba(0,0,0,0.75); color: #fff;
+      font-family: 'VCR', monospace; font-size: 14px;
+      padding: 4px 10px; z-index: 15; border: 1px outset var(--w95-light);
+      letter-spacing: 1px;
+    }
+    .pb-viewport.strip-result {
+      aspect-ratio: 4/9; max-height: 540px;
+    }
     .pb-error {
       border: 2px inset var(--w95-light); background: #fff0f0;
       padding: 20px; text-align: center; color: #800000; font-size: 11px;
@@ -939,6 +965,7 @@
   <!-- HOME PAGE -->
   <div class="home-page" id="homePage">
     <div class="desk-scatter">
+      <!-- Top Row: Label Tools -->
       <div class="scatter-item" id="scatterSingle">
         <span class="item-num">(01)</span>
         <img src="https://file.garden/ad-wGPVIV3ilAD_L/WORK%20PROJECT/LABEL%20MAKER/Icon/single%20label.png" alt="Single Label" class="item-img">
@@ -949,25 +976,26 @@
         <img src="https://file.garden/ad-wGPVIV3ilAD_L/WORK%20PROJECT/LABEL%20MAKER/Icon/batch%20label.png" alt="Batch Label" class="item-img">
         <div class="menu-item" data-action="openPage('batch')" title="Batch Label Printing"></div>
       </div>
-      <div class="scatter-item" id="scatterAccent">
-        <span class="item-num">(05)</span>
-        <img src="https://file.garden/ad-wGPVIV3ilAD_L/WORK%20PROJECT/LABEL%20MAKER/Icon/Calculator.png" alt="Calculator" class="item-img">
-        <div class="menu-item" data-action="openPage('calculator')" title="Calculator"></div>
-      </div>
       <div class="scatter-item" id="scatterHistory">
         <span class="item-num">(03)</span>
         <img src="https://file.garden/ad-wGPVIV3ilAD_L/WORK%20PROJECT/LABEL%20MAKER/Icon/print%20history.png" alt="Print History" class="item-img">
         <div class="menu-item" data-action="openPage('history')" title="Print History"></div>
       </div>
+      <!-- Bottom Row: Accessories & Games -->
       <div class="scatter-item" id="scatterMine">
         <span class="item-num">(04)</span>
         <img src="https://file.garden/ad-wGPVIV3ilAD_L/WORK%20PROJECT/LABEL%20MAKER/Icon/Minesweeper.png" alt="Minesweeper" class="item-img">
         <div class="menu-item" data-action="openPage('minesweeper')" title="Minesweeper"></div>
       </div>
       <div class="scatter-item" id="scatterPhoto">
-        <span class="item-num">(06)</span>
+        <span class="item-num">(05)</span>
         <img src="https://file.garden/ad-wGPVIV3ilAD_L/WORK%20PROJECT/LABEL%20MAKER/Icon/Photo-Camera.png" alt="Photobooth" class="item-img">
         <div class="menu-item" data-action="openPage('photobooth')" title="Photobooth"></div>
+      </div>
+      <div class="scatter-item" id="scatterAccent">
+        <span class="item-num">(06)</span>
+        <img src="https://file.garden/ad-wGPVIV3ilAD_L/WORK%20PROJECT/LABEL%20MAKER/Icon/Calculator.png" alt="Calculator" class="item-img">
+        <div class="menu-item" data-action="openPage('calculator')" title="Calculator"></div>
       </div>
     </div>
     <div class="desk-center">
@@ -1434,12 +1462,22 @@ Built for Labelmaker');closePbMenus()">About...</div>
               <option value="invert">Invert</option>
             </select>
           </label>
+          <label>
+            <input type="checkbox" id="pbMirror" data-change="pbToggleMirror()" checked> Mirror
+          </label>
+          <label>Mode:
+            <select id="pbMode" class="w95-select" style="width:auto;min-width:110px;" data-change="pbSetMode()">
+              <option value="single" selected>Single Photo</option>
+              <option value="strip">Photo Strip 1×3</option>
+            </select>
+          </label>
         </div>
         <div class="pb-viewport" id="pbViewport">
           <video id="pbVideo" autoplay playsinline></video>
           <canvas id="pbCanvas"></canvas>
           <div class="pb-countdown" id="pbCountdown">3</div>
           <div class="pb-flash" id="pbFlash"></div>
+          <div class="pb-strip-counter" id="pbStripCounter" style="display:none;">0 / 3</div>
           <div class="pb-error" id="pbError" style="display:none;">
             <div>📷 Camera not available</div>
             <div style="font-size:10px;margin-top:8px;">Please allow camera access or use a device with a camera.</div>
@@ -1448,6 +1486,7 @@ Built for Labelmaker');closePbMenus()">About...</div>
         <div class="pb-controls">
           <button class="w95-btn primary" id="pbSnapBtn" data-action="pbSnap()"><span>📷</span> Snap</button>
           <button class="w95-btn" id="pbRetakeBtn" data-action="pbRetake()" style="display:none;"><span>🔄</span> Retake</button>
+          <button class="w95-btn" id="pbNewStripBtn" data-action="pbNewStrip()" style="display:none;"><span>🆕</span> New Strip</button>
           <button class="w95-btn" data-action="pbDownloadLast()"><span>💾</span> Save Last</button>
         </div>
         <div class="pb-strip" id="pbStrip">
@@ -2639,6 +2678,86 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
     let pbStream = null;
     let pbPhotos = [];
     let pbCountdownInterval = null;
+    let pbMode = "single";
+    let pbStripSession = [];
+
+    let pbMirrorEnabled = true;
+
+    function pbToggleMirror() {
+      const checkbox = document.getElementById('pbMirror');
+      pbMirrorEnabled = checkbox ? checkbox.checked : true;
+      const video = document.getElementById('pbVideo');
+      const canvas = document.getElementById('pbCanvas');
+      if (video) {
+        if (pbMirrorEnabled) video.classList.add('mirrored');
+        else video.classList.remove('mirrored');
+      }
+      if (canvas) {
+        if (pbMirrorEnabled) canvas.classList.add('mirrored');
+        else canvas.classList.remove('mirrored');
+      }
+    }
+
+    function pbSetMode() {
+      const select = document.getElementById("pbMode");
+      pbMode = select ? select.value : "single";
+      const counter = document.getElementById("pbStripCounter");
+      if (counter) {
+        counter.style.display = pbMode === "strip" ? "block" : "none";
+        counter.textContent = pbStripSession.length + " / 3";
+      }
+      if (pbMode === "single" && pbStripSession.length > 0) {
+        pbNewStrip();
+      }
+    }
+
+    function pbUpdateStripCounter() {
+      const counter = document.getElementById("pbStripCounter");
+      if (counter) counter.textContent = pbStripSession.length + " / 3";
+    }
+
+    function pbNewStrip() {
+      pbStripSession = [];
+      pbUpdateStripCounter();
+      const viewport = document.getElementById("pbViewport");
+      const snapBtn = document.getElementById("pbSnapBtn");
+      const retakeBtn = document.getElementById("pbRetakeBtn");
+      const newStripBtn = document.getElementById("pbNewStripBtn");
+      viewport.classList.remove("has-photo", "strip-result");
+      if (snapBtn) snapBtn.style.display = "inline-flex";
+      if (retakeBtn) retakeBtn.style.display = "none";
+      if (newStripBtn) newStripBtn.style.display = "none";
+    }
+
+    function pbAssembleStrip() {
+      const canvas = document.getElementById("pbCanvas");
+      const ctx = canvas.getContext("2d");
+      const photoW = 640;
+      const photoH = 480;
+      const padding = 16;
+      const stripW = photoW + padding * 2;
+      const stripH = photoH * 3 + padding * 4;
+
+      canvas.width = stripW;
+      canvas.height = stripH;
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(0, 0, stripW, stripH);
+
+      let loaded = 0;
+      pbStripSession.forEach(function(url, i) {
+        const img = new Image();
+        img.onload = function() {
+          const y = padding + i * (photoH + padding);
+          ctx.drawImage(img, padding, y, photoW, photoH);
+          loaded++;
+          if (loaded === 3) {
+            const stripDataUrl = canvas.toDataURL("image/png");
+            pbAddToStrip(stripDataUrl, true);
+          }
+        };
+        img.src = url;
+      });
+    }
 
     function pbInit() {
       const video = document.getElementById('pbVideo');
@@ -2650,6 +2769,8 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
           .then(function(stream) {
             pbStream = stream;
             video.srcObject = stream;
+            if (pbMirrorEnabled) video.classList.add('mirrored');
+            else video.classList.remove('mirrored');
             if (errorEl) errorEl.style.display = 'none';
           })
           .catch(function(err) {
@@ -2705,6 +2826,7 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
       const flash = document.getElementById('pbFlash');
       const snapBtn = document.getElementById('pbSnapBtn');
       const retakeBtn = document.getElementById('pbRetakeBtn');
+      const newStripBtn = document.getElementById('pbNewStripBtn');
 
       if (!video || !canvas || !video.videoWidth) return;
 
@@ -2729,28 +2851,61 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
         ctx.filter = 'none';
       }
 
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      if (pbMirrorEnabled) {
+        ctx.save();
+        ctx.translate(canvas.width, 0);
+        ctx.scale(-1, 1);
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        ctx.restore();
+      } else {
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      }
       ctx.filter = 'none';
 
-      // Show canvas, hide video
-      viewport.classList.add('has-photo');
-      snapBtn.style.display = 'none';
-      retakeBtn.style.display = 'inline-flex';
+      const dataUrl = canvas.toDataURL('image/png');
 
-      // Add to strip
-      pbAddToStrip(canvas.toDataURL('image/png'));
+      if (pbMode === 'strip') {
+        pbStripSession.push(dataUrl);
+        pbUpdateStripCounter();
+        pbAddToStrip(dataUrl);
+
+        if (pbStripSession.length >= 3) {
+          pbAssembleStrip();
+          viewport.classList.add('has-photo', 'strip-result');
+          if (snapBtn) snapBtn.style.display = 'none';
+          if (retakeBtn) retakeBtn.style.display = 'inline-flex';
+          if (newStripBtn) newStripBtn.style.display = 'inline-flex';
+        }
+      } else {
+        // Single mode
+        viewport.classList.add('has-photo');
+        if (snapBtn) snapBtn.style.display = 'none';
+        if (retakeBtn) retakeBtn.style.display = 'inline-flex';
+        pbAddToStrip(dataUrl);
+      }
     }
 
     function pbRetake() {
+      if (pbMode === 'strip' && pbStripSession.length > 0) {
+        pbNewStrip();
+        return;
+      }
       const viewport = document.getElementById('pbViewport');
       const snapBtn = document.getElementById('pbSnapBtn');
       const retakeBtn = document.getElementById('pbRetakeBtn');
-      viewport.classList.remove('has-photo');
-      snapBtn.style.display = 'inline-flex';
-      retakeBtn.style.display = 'none';
+      const newStripBtn = document.getElementById('pbNewStripBtn');
+      const video = document.getElementById('pbVideo');
+      viewport.classList.remove('has-photo', 'strip-result');
+      if (video) {
+        if (pbMirrorEnabled) video.classList.add('mirrored');
+        else video.classList.remove('mirrored');
+      }
+      if (snapBtn) snapBtn.style.display = 'inline-flex';
+      if (retakeBtn) retakeBtn.style.display = 'none';
+      if (newStripBtn) newStripBtn.style.display = 'none';
     }
 
-    function pbAddToStrip(dataUrl) {
+    function pbAddToStrip(dataUrl, isStrip) {
       pbPhotos.push(dataUrl);
       const strip = document.getElementById('pbStrip');
       const empty = document.getElementById('pbStripEmpty');
@@ -2758,6 +2913,7 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
 
       const thumb = document.createElement('div');
       thumb.className = 'pb-thumb';
+      if (isStrip) thumb.style.borderColor = 'var(--w95-blue)';
       thumb.innerHTML = '<img src="' + dataUrl + '" alt="Photo"><button class="pb-thumb-remove" data-action="pbRemovePhoto(' + (pbPhotos.length - 1) + ')" title="Remove">×</button>';
       strip.appendChild(thumb);
     }
@@ -2785,8 +2941,10 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
 
     function pbClearPhotos() {
       pbPhotos = [];
+      pbStripSession = [];
       pbRebuildStrip();
       pbRetake();
+      pbUpdateStripCounter();
     }
 
     function pbDownloadLast() {
