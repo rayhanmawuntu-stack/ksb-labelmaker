@@ -2958,24 +2958,23 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
       const ctx = canvas.getContext("2d");
       const photoW = 640;
       const photoH = 480;
-      let framePad = 16, frameBottom = 0, frameTop = 0, frameSide = 0;
-      let bgColor = "#fff", borderColor = null, shadow = null;
+      let framePad = 16, frameBottom = 0, frameSide = 0;
+      let bgColor = "#fff";
       let filmSprockets = false, neonGlow = false, vintageTone = false;
 
       switch (pbFrame) {
         case "black":
-          framePad = 8; bgColor = "#000"; break;
+          framePad = 12; bgColor = "#000"; break;
         case "polaroid":
-          framePad = 16; frameBottom = 48; bgColor = "#fff";
-          shadow = "rgba(0,0,0,0.2)"; break;
+          framePad = 20; frameBottom = 60; bgColor = "#fff"; break;
         case "film":
-          framePad = 16; frameSide = 24; bgColor = "#1a1a1a"; filmSprockets = true; break;
+          framePad = 16; frameSide = 28; bgColor = "#1a1a1a"; filmSprockets = true; break;
         case "neon":
-          framePad = 4; bgColor = "#0a0a0a"; borderColor = "#0ff"; neonGlow = true; break;
+          framePad = 8; bgColor = "#0a0a0a"; neonGlow = true; break;
         case "vintage":
-          framePad = 10; bgColor = "#8B7355"; vintageTone = true; break;
+          framePad = 14; bgColor = "#8B7355"; vintageTone = true; break;
         default: // classic
-          framePad = 12; bgColor = "#fff"; break;
+          framePad = 16; bgColor = "#fff"; break;
       }
 
       const stripW = photoW + framePad * 2 + frameSide * 2;
@@ -2984,70 +2983,100 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
       canvas.width = stripW;
       canvas.height = stripH;
 
-      // Background
+      // Clear and draw background
       ctx.fillStyle = bgColor;
       ctx.fillRect(0, 0, stripW, stripH);
 
-      // Film sprockets
+      // Film sprockets (left and right strips)
       if (filmSprockets) {
-        ctx.fillStyle = "#333";
-        for (let side = 0; side < 2; side++) {
-          const x = side === 0 ? 6 : stripW - 18;
-          for (let y = 0; y < stripH; y += 18) {
-            ctx.fillRect(x, y, 12, 10);
-          }
+        ctx.fillStyle = "#0a0a0a";
+        ctx.fillRect(0, 0, frameSide, stripH);
+        ctx.fillRect(stripW - frameSide, 0, frameSide, stripH);
+        ctx.fillStyle = "#e0e0e0";
+        for (let y = 12; y < stripH - 12; y += 24) {
+          ctx.fillRect(6, y, 16, 12);
+          ctx.fillRect(stripW - frameSide + 6, y, 16, 12);
         }
       }
 
-      let loaded = 0;
-      pbStripSession.forEach(function(url, i) {
-        const img = new Image();
-        img.onload = function() {
+      // Pre-load all images then draw
+      const images = [];
+      let loadedCount = 0;
+
+      function onAllLoaded() {
+        for (let i = 0; i < 3; i++) {
           const x = framePad + frameSide;
           const y = framePad + i * (photoH + framePad + frameBottom);
 
-          // Photo background (for polaroid bottom space)
+          // Polaroid: draw white card behind each photo
           if (pbFrame === "polaroid") {
             ctx.fillStyle = "#fff";
-            ctx.fillRect(x - framePad, y - framePad, photoW + framePad * 2, photoH + framePad + frameBottom);
+            ctx.fillRect(x - framePad + 4, y - framePad + 4, photoW + framePad * 2 - 8, photoH + framePad + frameBottom - 8);
+            ctx.shadowColor = "rgba(0,0,0,0.15)";
+            ctx.shadowBlur = 8;
+            ctx.shadowOffsetX = 2;
+            ctx.shadowOffsetY = 4;
           }
 
-          // Neon border per photo
+          // Neon: draw glow border
           if (neonGlow) {
             ctx.shadowColor = "#0ff";
-            ctx.shadowBlur = 12;
+            ctx.shadowBlur = 20;
             ctx.strokeStyle = "#0ff";
-            ctx.lineWidth = 2;
-            ctx.strokeRect(x - 2, y - 2, photoW + 4, photoH + 4);
+            ctx.lineWidth = 3;
+            ctx.strokeRect(x - 4, y - 4, photoW + 8, photoH + 8);
             ctx.shadowBlur = 0;
           }
 
-          // Vintage overlay prep
-          ctx.save();
-          if (vintageTone) {
-            ctx.filter = "sepia(30%) contrast(1.1)";
+          // Black frame: draw white inner border
+          if (pbFrame === "black") {
+            ctx.strokeStyle = "#fff";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x - 2, y - 2, photoW + 4, photoH + 4);
           }
 
-          ctx.drawImage(img, x, y, photoW, photoH);
+          // Draw the photo
+          ctx.save();
+          if (vintageTone) {
+            ctx.filter = "sepia(35%) contrast(1.15) brightness(0.95)";
+          }
+          ctx.drawImage(images[i], x, y, photoW, photoH);
           ctx.restore();
 
-          // Vintage inner shadow
+          // Vintage vignette overlay
           if (vintageTone) {
             const grad = ctx.createRadialGradient(
-              x + photoW/2, y + photoH/2, photoW * 0.3,
-              x + photoW/2, y + photoH/2, photoW * 0.7
+              x + photoW / 2, y + photoH / 2, photoW * 0.25,
+              x + photoW / 2, y + photoH / 2, photoW * 0.75
             );
-            grad.addColorStop(0, "rgba(139,115,85,0)");
-            grad.addColorStop(1, "rgba(139,115,85,0.25)");
+            grad.addColorStop(0, "rgba(101,67,33,0)");
+            grad.addColorStop(1, "rgba(60,40,20,0.35)");
             ctx.fillStyle = grad;
             ctx.fillRect(x, y, photoW, photoH);
           }
+        }
 
-          loaded++;
-          if (loaded === 3) {
-            const stripDataUrl = canvas.toDataURL("image/png");
-            pbAddToStrip(stripDataUrl, true);
-          }
+        // Reset shadow
+        ctx.shadowColor = "transparent";
+        ctx.shadowBlur = 0;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+
+        const stripDataUrl = canvas.toDataURL("image/png");
+        pbAddToStrip(stripDataUrl, true);
+      }
+
+      pbStripSession.forEach(function(url, idx) {
+        const img = new Image();
+        img.onload = function() {
+          images[idx] = img;
+          loadedCount++;
+          if (loadedCount === 3) onAllLoaded();
+        };
+        img.onerror = function() {
+          images[idx] = null;
+          loadedCount++;
+          if (loadedCount === 3) onAllLoaded();
         };
         img.src = url;
       });
