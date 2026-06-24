@@ -817,6 +817,119 @@
     .start-menu-backdrop.show {
       display: block;
     }
+
+    /* ══════════════════════════════════════════════════════
+       PHOTOBOOTH — KSB Edition (Windows 95 aesthetic)
+       ══════════════════════════════════════════════════════ */
+    .photobooth-desktop { display: none; min-height: 100vh; padding: 20px; background: var(--w95-bg); position: relative; }
+    .photobooth-desktop.active { display: block; }
+    .pb-window {
+      background: var(--w95-gray); border: 2px outset var(--w95-light);
+      box-shadow: 2px 2px 0 rgba(0,0,0,0.3); max-width: 640px; margin: 40px auto;
+    }
+    .pb-title-bar {
+      background: linear-gradient(90deg, var(--w95-blue) 0%, var(--w95-blue-light) 100%);
+      color: var(--w95-light); padding: 3px 4px 3px 6px; display: flex;
+      align-items: center; justify-content: space-between; font-weight: bold;
+      font-size: 11px; letter-spacing: 0.5px;
+    }
+    .pb-title-text { display: flex; align-items: center; gap: 6px; }
+    .pb-title-btns { display: flex; gap: 2px; }
+    .pb-menu-bar {
+      display: flex; gap: 0; padding: 2px 4px; border-bottom: 1px solid var(--w95-dark);
+      margin-bottom: 8px; position: relative;
+    }
+    .pb-menu-wrapper { position: relative; display: inline-block; }
+    .pb-menu-item {
+      padding: 2px 8px; font-size: 11px; text-decoration: underline;
+      text-underline-offset: 2px; text-decoration-color: var(--w95-text); cursor: pointer;
+    }
+    .pb-menu-item:hover {
+      background: var(--w95-blue); color: var(--w95-light); text-decoration-color: var(--w95-light);
+    }
+    .pb-dropdown {
+      display: none; position: absolute; top: 100%; left: 0; background: var(--w95-gray);
+      border: 2px outset var(--w95-light); box-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+      min-width: 140px; z-index: 100; padding: 2px;
+    }
+    .pb-dropdown.show { display: block; }
+    .pb-dropdown-item {
+      padding: 4px 8px; font-size: 11px; display: flex; align-items: center;
+      gap: 6px; cursor: pointer; white-space: nowrap;
+    }
+    .pb-dropdown-item:hover { background: var(--w95-blue); color: var(--w95-light); }
+    .pb-content { padding: 8px; }
+    .pb-viewport {
+      border: 3px inset var(--w95-light); background: #000;
+      width: 100%; aspect-ratio: 4/3; position: relative;
+      overflow: hidden; margin-bottom: 8px;
+    }
+    .pb-viewport video {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+    }
+    .pb-viewport canvas {
+      width: 100%; height: 100%; object-fit: contain; display: none;
+    }
+    .pb-viewport.has-photo video { display: none; }
+    .pb-viewport.has-photo canvas { display: block; }
+    .pb-countdown {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      font-family: 'VCR', monospace; font-size: 72px; color: #fff;
+      text-shadow: 2px 2px 0 #000; z-index: 10; display: none;
+    }
+    .pb-flash {
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background: #fff; opacity: 0; z-index: 20; pointer-events: none;
+    }
+    .pb-flash.active {
+      animation: pbFlash 0.3s ease-out;
+    }
+    @keyframes pbFlash {
+      0% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+    .pb-controls {
+      display: flex; gap: 8px; justify-content: center; margin-bottom: 8px;
+    }
+    .pb-strip {
+      border: 2px inset var(--w95-light); background: var(--w95-light);
+      padding: 8px; display: flex; gap: 8px; overflow-x: auto;
+      min-height: 100px; align-items: center;
+    }
+    .pb-strip-empty {
+      color: var(--w95-dark); font-size: 11px; text-align: center;
+      width: 100%; padding: 20px 0;
+    }
+    .pb-thumb {
+      width: 80px; height: 60px; border: 2px outset var(--w95-light);
+      background: #000; flex-shrink: 0; cursor: pointer;
+      position: relative;
+    }
+    .pb-thumb img {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+    .pb-thumb .pb-thumb-remove {
+      position: absolute; top: -6px; right: -6px;
+      width: 16px; height: 16px; background: #ff0000; color: #fff;
+      border: 1px outset var(--w95-light); font-size: 10px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; padding: 0; line-height: 1;
+    }
+    .pb-options {
+      display: flex; gap: 12px; margin-bottom: 8px; flex-wrap: wrap;
+      align-items: center;
+    }
+    .pb-options label {
+      font-size: 11px; display: flex; align-items: center; gap: 4px;
+    }
+    .pb-options select {
+      background: var(--w95-light); border: 2px inset var(--w95-dark);
+      padding: 2px 4px; font-family: 'MS Sans Serif', sans-serif; font-size: 11px;
+    }
+    .pb-error {
+      border: 2px inset var(--w95-light); background: #fff0f0;
+      padding: 20px; text-align: center; color: #800000; font-size: 11px;
+    }
 </style>
 <base target="_blank">
 </head>
@@ -849,6 +962,11 @@
         <span class="item-num">(04)</span>
         <img src="https://file.garden/ad-wGPVIV3ilAD_L/WORK%20PROJECT/LABEL%20MAKER/Icon/Minesweeper.png" alt="Minesweeper" class="item-img">
         <div class="menu-item" data-action="openPage('minesweeper')" title="Minesweeper"></div>
+      </div>
+      <div class="scatter-item" id="scatterPhoto">
+        <span class="item-num">(06)</span>
+        <img src="https://file.garden/ad-wGPVIV3ilAD_L/WORK%20PROJECT/LABEL%20MAKER/Icon/Photo-Camera.png" alt="Photobooth" class="item-img">
+        <div class="menu-item" data-action="openPage('photobooth')" title="Photobooth"></div>
       </div>
     </div>
     <div class="desk-center">
@@ -1261,6 +1379,83 @@
   </div>
 
 
+  <!-- PHOTOBOOTH PAGE -->
+  <div class="photobooth-desktop" id="photoboothPage">
+    <div class="pb-window">
+      <div class="pb-title-bar">
+        <div class="pb-title-text"><span style="font-size: 14px;">📷</span> Photobooth — KSB Edition</div>
+        <div class="pb-title-btns">
+          <button class="title-bar-btn" data-action="goHome()">_</button>
+          <button class="title-bar-btn" data-action="goHome()">□</button>
+          <button class="title-bar-btn" data-action="goHome()" style="font-weight: bold;">×</button>
+        </div>
+      </div>
+      <div class="pb-menu-bar">
+        <div class="pb-menu-wrapper">
+          <span class="pb-menu-item" data-action="togglePbMenu('pbFileMenu')">File</span>
+          <div class="pb-dropdown" id="pbFileMenu">
+            <div class="pb-dropdown-item" data-action="pbDownloadStrip();closePbMenus()">Download Photo Strip</div>
+            <div class="pb-dropdown-item" data-action="pbClearPhotos();closePbMenus()">Clear All</div>
+            <div class="pb-dropdown-sep"></div>
+            <div class="pb-dropdown-item" data-action="goHome();closePbMenus()">Exit to Desktop</div>
+          </div>
+        </div>
+        <div class="pb-menu-wrapper">
+          <span class="pb-menu-item" data-action="togglePbMenu('pbHelpMenu')">Help</span>
+          <div class="pb-dropdown" id="pbHelpMenu">
+            <div class="pb-dropdown-item" data-action="alert('Photobooth KSB Edition 📷
+
+Click Snap to take a photo.
+Photos are stored in a strip below.
+Download the strip when done!');closePbMenus()">How to Use</div>
+            <div class="pb-dropdown-item" data-action="alert('Photobooth KSB Edition v1.0 📷
+Windows 95 Aesthetic
+
+Built for Labelmaker');closePbMenus()">About...</div>
+          </div>
+        </div>
+      </div>
+      <div class="pb-content">
+        <div class="pb-options">
+          <label>Timer:
+            <select id="pbTimer" class="w95-select" style="width:auto;min-width:60px;">
+              <option value="0">None</option>
+              <option value="3" selected>3 sec</option>
+              <option value="5">5 sec</option>
+              <option value="10">10 sec</option>
+            </select>
+          </label>
+          <label>Filter:
+            <select id="pbFilter" class="w95-select" style="width:auto;min-width:80px;" data-change="pbApplyFilter()">
+              <option value="none">None</option>
+              <option value="grayscale">B&amp;W</option>
+              <option value="sepia">Sepia</option>
+              <option value="invert">Invert</option>
+            </select>
+          </label>
+        </div>
+        <div class="pb-viewport" id="pbViewport">
+          <video id="pbVideo" autoplay playsinline></video>
+          <canvas id="pbCanvas"></canvas>
+          <div class="pb-countdown" id="pbCountdown">3</div>
+          <div class="pb-flash" id="pbFlash"></div>
+          <div class="pb-error" id="pbError" style="display:none;">
+            <div>📷 Camera not available</div>
+            <div style="font-size:10px;margin-top:8px;">Please allow camera access or use a device with a camera.</div>
+          </div>
+        </div>
+        <div class="pb-controls">
+          <button class="w95-btn primary" id="pbSnapBtn" data-action="pbSnap()"><span>📷</span> Snap</button>
+          <button class="w95-btn" id="pbRetakeBtn" data-action="pbRetake()" style="display:none;"><span>🔄</span> Retake</button>
+          <button class="w95-btn" data-action="pbDownloadLast()"><span>💾</span> Save Last</button>
+        </div>
+        <div class="pb-strip" id="pbStrip">
+          <div class="pb-strip-empty" id="pbStripEmpty">No photos yet. Click Snap to take your first photo!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- CALCULATOR PAGE -->
   <div class="calculator-desktop" id="calculatorPage">
     <div class="calc-window">
@@ -1365,6 +1560,10 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
     </div>
     <div class="start-menu-sep"></div>
     <div class="start-menu-label">Accessories</div>
+    <div class="start-menu-item" data-action="openPage('photobooth');toggleStartMenu()">
+      <span class="menu-icon">📷</span>
+      <span>Photobooth</span>
+    </div>
     <div class="start-menu-item" data-action="openPage('calculator');toggleStartMenu()">
       <span class="menu-icon">🧮</span>
       <span>Calculator</span>
@@ -1402,6 +1601,8 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
       document.getElementById('homePage').style.display = 'none';
       document.querySelectorAll('.w95-desktop').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.minesweeper-desktop').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.photobooth-desktop').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.calculator-desktop').forEach(p => p.classList.remove('active'));
       document.getElementById('appFooter').style.display = 'block';
       document.getElementById('w95Taskbar').style.display = 'flex';
       if (page === 'single') {
@@ -1415,6 +1616,9 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
       } else if (page === 'minesweeper') {
         document.getElementById('minesweeperPage').classList.add('active');
         if (!msGameState.started) msNewGame('beginner');
+      } else if (page === 'photobooth') {
+        document.getElementById('photoboothPage').classList.add('active');
+        pbInit();
       } else if (page === 'calculator') {
         document.getElementById('calculatorPage').classList.add('active');
       }
@@ -1439,9 +1643,11 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
     }
 
     function goHome() {
+      pbStop();
       document.getElementById('homePage').style.display = 'flex';
       document.querySelectorAll('.w95-desktop').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.minesweeper-desktop').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.photobooth-desktop').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.calculator-desktop').forEach(p => p.classList.remove('active'));
       document.getElementById('appFooter').style.display = 'none';
       document.getElementById('w95Taskbar').style.display = 'none';
@@ -2424,6 +2630,224 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
       testImg.onload = function() { gsUpdateStatus('Beacon reachable ✓', 'ok'); };
       testImg.onerror = function() { gsUpdateStatus('Beacon sent (check sheet)', 'warn'); };
     }
+
+    // ══════════════════════════════════════════════════════
+    // PHOTOBOOTH ENGINE
+    // ══════════════════════════════════════════════════════
+
+    let pbStream = null;
+    let pbPhotos = [];
+    let pbCountdownInterval = null;
+
+    function pbInit() {
+      const video = document.getElementById('pbVideo');
+      const errorEl = document.getElementById('pbError');
+      if (!video) return;
+
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false })
+          .then(function(stream) {
+            pbStream = stream;
+            video.srcObject = stream;
+            if (errorEl) errorEl.style.display = 'none';
+          })
+          .catch(function(err) {
+            console.error('Camera error:', err);
+            if (errorEl) errorEl.style.display = 'block';
+          });
+      } else {
+        if (errorEl) errorEl.style.display = 'block';
+      }
+    }
+
+    function pbStop() {
+      if (pbStream) {
+        pbStream.getTracks().forEach(function(track) { track.stop(); });
+        pbStream = null;
+      }
+    }
+
+    function pbSnap() {
+      const timerVal = parseInt(document.getElementById('pbTimer').value, 10);
+      if (timerVal > 0) {
+        pbStartCountdown(timerVal);
+      } else {
+        pbTakePhoto();
+      }
+    }
+
+    function pbStartCountdown(seconds) {
+      const countdownEl = document.getElementById('pbCountdown');
+      const snapBtn = document.getElementById('pbSnapBtn');
+      let remaining = seconds;
+      countdownEl.textContent = remaining;
+      countdownEl.style.display = 'block';
+      snapBtn.disabled = true;
+
+      pbCountdownInterval = setInterval(function() {
+        remaining--;
+        if (remaining > 0) {
+          countdownEl.textContent = remaining;
+        } else {
+          clearInterval(pbCountdownInterval);
+          countdownEl.style.display = 'none';
+          snapBtn.disabled = false;
+          pbTakePhoto();
+        }
+      }, 1000);
+    }
+
+    function pbTakePhoto() {
+      const video = document.getElementById('pbVideo');
+      const canvas = document.getElementById('pbCanvas');
+      const viewport = document.getElementById('pbViewport');
+      const flash = document.getElementById('pbFlash');
+      const snapBtn = document.getElementById('pbSnapBtn');
+      const retakeBtn = document.getElementById('pbRetakeBtn');
+
+      if (!video || !canvas || !video.videoWidth) return;
+
+      // Flash effect
+      flash.classList.add('active');
+      setTimeout(function() { flash.classList.remove('active'); }, 300);
+
+      // Draw video frame to canvas
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+
+      // Apply filter
+      const filter = document.getElementById('pbFilter').value;
+      if (filter === 'grayscale') {
+        ctx.filter = 'grayscale(100%)';
+      } else if (filter === 'sepia') {
+        ctx.filter = 'sepia(100%)';
+      } else if (filter === 'invert') {
+        ctx.filter = 'invert(100%)';
+      } else {
+        ctx.filter = 'none';
+      }
+
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      ctx.filter = 'none';
+
+      // Show canvas, hide video
+      viewport.classList.add('has-photo');
+      snapBtn.style.display = 'none';
+      retakeBtn.style.display = 'inline-flex';
+
+      // Add to strip
+      pbAddToStrip(canvas.toDataURL('image/png'));
+    }
+
+    function pbRetake() {
+      const viewport = document.getElementById('pbViewport');
+      const snapBtn = document.getElementById('pbSnapBtn');
+      const retakeBtn = document.getElementById('pbRetakeBtn');
+      viewport.classList.remove('has-photo');
+      snapBtn.style.display = 'inline-flex';
+      retakeBtn.style.display = 'none';
+    }
+
+    function pbAddToStrip(dataUrl) {
+      pbPhotos.push(dataUrl);
+      const strip = document.getElementById('pbStrip');
+      const empty = document.getElementById('pbStripEmpty');
+      if (empty) empty.style.display = 'none';
+
+      const thumb = document.createElement('div');
+      thumb.className = 'pb-thumb';
+      thumb.innerHTML = '<img src="' + dataUrl + '" alt="Photo"><button class="pb-thumb-remove" data-action="pbRemovePhoto(' + (pbPhotos.length - 1) + ')" title="Remove">×</button>';
+      strip.appendChild(thumb);
+    }
+
+    function pbRemovePhoto(index) {
+      pbPhotos.splice(index, 1);
+      pbRebuildStrip();
+    }
+
+    function pbRebuildStrip() {
+      const strip = document.getElementById('pbStrip');
+      const empty = document.getElementById('pbStripEmpty');
+      strip.innerHTML = '';
+      if (pbPhotos.length === 0) {
+        strip.innerHTML = '<div class="pb-strip-empty" id="pbStripEmpty">No photos yet. Click Snap to take your first photo!</div>';
+      } else {
+        pbPhotos.forEach(function(url, i) {
+          const thumb = document.createElement('div');
+          thumb.className = 'pb-thumb';
+          thumb.innerHTML = '<img src="' + url + '" alt="Photo"><button class="pb-thumb-remove" data-action="pbRemovePhoto(' + i + ')" title="Remove">×</button>';
+          strip.appendChild(thumb);
+        });
+      }
+    }
+
+    function pbClearPhotos() {
+      pbPhotos = [];
+      pbRebuildStrip();
+      pbRetake();
+    }
+
+    function pbDownloadLast() {
+      if (pbPhotos.length === 0) {
+        alert('No photos to download. Take a photo first!');
+        return;
+      }
+      const link = document.createElement('a');
+      link.href = pbPhotos[pbPhotos.length - 1];
+      link.download = 'ksb-photobooth-' + Date.now() + '.png';
+      link.click();
+    }
+
+    function pbDownloadStrip() {
+      if (pbPhotos.length === 0) {
+        alert('No photos to download. Take some photos first!');
+        return;
+      }
+      // Create a strip canvas
+      const thumbW = 320;
+      const thumbH = 240;
+      const padding = 10;
+      const stripCanvas = document.createElement('canvas');
+      stripCanvas.width = thumbW + padding * 2;
+      stripCanvas.height = thumbH * pbPhotos.length + padding * (pbPhotos.length + 1);
+      const ctx = stripCanvas.getContext('2d');
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0, 0, stripCanvas.width, stripCanvas.height);
+
+      let loaded = 0;
+      pbPhotos.forEach(function(url, i) {
+        const img = new Image();
+        img.onload = function() {
+          ctx.drawImage(img, padding, padding + i * (thumbH + padding), thumbW, thumbH);
+          loaded++;
+          if (loaded === pbPhotos.length) {
+            const link = document.createElement('a');
+            link.href = stripCanvas.toDataURL('image/png');
+            link.download = 'ksb-photobooth-strip-' + Date.now() + '.png';
+            link.click();
+          }
+        };
+        img.src = url;
+      });
+    }
+
+    function pbApplyFilter() {
+      // Filter is applied when taking the photo
+    }
+
+    function togglePbMenu(id) {
+      const menu = document.getElementById(id);
+      const isOpen = menu.classList.contains('show');
+      closePbMenus();
+      if (!isOpen) menu.classList.add('show');
+    }
+    function closePbMenus() {
+      document.querySelectorAll('.pb-dropdown').forEach(function(m) { m.classList.remove('show'); });
+    }
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.pb-menu-bar')) closePbMenus();
+    });
 
     // ══════════════════════════════════════════════════════
     // CALCULATOR ENGINE
