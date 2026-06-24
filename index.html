@@ -887,11 +887,33 @@
       background: #fff; opacity: 0; z-index: 20; pointer-events: none;
     }
     .pb-flash.active {
-      animation: pbFlash 0.3s ease-out;
+      animation: pbShutter 0.6s ease-out forwards;
     }
-    @keyframes pbFlash {
-      0% { opacity: 1; }
+    @keyframes pbShutter {
+      0%   { opacity: 0; }
+      5%   { opacity: 1; }
+      25%  { opacity: 1; }
       100% { opacity: 0; }
+    }
+    .pb-shutter-sound {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      font-family: 'VCR', monospace; font-size: 14px; color: #fff;
+      text-shadow: 1px 1px 0 #000; z-index: 21; opacity: 0; pointer-events: none;
+      letter-spacing: 2px; background: rgba(0,0,0,0.6); padding: 4px 12px;
+      border: 1px outset var(--w95-light);
+    }
+    .pb-shutter-sound.active {
+      animation: pbSound 0.6s ease-out forwards;
+    }
+    @keyframes pbSound {
+      0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+      10%  { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      40%  { opacity: 1; }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+    }
+    .pb-viewport::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      border: 3px inset var(--w95-light); pointer-events: none; z-index: 5;
     }
     .pb-controls {
       display: flex; gap: 8px; justify-content: center; margin-bottom: 8px;
@@ -2966,9 +2988,14 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
 
       if (!video || !canvas || !video.videoWidth) return;
 
-      // Flash effect
+      // Shutter effect
       flash.classList.add('active');
-      setTimeout(function() { flash.classList.remove('active'); }, 300);
+      const sound = document.getElementById('pbShutterSound');
+      if (sound) sound.classList.add('active');
+      setTimeout(function() {
+        flash.classList.remove('active');
+        if (sound) sound.classList.remove('active');
+      }, 600);
 
       // Draw video frame to canvas
       canvas.width = video.videoWidth;
