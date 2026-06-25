@@ -214,15 +214,16 @@
     .w95-preview-frame {
       background: #888; border: 2px inset var(--w95-dark); padding: 8px;
       min-height: 300px; display: flex; align-items: flex-start; justify-content: center;
-      overflow: auto; gap: 8px; flex-wrap: wrap;
+      overflow: auto; gap: 12px; flex-wrap: wrap;
     }
     /* Wrapper that holds one scaled print-page thumbnail */
     .preview-page-wrap {
       flex-shrink: 0;
       background: #fff;
-      box-shadow: 2px 2px 6px rgba(0,0,0,0.4);
+      box-shadow: 2px 2px 8px rgba(0,0,0,0.5);
       overflow: hidden;
       position: relative;
+      border: 1px solid #333;
     }
     /* The inner clone is positioned absolute so scaling doesn't affect layout flow */
     .preview-page-inner {
@@ -230,6 +231,15 @@
       top: 0; left: 0;
       transform-origin: top left;
       background: #fff;
+    }
+    /* Preview labels should match print styling */
+    .preview-page-inner .ksb-label {
+      border: 2px solid #000 !important;
+      box-shadow: inset 0 0 0 1px #fff, inset 0 0 0 3px #000, inset 0 0 0 4px #fff, inset 0 0 0 6px #000 !important;
+    }
+    .preview-page-inner .label-divider {
+      background: #000 !important;
+      height: 2px !important;
     }
 
     .ksb-label {
@@ -261,7 +271,7 @@
     .label-section { margin-bottom: 0; }
     .label-section:last-child { margin-bottom: 0; }
     .label-heading {
-      font-size: 10px;
+      font-size: var(--lh-font, 10px);
       text-transform: capitalize;
       margin-bottom: 4px;
       font-weight: 400;
@@ -269,7 +279,7 @@
       color: #555;
     }
     .label-name {
-      font-size: 24px;
+      font-size: var(--ln-font, 24px);
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -278,7 +288,7 @@
       line-height: 1.15;
     }
     .label-attn {
-      font-size: 12px;
+      font-size: var(--la-font, 12px);
       text-transform: uppercase;
       margin-bottom: 6px;
       font-style: italic;
@@ -287,7 +297,7 @@
       line-height: 1.2;
     }
     .label-address {
-      font-size: 14px;
+      font-size: var(--laddr-font, 14px);
       line-height: 1.4;
       text-transform: uppercase;
       letter-spacing: 0.3px;
@@ -296,11 +306,14 @@
       margin-top: 2px;
     }
     .label-phone {
-      font-size: 11px;
+      font-size: var(--lp-font, 11px);
       font-style: italic;
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
       color: #555;
       margin-top: 4px;
+    }
+    .ksb-logo {
+      width: var(--logo-w, 70px);
     }
     .label-divider {
       height: 3px;
@@ -634,16 +647,16 @@
         border: none !important;
       }
 
-      /* ── Font sizing using em (relative to 10pt base) ── */
+      /* ── Dynamic font sizing — base values, JS will scale down if needed ── */
       .label-heading {
-        font-size: 0.75em !important;        /* 7.5pt */
+        font-size: var(--lh-font, 0.75em) !important;
         color: #555 !important;
         text-transform: capitalize !important;
         margin-bottom: 0.35em !important;
         font-weight: 400 !important;
       }
       .label-name {
-        font-size: 1.7em !important;         /* 17pt */
+        font-size: var(--ln-font, 1.7em) !important;
         font-weight: 800 !important;
         text-transform: uppercase !important;
         letter-spacing: 0.02em !important;
@@ -652,7 +665,7 @@
         margin-bottom: 0.35em !important;
       }
       .label-attn {
-        font-size: 0.85em !important;        /* 8.5pt */
+        font-size: var(--la-font, 0.85em) !important;
         font-style: italic !important;
         text-transform: uppercase !important;
         word-break: break-word !important;
@@ -661,25 +674,25 @@
         margin-bottom: 0.35em !important;
       }
       .label-address {
-        font-size: 1em !important;           /* 10pt */
+        font-size: var(--laddr-font, 1em) !important;
         font-weight: 700 !important;
         text-transform: uppercase !important;
         letter-spacing: 0.02em !important;
         line-height: 1.35 !important;
       }
       .label-phone {
-        font-size: 0.8em !important;         /* 8pt */
+        font-size: var(--lp-font, 0.8em) !important;
         font-style: italic !important;
         color: #555 !important;
         margin-top: 0.3em !important;
       }
 
-      /* Logo */
+      /* Logo — dynamic width via CSS variable */
       .ksb-logo {
         position: absolute !important;
         top: 0.5em !important;
         right: 0.5em !important;
-        width: 4.5em !important;
+        width: var(--logo-w, 4.5em) !important;
         height: auto !important;
         opacity: 0.9 !important;
       }
@@ -1600,6 +1613,10 @@
               <tr><td colspan="3" style="text-align:center;color:var(--w95-darker);">No records yet</td></tr>
             </tbody>
           </table>
+          <div style="margin-top:8px;display:flex;gap:4px;">
+            <button class="w95-btn" style="font-size:10px;padding:2px 8px;min-height:22px;" data-action="msSyncAllScores()">☁️ Sync All to Sheets</button>
+            <button class="w95-btn" style="font-size:10px;padding:2px 8px;min-height:22px;" data-action="msClearScores()">🗑 Clear</button>
+          </div>
         </div>
       </div>
     </div>
@@ -2108,7 +2125,6 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
       if (!printArea) return;
       var pages = Array.from(printArea.querySelectorAll('.print-page'));
 
-      // Work out which preview frame to target
       var singleActive = document.getElementById('singlePage') && document.getElementById('singlePage').classList.contains('active');
       var frameId = singleActive ? 'singlePreviewArea' : 'batchPreviewArea';
       var frame = document.getElementById(frameId);
@@ -2119,32 +2135,87 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
         return;
       }
 
-      // Available width inside the frame (subtract padding)
+      // Available width inside the frame
       var availW = frame.clientWidth - 16;
       if (availW < 80) availW = 300;
 
-      // Scale so one page thumbnail fits the available width
+      // A4 landscape = 297mm x 210mm at 96dpi = 1122 x 794 px
       var scale = availW / A4_W_PX;
       var thumbW = Math.round(A4_W_PX * scale);
       var thumbH = Math.round(A4_H_PX * scale);
 
-      var html = '';
+      var previewHTML = '';
       pages.forEach(function(page) {
-        // Clone the page and strip print-only classes so screen CSS applies
         var clone = page.cloneNode(true);
-        // Apply inline dimensions that mimic @media print sizing
-        clone.style.cssText = 'width:' + A4_W_PX + 'px;height:' + A4_H_PX + 'px;padding:30px;box-sizing:border-box;background:#fff;display:grid;';
-        // Copy layout class for grid columns/rows
+
+        // Apply exact print dimensions and grid styling
+        clone.style.cssText = 'width:' + A4_W_PX + 'px;height:' + A4_H_PX + 'px;padding:30px;box-sizing:border-box;background:#fff;display:grid;position:relative;';
+
         var layoutClass = Array.from(page.classList).find(function(c) { return c.startsWith('layout-'); });
         if (layoutClass) clone.classList.add(layoutClass);
 
-        html += '<div class="preview-page-wrap" style="width:' + thumbW + 'px;height:' + thumbH + 'px;">'
-              + '<div class="preview-page-inner" style="width:' + A4_W_PX + 'px;height:' + A4_H_PX + 'px;transform:scale(' + scale.toFixed(4) + ');">'
+        // Apply screen-like font sizing for preview (not print vmin)
+        var labels = clone.querySelectorAll('.ksb-label');
+        labels.forEach(function(label) {
+          // For preview, calculate proportional sizes based on label dimensions
+          var labelW = label.offsetWidth || (A4_W_PX / (layoutClass === 'layout-3x3' ? 3 : layoutClass === 'layout-2x2' || layoutClass === 'layout-2x3' || layoutClass === 'layout-3x2' ? 2 : 1));
+          var labelH = label.offsetHeight || (A4_H_PX / (layoutClass === 'layout-1x2' || layoutClass === 'layout-2x2' || layoutClass === 'layout-3x2' ? 2 : layoutClass === 'layout-2x3' || layoutClass === 'layout-3x3' ? 3 : 1));
+
+          // Calculate base font size proportional to label width
+          // Reference: 480px label = 24px base font for name
+          var baseFont = Math.max(8, Math.min(22, labelW / 20));
+
+          var nameEl = label.querySelector('.label-name');
+          var addrEl = label.querySelector('.label-address');
+          var attnEl = label.querySelector('.label-attn');
+          var phoneEl = label.querySelector('.label-phone');
+          var headingEl = label.querySelector('.label-heading');
+          var logoEl = label.querySelector('.ksb-logo');
+
+          if (nameEl) {
+            var nameLen = nameEl.textContent.length;
+            var addrLen = addrEl ? addrEl.textContent.length : 0;
+            var totalLen = nameLen + addrLen;
+
+            // Scale down for long content
+            var contentScale = 1.0;
+            if (totalLen > 60) contentScale = Math.max(0.5, 1 - (totalLen - 60) * 0.005);
+            if (nameLen > 20) contentScale *= Math.max(0.7, 1 - (nameLen - 20) * 0.01);
+
+            var nameSize = Math.max(10, baseFont * 1.6 * contentScale);
+            var addrSize = Math.max(8, baseFont * 0.9 * contentScale);
+            var attnSize = Math.max(7, baseFont * 0.7 * contentScale);
+            var phoneSize = Math.max(6, baseFont * 0.6 * contentScale);
+            var headingSize = Math.max(6, baseFont * 0.55 * contentScale);
+
+            nameEl.style.fontSize = nameSize + 'px';
+            if (addrEl) addrEl.style.fontSize = addrSize + 'px';
+            if (attnEl) attnEl.style.fontSize = attnSize + 'px';
+            if (phoneEl) phoneEl.style.fontSize = phoneSize + 'px';
+            if (headingEl) headingEl.style.fontSize = headingSize + 'px';
+          }
+
+          // Logo sizing
+          if (logoEl) {
+            var logoW = Math.max(20, Math.min(60, labelW * 0.12));
+            logoEl.style.width = logoW + 'px';
+          }
+
+          // Padding
+          if (labelW < 250) {
+            label.style.padding = '4px 6px';
+          } else if (labelW < 400) {
+            label.style.padding = '6px 10px';
+          }
+        });
+
+        previewHTML += '<div class="preview-page-wrap" style="width:' + thumbW + 'px;height:' + thumbH + 'px;">'
+              + '<div class="preview-page-inner" style="width:' + A4_W_PX + 'px;height:' + A4_H_PX + 'px;transform:scale(' + scale.toFixed(4) + ');transform-origin:top left;">'
               + clone.outerHTML
               + '</div></div>';
       });
 
-      frame.innerHTML = html;
+      frame.innerHTML = previewHTML;
     }
     function applyLayoutToPrintArea() {
       const printArea = document.getElementById('printArea');
@@ -2709,27 +2780,75 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
     }
 
     function fitLabelFonts(label, layout) {
-      // Spacing-only adjustment — font sizes are handled by CSS
+      // Dynamic font sizing for screen preview — print uses vmin
       const nameEl = label.querySelector('.label-name');
       const attnEl = label.querySelector('.label-attn');
       const addrEl = label.querySelector('.label-address');
       const phoneEl = label.querySelector('.label-phone');
+      const logoEl = label.querySelector('.ksb-logo');
+      const senderSection = label.querySelector('.sender-section');
+      const recipientSection = label.querySelector('.recipient-section');
 
-      const nameText = nameEl ? nameEl.textContent.trim() : '';
+      if (!nameEl || !addrEl) return;
+
+      // Get label dimensions
+      const rect = label.getBoundingClientRect();
+      const labelW = rect.width || label.clientWidth || 480;
+      const labelH = rect.height || label.clientHeight || 140;
+
+      // Calculate content metrics
+      const nameText = nameEl.textContent.trim();
       const attnText = attnEl ? attnEl.textContent.replace(/^Attn:\s*/, '').trim() : '';
-      const addrText = addrEl ? addrEl.textContent.trim() : '';
+      const addrText = addrEl.textContent.trim();
+      const phoneText = phoneEl ? phoneEl.textContent.trim() : '';
+      const senderNameEl = senderSection ? senderSection.querySelector('.label-name') : null;
+      const senderText = senderNameEl ? senderNameEl.textContent.trim() : '';
 
-      // Adjust spacing between attn and address
-      if (attnEl && addrEl) {
-        if (attnText.length > 0 && addrText.length > 0) {
-          attnEl.style.setProperty('margin-bottom', '3mm', 'important');
-          addrEl.style.setProperty('margin-top', '1mm', 'important');
-        }
+      // Base font size calculation (proportional to label size)
+      // Reference: 480px wide label = 10pt base font
+      const baseFont = Math.max(6, Math.min(14, labelW / 48));
+
+      // Content complexity adjustment
+      const nameScore = nameText.length;
+      const addrScore = addrText.length;
+      const totalChars = nameScore + addrScore + (attnText ? attnText.length : 0) + senderText.length;
+
+      // Reduce font size for high content density
+      let contentScale = 1.0;
+      if (totalChars > 80) {
+        contentScale = Math.max(0.55, 1 - (totalChars - 80) * 0.004);
+      }
+      if (nameScore > 18) {
+        contentScale *= Math.max(0.7, 1 - (nameScore - 18) * 0.012);
+      }
+      if (addrScore > 50) {
+        contentScale *= Math.max(0.8, 1 - (addrScore - 50) * 0.003);
       }
 
-      // If address is very long, slightly reduce line-height
-      if (addrEl && addrText.length > 80) {
-        addrEl.style.setProperty('line-height', '1.25', 'important');
+      // Final font size
+      const finalBase = Math.max(5, baseFont * contentScale);
+
+      // Apply to screen preview (print uses vmin)
+      label.style.fontSize = finalBase + 'px';
+
+      // Logo sizing
+      if (logoEl) {
+        const logoW = Math.max(24, Math.min(70, labelW * 0.14));
+        logoEl.style.width = logoW + 'px';
+      }
+
+      // Padding adjustment
+      if (labelW < 200) {
+        label.style.padding = '4px 6px';
+      } else if (labelW < 300) {
+        label.style.padding = '6px 8px';
+      } else {
+        label.style.padding = '8px 12px';
+      }
+
+      // Line-height for long addresses
+      if (addrScore > 60) {
+        addrEl.style.lineHeight = '1.25';
       }
     }
 
@@ -3036,6 +3155,33 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
       msBestTimes.sort((a, b) => a.time - b.time);
       msBestTimes = msBestTimes.slice(0, 10);
       localStorage.setItem('msBestTimes', JSON.stringify(msBestTimes));
+      // Auto-sync to Google Sheets
+      msSyncToSheets(entry);
+    }
+
+    function msSyncToSheets(entry) {
+      if (!GS_WEBAPP_URL) return;
+      const gsEntry = {
+        date: new Date().toLocaleString('id-ID'),
+        toName: 'MINESWEEPER: ' + entry.difficulty.toUpperCase(),
+        toAttn: '',
+        toAddress: 'Time: ' + entry.time + 's · Date: ' + entry.date,
+        toPhone: '',
+        fromName: 'Minesweeper Scoreboard',
+        type: 'minesweeper'
+      };
+      gsPushEntry(gsEntry);
+    }
+
+    function msSyncAllScores() {
+      if (!GS_WEBAPP_URL) { alert('Google Sheets URL not configured'); return; }
+      if (msBestTimes.length === 0) { alert('No scores to sync'); return; }
+      let synced = 0;
+      for (const entry of msBestTimes) {
+        msSyncToSheets(entry);
+        synced++;
+      }
+      alert(synced + ' score(s) queued for sync to Google Sheets ✓');
     }
 
     function msRenderBestTimes() {
@@ -3048,6 +3194,13 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
       tbody.innerHTML = msBestTimes.map((t, i) =>
         `<tr><td>${diffLabels[t.difficulty] || t.difficulty}</td><td>${t.time}s</td><td>${t.date}</td></tr>`
       ).join('');
+    }
+
+    function msClearScores() {
+      if (!confirm('Clear all Minesweeper scores?')) return;
+      msBestTimes = [];
+      localStorage.removeItem('msBestTimes');
+      msRenderBestTimes();
     }
 
     // Prevent context menu on the board
