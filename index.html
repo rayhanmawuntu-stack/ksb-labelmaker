@@ -236,20 +236,32 @@
     .preview-page-inner .ksb-label {
       border: 2px solid #000 !important;
       box-shadow: inset 0 0 0 1px #fff, inset 0 0 0 3px #000, inset 0 0 0 4px #fff, inset 0 0 0 6px #000 !important;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
     }
     .preview-page-inner .label-divider {
       background: #000 !important;
       height: 2px !important;
+      margin: 4px 0 !important;
+    }
+    .preview-page-inner .label-heading {
+      color: #333 !important;
+      text-transform: none !important;
+    }
+    .preview-page-inner .label-attn {
+      color: #444 !important;
+    }
+    .preview-page-inner .label-phone {
+      color: #444 !important;
     }
 
     .ksb-label {
       width: 100%; max-width: 480px; background: #fff; border: 2px solid #000;
-      padding: 14px 18px; position: relative; margin: 0 auto;
+      padding: 12px 16px; position: relative; margin: 0 auto;
       box-shadow: inset 0 0 0 1px #fff, inset 0 0 0 3px #000, inset 0 0 0 4px #fff, inset 0 0 0 6px #000;
       page-break-inside: avoid; page-break-after: always;
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
       display: flex; flex-direction: column;
-      aspect-ratio: 3.5 / 1;
+      min-height: 160px;
     }
     .ksb-label .recipient-section {
       padding-right: 80px;
@@ -271,54 +283,54 @@
     .label-section { margin-bottom: 0; }
     .label-section:last-child { margin-bottom: 0; }
     .label-heading {
-      font-size: var(--lh-font, 10px);
-      text-transform: capitalize;
-      margin-bottom: 4px;
+      font-size: var(--lh-font, 9px);
+      text-transform: none;
+      margin-bottom: 2px;
       font-weight: 400;
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      color: #555;
+      color: #333;
     }
     .label-name {
-      font-size: var(--ln-font, 24px);
+      font-size: var(--ln-font, 22px);
       font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 6px;
+      letter-spacing: 0.3px;
+      margin-bottom: 3px;
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
       line-height: 1.15;
     }
     .label-attn {
-      font-size: var(--la-font, 12px);
+      font-size: var(--la-font, 11px);
       text-transform: uppercase;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       font-style: italic;
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      color: #555;
+      color: #444;
       line-height: 1.2;
     }
     .label-address {
-      font-size: var(--laddr-font, 14px);
+      font-size: var(--laddr-font, 12px);
       line-height: 1.4;
       text-transform: uppercase;
-      letter-spacing: 0.3px;
+      letter-spacing: 0.2px;
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
       font-weight: 700;
       margin-top: 2px;
     }
     .label-phone {
-      font-size: var(--lp-font, 11px);
+      font-size: var(--lp-font, 10px);
       font-style: italic;
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      color: #555;
-      margin-top: 4px;
+      color: #444;
+      margin-top: 2px;
     }
     .ksb-logo {
-      width: var(--logo-w, 70px);
+      width: var(--logo-w, 60px);
     }
     .label-divider {
-      height: 3px;
+      height: 2px;
       background: #000;
-      margin: 10px 0;
+      margin: 6px 0;
       flex-shrink: 0;
     }
     .recipient-section {
@@ -326,6 +338,7 @@
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
+      padding-right: 70px;
     }
     .sender-section {
       flex: 0 0 auto;
@@ -616,8 +629,8 @@
         overflow: hidden !important;
         background: #fff !important;
         /* Base font size — all children use em units */
-        font-size: 10pt !important;
-        padding: 1em 1.2em !important;
+        font-size: 9pt !important;
+        padding: 0.7em 0.9em !important;
       }
       .ksb-label-inner {
         position: relative !important;
@@ -642,57 +655,57 @@
       .label-divider {
         background: #000 !important;
         flex: 0 0 auto !important;
-        margin: 0.4em 0 !important;
-        height: 2pt !important;
+        margin: 0.3em 0 !important;
+        height: 1.5pt !important;
         border: none !important;
       }
 
       /* ── Dynamic font sizing — base values, JS will scale down if needed ── */
       .label-heading {
-        font-size: var(--lh-font, 0.75em) !important;
-        color: #555 !important;
-        text-transform: capitalize !important;
-        margin-bottom: 0.35em !important;
+        font-size: var(--lh-font, 0.65em) !important;
+        color: #333 !important;
+        text-transform: none !important;
+        margin-bottom: 0.2em !important;
         font-weight: 400 !important;
       }
       .label-name {
-        font-size: var(--ln-font, 1.7em) !important;
+        font-size: var(--ln-font, 1.6em) !important;
         font-weight: 800 !important;
         text-transform: uppercase !important;
         letter-spacing: 0.02em !important;
         word-break: break-word !important;
         line-height: 1.15 !important;
-        margin-bottom: 0.35em !important;
+        margin-bottom: 0.25em !important;
       }
       .label-attn {
-        font-size: var(--la-font, 0.85em) !important;
+        font-size: var(--la-font, 0.8em) !important;
         font-style: italic !important;
         text-transform: uppercase !important;
         word-break: break-word !important;
-        color: #555 !important;
+        color: #444 !important;
         line-height: 1.2 !important;
-        margin-bottom: 0.35em !important;
+        margin-bottom: 0.3em !important;
       }
       .label-address {
-        font-size: var(--laddr-font, 1em) !important;
+        font-size: var(--laddr-font, 0.9em) !important;
         font-weight: 700 !important;
         text-transform: uppercase !important;
         letter-spacing: 0.02em !important;
         line-height: 1.35 !important;
       }
       .label-phone {
-        font-size: var(--lp-font, 0.8em) !important;
+        font-size: var(--lp-font, 0.75em) !important;
         font-style: italic !important;
-        color: #555 !important;
-        margin-top: 0.3em !important;
+        color: #444 !important;
+        margin-top: 0.2em !important;
       }
 
       /* Logo — dynamic width via CSS variable */
       .ksb-logo {
         position: absolute !important;
-        top: 0.5em !important;
-        right: 0.5em !important;
-        width: var(--logo-w, 4.5em) !important;
+        top: 0.4em !important;
+        right: 0.4em !important;
+        width: var(--logo-w, 4em) !important;
         height: auto !important;
         opacity: 0.9 !important;
       }
@@ -1270,16 +1283,16 @@
                     <option value="custom">Custom…</option>
                   </select>
                   <input type="text" class="w95-input" id="sCustomPrefix" style="display: none; width: 80px; flex-shrink: 0;" placeholder="Prefix" data-input="generateSingle()">
-                  <input type="text" class="w95-input" id="sToName" value="EMBLEM ASIA" placeholder="EMBLEM ASIA" style="flex: 1;">
+                  <input type="text" class="w95-input" id="sToName" value="UNILEVER OLEOCHEMICAL INDONESIA" placeholder="Company Name" style="flex: 1;">
                 </div>
               </div>
               <div style="margin-bottom: 8px;">
                 <label style="font-size: 11px; display: block; margin-bottom: 2px;">Attn:</label>
-                <input type="text" class="w95-input" id="sToAttn" value="IBU ARNETA" placeholder="IBU ARNETA">
+                <input type="text" class="w95-input" id="sToAttn" value="ACCOUNT PAYABLE DEPT" placeholder="Attn:">
               </div>
               <div>
                 <label style="font-size: 11px; display: block; margin-bottom: 2px;">Address & Phone:</label>
-                <textarea class="w95-textarea" id="sToAddressPhone" rows="3" placeholder="ADDRESS (0xxxxxxxx)">MM2100 INDUSTRIAL TOWN BLOK T-3 JL. BALI CIKARANG BARAT BEKASI 17520 (85781486063)</textarea>
+                <textarea class="w95-textarea" id="sToAddressPhone" rows="3" placeholder="ADDRESS (0xxxxxxxx)">FORUM NINE LT. 7 SUITE 18-22, JL. IMAM BONJOL NO. 9 MEDAN SUMATERA UTARA 20112 (021-52996686)</textarea>
               </div>
             </div>
             <div class="w95-group">
@@ -2022,6 +2035,13 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
     }
 
     const senderState = { single: 'KSB Indonesia', batch: 'KSB Indonesia' };
+    // Ensure sender radio buttons match the state
+    document.addEventListener('DOMContentLoaded', function() {
+      const singleRadios = document.querySelectorAll('input[name="sSender"]');
+      singleRadios.forEach(r => { if (r.value === 'KSB Indonesia') r.checked = true; });
+      const batchRadios = document.querySelectorAll('input[name="bSender"]');
+      batchRadios.forEach(r => { if (r.value === 'KSB Indonesia') r.checked = true; });
+    });
     let currentLayout = '1x1';
     let batchMode = 'cards';
 
@@ -2246,7 +2266,7 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
     function getSender(page) {
       if (senderState[page] === 'custom') {
         const input = page === 'single' ? document.getElementById('sCustomSender') : document.getElementById('bCustomSender');
-        return input.value.trim() || 'KSB SALES INDONESIA';
+        return input.value.trim() || 'KSB INDONESIA';
       }
       return senderState[page];
     }
@@ -2267,16 +2287,16 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
     let printHistory = [];
 
     function createLabelHTML(data, index) {
-      const toName = data.toName || 'PT EMBLEM ASIA';
+      const toName = data.toName || 'PT UNILEVER OLEOCHEMICAL INDONESIA';
       const toAttn = data.toAttn || '';
-      const toAddress = (data.toAddress || 'MM2100 INDUSTRIAL TOWN BLOK T-3 JL. BALI CIKARANG BARAT BEKASI 17520').replace(/\n/g, '<br>');
+      const toAddress = (data.toAddress || 'FORUM NINE LT. 7 SUITE 18-22, JL. IMAM BONJOL NO. 9 MEDAN SUMATERA UTARA 20112').replace(/\n/g, '<br>');
       const toPhone = data.toPhone || '';
-      const fromName = data.fromName || 'KSB SALES INDONESIA';
+      const fromName = data.fromName || 'KSB INDONESIA';
       const showLogo = data.showLogo !== false;
       const logoHTML = showLogo ? `<img src="${KSB_LOGO_URL}" alt="KSB" class="ksb-logo" data-error="this.style.display=none">` : '';
       const attnHTML = toAttn ? `<div class="label-attn">Attn: ${escapeHtml(toAttn)}</div>` : '';
-      const phoneHTML = toPhone ? `<div class="label-phone">(${escapeHtml(toPhone)})</div>` : '';
-      return `<div class="ksb-label" data-index="${index}"><div class="ksb-label-inner">${logoHTML}<div class="label-section recipient-section"><div class="label-heading">Penerima :</div><div class="label-name">${escapeHtml(toName)}</div>${attnHTML}<div class="label-address">${toAddress}</div>${phoneHTML}</div><div class="label-divider"></div><div class="label-section sender-section"><div class="label-heading">Pengirim :</div><div class="label-name">${escapeHtml(fromName)}</div></div></div></div>`;
+      const phoneHTML = toPhone ? ` <span class="label-phone">(${escapeHtml(toPhone)})</span>` : '';
+      return `<div class="ksb-label" data-index="${index}"><div class="ksb-label-inner">${logoHTML}<div class="label-section recipient-section"><div class="label-heading">Penerima :</div><div class="label-name">${escapeHtml(toName)}</div>${attnHTML}<div class="label-address">${toAddress}${phoneHTML}</div></div><div class="label-divider"></div><div class="label-section sender-section"><div class="label-heading">Pengirim :</div><div class="label-name">${escapeHtml(fromName)}</div></div></div></div>`;
     }
 
     function escapeHtml(text) {
@@ -2601,7 +2621,7 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
     // MOCK DATA — for testing print flow
     // ══════════════════════════════════════════════════════
     const MOCK_LABELS = [
-      { prefix: 'PT', name: 'EMBLEM ASIA',         attn: 'IBU ARNETA',    phone: '085781486063', address: 'MM2100 INDUSTRIAL TOWN BLOK T-3 JL. BALI CIKARANG BARAT BEKASI 17520',          sender: 'KSB Indonesia' },
+      { prefix: 'PT', name: 'UNILEVER OLEOCHEMICAL INDONESIA', attn: 'ACCOUNT PAYABLE DEPT', phone: '021-52996686', address: 'FORUM NINE LT. 7 SUITE 18-22, JL. IMAM BONJOL NO. 9 MEDAN SUMATERA UTARA 20112', sender: 'KSB Indonesia' },
       { prefix: 'PT', name: 'ASTRA HONDA MOTOR',   attn: 'PAK BUDI',      phone: '02188901234',  address: 'JL. LAKSDA YOS SUDARSO KAV. 89 SUNTER JAYA TANJUNG PRIOK JAKARTA UTARA 14350', sender: 'KSB Indonesia' },
       { prefix: 'PT', name: 'UNILEVER INDONESIA',  attn: 'IBU SARI',      phone: '02179187000',  address: 'BSD BOULEVARD BARAT BLOK BD 1-5 BSD CITY TANGERANG SELATAN BANTEN 15345',       sender: 'KSB Sales Indonesia' },
       { prefix: 'CV', name: 'MAJU JAYA TEKNIK',    attn: 'PAK HENDRA',    phone: '02131456789',  address: 'JL. RAYA BEKASI KM 27 PONDOK UNGU PERMAI BLOK D NO. 12 BEKASI 17133',          sender: 'KSB Indonesia' },
@@ -2805,50 +2825,51 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
       const senderText = senderNameEl ? senderNameEl.textContent.trim() : '';
 
       // Base font size calculation (proportional to label size)
-      // Reference: 480px wide label = 10pt base font
-      const baseFont = Math.max(6, Math.min(14, labelW / 48));
+      // Reference: 480px wide label = 10px base font for screen preview
+      const baseFont = Math.max(6, Math.min(13, labelW / 50));
 
-      // Content complexity adjustment
+      // Content complexity adjustment — scale down for dense content
       const nameScore = nameText.length;
       const addrScore = addrText.length;
       const totalChars = nameScore + addrScore + (attnText ? attnText.length : 0) + senderText.length;
 
-      // Reduce font size for high content density
       let contentScale = 1.0;
-      if (totalChars > 80) {
-        contentScale = Math.max(0.55, 1 - (totalChars - 80) * 0.004);
+      if (totalChars > 70) {
+        contentScale = Math.max(0.6, 1 - (totalChars - 70) * 0.005);
       }
-      if (nameScore > 18) {
-        contentScale *= Math.max(0.7, 1 - (nameScore - 18) * 0.012);
+      if (nameScore > 22) {
+        contentScale *= Math.max(0.75, 1 - (nameScore - 22) * 0.01);
       }
-      if (addrScore > 50) {
-        contentScale *= Math.max(0.8, 1 - (addrScore - 50) * 0.003);
+      if (addrScore > 55) {
+        contentScale *= Math.max(0.85, 1 - (addrScore - 55) * 0.003);
       }
 
       // Final font size
-      const finalBase = Math.max(5, baseFont * contentScale);
+      const finalBase = Math.max(6, baseFont * contentScale);
 
       // Apply to screen preview (print uses vmin)
       label.style.fontSize = finalBase + 'px';
 
-      // Logo sizing
+      // Logo sizing — proportional to label width
       if (logoEl) {
-        const logoW = Math.max(24, Math.min(70, labelW * 0.14));
+        const logoW = Math.max(20, Math.min(60, labelW * 0.13));
         logoEl.style.width = logoW + 'px';
       }
 
-      // Padding adjustment
-      if (labelW < 200) {
-        label.style.padding = '4px 6px';
-      } else if (labelW < 300) {
-        label.style.padding = '6px 8px';
+      // Padding adjustment based on label size
+      if (labelW < 180) {
+        label.style.padding = '3px 5px';
+      } else if (labelW < 280) {
+        label.style.padding = '5px 7px';
+      } else if (labelW < 400) {
+        label.style.padding = '6px 10px';
       } else {
-        label.style.padding = '8px 12px';
+        label.style.padding = '8px 14px';
       }
 
       // Line-height for long addresses
-      if (addrScore > 60) {
-        addrEl.style.lineHeight = '1.25';
+      if (addrScore > 55) {
+        addrEl.style.lineHeight = '1.3';
       }
     }
 
