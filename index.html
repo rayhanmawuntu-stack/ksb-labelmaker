@@ -779,6 +779,13 @@
     }
     .notes-status-panel { border: 1px inset var(--w95-light); padding: 2px 6px; flex: 1; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .notes-status-panel:first-child { flex: 2; }
+    .notes-list-item { padding: 4px 6px; cursor: pointer; border-bottom: 1px solid var(--w95-gray); display: flex; justify-content: space-between; align-items: center; }
+    .notes-list-item:hover { background: var(--w95-blue); color: var(--w95-light); }
+    .notes-list-item:hover span { color: var(--w95-light); }
+    .notes-list-panel { scrollbar-width: thin; }
+    .notes-list-panel::-webkit-scrollbar { width: 8px; }
+    .notes-list-panel::-webkit-scrollbar-track { background: var(--w95-gray); }
+    .notes-list-panel::-webkit-scrollbar-thumb { background: var(--w95-dark); border: 1px solid var(--w95-light); }
 
     /* ══════════════════════════════════════════════════════
        CALCULATOR — KSB Edition (Windows 95 aesthetic)
@@ -1285,6 +1292,7 @@
             </div>
             <div class="w95-status-bar">
               <div class="w95-status-panel" id="sStatusPanel">Ready · Layout: 1×1</div>
+              <div class="w95-status-panel" id="sLayoutPanel" style="cursor:pointer;" data-action="showLayoutPicker()">📐 Layout: 1×1</div>
               <div class="w95-status-panel">1 object(s)</div>
             </div>
           </div>
@@ -1409,6 +1417,7 @@
             </div>
             <div class="w95-status-bar">
               <div class="w95-status-panel" id="bStatusPanel">Ready · Layout: 1×1 · Card Mode</div>
+              <div class="w95-status-panel" id="bLayoutPanel" style="cursor:pointer;" data-action="showLayoutPicker()">📐 Layout: 1×1</div>
               <div class="w95-status-panel" id="batchCountPanel">0 label(s)</div>
             </div>
           </div>
@@ -1725,8 +1734,12 @@ Built for Labelmaker');closePbMenus()">About...</div>
             <div class="notes-dropdown-item" data-action="notesNew();closeNotesMenus()">New</div>
             <div class="notes-dropdown-item" data-action="notesOpen();closeNotesMenus()">Open…</div>
             <div class="notes-dropdown-item" data-action="notesSave();closeNotesMenus()">Save</div>
+            <div class="notes-dropdown-item" data-action="notesSaveAs();closeNotesMenus()">Save As…</div>
+            <div class="notes-dropdown-item" data-action="notesDelete();closeNotesMenus()">Delete…</div>
             <div class="notes-dropdown-sep"></div>
             <div class="notes-dropdown-item" data-action="notesDownload();closeNotesMenus()">Download .txt</div>
+            <div class="notes-dropdown-sep"></div>
+            <div class="notes-dropdown-item" data-action="notesSyncToSheets();closeNotesMenus()">☁️ Sync to Sheets</div>
             <div class="notes-dropdown-sep"></div>
             <div class="notes-dropdown-item" data-action="goHome();closeNotesMenus()">Exit to Desktop</div>
           </div>
@@ -1759,11 +1772,24 @@ Built for Labelmaker');closePbMenus()">About...</div>
           </div>
         </div>
       </div>
-      <div class="notes-content">
-        <textarea class="notes-editor" id="notesEditor" placeholder="Type your notes here..."></textarea>
-        <div class="notes-status-bar">
-          <div class="notes-status-panel" id="notesStatus">Untitled · 0 chars · 0 lines</div>
-          <div class="notes-status-panel" id="notesCursorPos">Ln 1, Col 1</div>
+      <div class="notes-content" style="flex-direction:row;gap:8px;">
+        <div style="flex:1;display:flex;flex-direction:column;min-width:0;">
+          <textarea class="notes-editor" id="notesEditor" placeholder="Type your notes here..."></textarea>
+          <div class="notes-status-bar">
+            <div class="notes-status-panel" id="notesStatus">Untitled · 0 chars · 0 lines</div>
+            <div class="notes-status-panel" id="notesSyncIndicator" style="flex:0 0 auto;min-width:40px;text-align:center;cursor:pointer;" data-action="notesSyncToSheets()" title="Click to sync now">☁️</div>
+            <div class="notes-status-panel" id="notesCursorPos">Ln 1, Col 1</div>
+          </div>
+        </div>
+        <div style="width:180px;flex-shrink:0;display:flex;flex-direction:column;gap:4px;">
+          <div style="font-size:10px;font-weight:bold;padding:4px 6px;border-bottom:1px solid var(--w95-dark);color:var(--w95-darker);">Saved Notes</div>
+          <div class="notes-list-panel" id="notesListPanel" style="flex:1;border:2px inset var(--w95-dark);background:var(--w95-light);overflow:auto;padding:4px;font-size:11px;">
+            <div style="padding:8px;color:var(--w95-darker);text-align:center;">No saved notes</div>
+          </div>
+          <div style="display:flex;gap:4px;padding:2px 0;">
+            <button class="w95-btn" style="flex:1;font-size:10px;padding:2px 4px;min-height:22px;" data-action="notesSave()">💾 Save</button>
+            <button class="w95-btn" style="flex:1;font-size:10px;padding:2px 4px;min-height:22px;" data-action="notesSyncToSheets()">☁️ Sync</button>
+          </div>
         </div>
       </div>
     </div>
@@ -2008,6 +2034,7 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
 
     function setLayout(layout) {
       currentLayout = layout;
+      saveLayoutPreference();
       ['1x1','1x2','2x2','2x3','3x2','3x3'].forEach(l => {
         for (let i = 1; i <= 3; i++) {
           const chk = document.getElementById('chk' + (i === 1 ? '' : i) + '-' + l);
@@ -2017,6 +2044,8 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
       const layoutText = 'Layout: ' + layout.replace('x', '×');
       const sStatus = document.getElementById('sStatusPanel');
       const bStatus = document.getElementById('bStatusPanel');
+      const sLayout = document.getElementById('sLayoutPanel');
+      const bLayout = document.getElementById('bLayoutPanel');
       if (sStatus && !sStatus.textContent.includes('Form cleared')) {
         sStatus.textContent = sStatus.textContent.replace(/Layout: [^·]+/, layoutText);
         if (!sStatus.textContent.includes('Layout')) sStatus.textContent += ' · ' + layoutText;
@@ -2025,6 +2054,8 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
         bStatus.textContent = bStatus.textContent.replace(/Layout: [^·]+/, layoutText);
         if (!bStatus.textContent.includes('Layout')) bStatus.textContent += ' · ' + layoutText;
       }
+      if (sLayout) sLayout.textContent = '📐 ' + layoutText;
+      if (bLayout) bLayout.textContent = '📐 ' + layoutText;
       const printArea = document.getElementById('printArea');
       if (printArea.innerHTML.trim()) {
         applyLayoutToPrintArea();
@@ -2032,6 +2063,41 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
       }
     }
     function getLayout() { return currentLayout; }
+
+    // ══════════════════════════════════════════════════════
+    // PRINT LAYOUT MEMORY — Save/Restore from localStorage
+    // ══════════════════════════════════════════════════════
+
+    const LAYOUT_STORAGE_KEY = 'ksb_labelmaker_layout';
+
+    function saveLayoutPreference() {
+      localStorage.setItem(LAYOUT_STORAGE_KEY, currentLayout);
+    }
+
+    function loadLayoutPreference() {
+      const saved = localStorage.getItem(LAYOUT_STORAGE_KEY);
+      if (saved && ['1x1','1x2','2x2','2x3','3x2','3x3'].includes(saved)) {
+        setLayout(saved);
+        return true;
+      }
+      return false;
+    }
+
+    // Auto-load on startup
+    document.addEventListener('DOMContentLoaded', function() {
+      loadLayoutPreference();
+    })
+
+    function showLayoutPicker() {
+      const layouts = ['1x1','1x2','2x2','2x3','3x2','3x3'];
+      const list = layouts.map((l, i) => (i + 1) + '. ' + l.replace('x', '×')).join('\n');
+      const choice = prompt('Select layout:\n' + list + '\n\nEnter number:');
+      const idx = parseInt(choice, 10);
+      if (idx > 0 && idx <= layouts.length) {
+        setLayout(layouts[idx - 1]);
+      }
+    }
+;
 
     // A4 landscape in px at 96dpi: 297mm × 210mm
     var A4_W_PX = 1122;
@@ -3684,8 +3750,11 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
     });
 
     // ══════════════════════════════════════════════════════
-    // NOTES / NOTEPAD ENGINE
+    // NOTES / NOTEPAD ENGINE — Enhanced with multi-save & Sheets sync
     // ══════════════════════════════════════════════════════
+
+    const NOTES_STORAGE_KEY = 'ksb_notes_v2';
+    const NOTES_SHEETS_URL = GS_WEBAPP_URL; // Reuse the same endpoint
 
     let notesState = {
       content: '',
@@ -3693,18 +3762,35 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
       wordWrap: true,
       font: 'monospace',
       undoStack: [],
-      undoIndex: -1
+      undoIndex: -1,
+      notesList: []
     };
 
     function notesInit() {
       const editor = document.getElementById('notesEditor');
       if (!editor) return;
+      notesLoadList();
       notesPushUndo();
       editor.addEventListener('input', notesOnInput);
       editor.addEventListener('keydown', notesOnKeydown);
       editor.addEventListener('click', notesUpdateCursor);
       editor.addEventListener('keyup', notesUpdateCursor);
       notesUpdateStatus();
+      notesRenderList();
+      notesStartAutoSync();
+    }
+
+    function notesLoadList() {
+      try {
+        const raw = localStorage.getItem(NOTES_STORAGE_KEY);
+        notesState.notesList = raw ? JSON.parse(raw) : [];
+      } catch (e) {
+        notesState.notesList = [];
+      }
+    }
+
+    function notesSaveList() {
+      localStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(notesState.notesList));
     }
 
     function notesOnInput() {
@@ -3756,31 +3842,110 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
     function notesSave() {
       const editor = document.getElementById('notesEditor');
       if (!editor) return;
-      notesState.content = editor.value;
-      localStorage.setItem('ksb_notes_' + notesState.filename, notesState.content);
+      const content = editor.value;
+      const filename = notesState.filename || 'Untitled';
+      const timestamp = new Date().toISOString();
+
+      // Update or add to list
+      const existingIdx = notesState.notesList.findIndex(n => n.filename === filename);
+      if (existingIdx >= 0) {
+        notesState.notesList[existingIdx] = { filename, content, timestamp };
+      } else {
+        notesState.notesList.push({ filename, content, timestamp });
+      }
+      notesSaveList();
       notesUpdateStatus();
+      notesRenderList();
+
+      // Auto-sync to Google Sheets
+      notesSyncToSheets(filename, content, timestamp);
+    }
+
+    function notesSyncToSheets(filename, content, timestamp) {
+      if (!NOTES_SHEETS_URL) return;
+      const entry = {
+        date: new Date().toLocaleString('id-ID'),
+        toName: 'NOTEPAD: ' + filename,
+        toAttn: '',
+        toAddress: content.substring(0, 200).replace(/\n/g, ' '),
+        toPhone: '',
+        fromName: 'Notepad Auto-Sync',
+        type: 'note'
+      };
+      gsPushEntry(entry);
     }
 
     function notesOpen() {
-      const keys = Object.keys(localStorage).filter(k => k.startsWith('ksb_notes_'));
-      if (keys.length === 0) {
+      if (notesState.notesList.length === 0) {
         alert('No saved notes found.');
         return;
       }
-      const list = keys.map((k, i) => (i + 1) + '. ' + k.replace('ksb_notes_', '')).join('\n');
+      const list = notesState.notesList.map((n, i) => (i + 1) + '. ' + n.filename + ' (' + new Date(n.timestamp).toLocaleDateString() + ')').join('\n');
       const choice = prompt('Saved notes:\n' + list + '\n\nEnter number to open:');
       const idx = parseInt(choice, 10);
-      if (idx > 0 && idx <= keys.length) {
-        const key = keys[idx - 1];
-        const content = localStorage.getItem(key) || '';
+      if (idx > 0 && idx <= notesState.notesList.length) {
+        const note = notesState.notesList[idx - 1];
         const editor = document.getElementById('notesEditor');
-        if (editor) editor.value = content;
-        notesState.filename = key.replace('ksb_notes_', '');
+        if (editor) editor.value = note.content;
+        notesState.filename = note.filename;
         notesState.undoStack = [];
         notesState.undoIndex = -1;
         notesPushUndo();
         notesUpdateStatus();
       }
+    }
+
+    function notesDelete() {
+      if (notesState.notesList.length === 0) {
+        alert('No saved notes to delete.');
+        return;
+      }
+      const list = notesState.notesList.map((n, i) => (i + 1) + '. ' + n.filename).join('\n');
+      const choice = prompt('Delete note:\n' + list + '\n\nEnter number to delete:');
+      const idx = parseInt(choice, 10);
+      if (idx > 0 && idx <= notesState.notesList.length) {
+        if (confirm('Delete "' + notesState.notesList[idx - 1].filename + '"?')) {
+          notesState.notesList.splice(idx - 1, 1);
+          notesSaveList();
+          notesRenderList();
+        }
+      }
+    }
+
+    function notesRenderList() {
+      const panel = document.getElementById('notesListPanel');
+      if (!panel) return;
+      if (notesState.notesList.length === 0) {
+        panel.innerHTML = '<div style="padding:8px;color:var(--w95-darker);font-size:11px;text-align:center;">No saved notes</div>';
+        return;
+      }
+      panel.innerHTML = notesState.notesList.map((n, i) =>
+        '<div class="notes-list-item" data-action="notesLoadByIndex(' + i + ')">' +
+        '<span>' + escapeHtml(n.filename) + '</span>' +
+        '<span style="font-size:10px;color:var(--w95-darker);">' + new Date(n.timestamp).toLocaleDateString() + '</span>' +
+        '</div>'
+      ).join('');
+    }
+
+    function notesLoadByIndex(idx) {
+      const note = notesState.notesList[idx];
+      if (!note) return;
+      const editor = document.getElementById('notesEditor');
+      if (editor) editor.value = note.content;
+      notesState.filename = note.filename;
+      notesState.undoStack = [];
+      notesState.undoIndex = -1;
+      notesPushUndo();
+      notesUpdateStatus();
+    }
+
+    function notesSaveAs() {
+      const editor = document.getElementById('notesEditor');
+      if (!editor) return;
+      const name = prompt('Save as:', notesState.filename);
+      if (!name || !name.trim()) return;
+      notesState.filename = name.trim();
+      notesSave();
     }
 
     function notesDownload() {
@@ -3801,7 +3966,8 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
       if (!editor || !status) return;
       const chars = editor.value.length;
       const lines = editor.value.split('\n').length;
-      status.textContent = notesState.filename + ' · ' + chars + ' chars · ' + lines + ' lines';
+      const saved = notesState.notesList.some(n => n.filename === notesState.filename);
+      status.textContent = notesState.filename + (saved ? ' ✓' : ' *') + ' · ' + chars + ' chars · ' + lines + ' lines';
     }
 
     function notesUpdateCursor() {
@@ -3872,6 +4038,29 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
       if (chkSans) chkSans.innerHTML = font === 'sans-serif' ? '✓' : '&nbsp;';
     }
 
+
+    function notesSyncToSheets() {
+      const editor = document.getElementById('notesEditor');
+      if (!editor || !editor.value.trim()) {
+        alert('Nothing to sync. Type some notes first.');
+        return;
+      }
+      const filename = notesState.filename || 'Untitled';
+      const content = editor.value;
+      const timestamp = new Date().toLocaleString('id-ID');
+      const entry = {
+        date: timestamp,
+        toName: 'NOTEPAD: ' + filename,
+        toAttn: '',
+        toAddress: content.substring(0, 500).replace(/\n/g, ' | '),
+        toPhone: '',
+        fromName: 'Notepad Manual Sync',
+        type: 'note'
+      };
+      gsPushEntry(entry);
+      alert('Note "' + filename + '" queued for sync to Google Sheets ✓');
+    }
+
     function toggleNotesMenu(id) {
       const menu = document.getElementById(id);
       const isOpen = menu.classList.contains('show');
@@ -3883,6 +4072,14 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
     }
     document.addEventListener('click', function(e) {
       if (!e.target.closest('.notes-menu-bar')) closeNotesMenus();
+    });
+
+    // Sync notes on page unload
+    window.addEventListener('beforeunload', function() {
+      const editor = document.getElementById('notesEditor');
+      if (editor && editor.value.trim()) {
+        notesSyncToSheets();
+      }
     });
 
     // ══════════════════════════════════════════════════════
