@@ -208,24 +208,25 @@
     .w95-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 1200px; margin: 0 auto; }
     .w95-col { display: flex; flex-direction: column; gap: 16px; }
     .w95-preview-frame {
-      background: var(--w95-light); border: 2px inset var(--w95-dark); padding: 12px;
-      min-height: 300px; display: flex; align-items: center; justify-content: center; overflow: auto;
+      background: #888; border: 2px inset var(--w95-dark); padding: 8px;
+      min-height: 300px; display: flex; align-items: flex-start; justify-content: center;
+      overflow: auto; gap: 8px; flex-wrap: wrap;
     }
-    .preview-grid-container { width: 100%; max-width: 100%; display: grid; gap: 8px; align-items: start; justify-items: center; }
-    .preview-grid-container .ksb-label { width: 100%; max-width: 220px; margin: 0; padding: 10px 12px; transform: scale(0.85); transform-origin: center top; }
-    .preview-grid-1x1 { grid-template-columns: 1fr; }
-    .preview-grid-1x2 { grid-template-columns: 1fr; grid-template-rows: repeat(2, auto); }
-    .preview-grid-2x2 { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, auto); }
-    .preview-grid-2x3 { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(3, auto); }
-    .preview-grid-3x2 { grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, auto); }
-    .preview-grid-3x3 { grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, auto); }
-    /* Scale down label preview more for denser layouts so they all fit the preview pane */
-    .preview-grid-1x1 .ksb-label  { transform: scale(1.0); max-width: 360px; }
-    .preview-grid-1x2 .ksb-label  { transform: scale(0.95); max-width: 320px; }
-    .preview-grid-2x2 .ksb-label  { transform: scale(0.85); max-width: 220px; }
-    .preview-grid-2x3 .ksb-label  { transform: scale(0.75); max-width: 200px; }
-    .preview-grid-3x2 .ksb-label  { transform: scale(0.7);  max-width: 180px; }
-    .preview-grid-3x3 .ksb-label  { transform: scale(0.62); max-width: 160px; }
+    /* Wrapper that holds one scaled print-page thumbnail */
+    .preview-page-wrap {
+      flex-shrink: 0;
+      background: #fff;
+      box-shadow: 2px 2px 6px rgba(0,0,0,0.4);
+      overflow: hidden;
+      position: relative;
+    }
+    /* The inner clone is positioned absolute so scaling doesn't affect layout flow */
+    .preview-page-inner {
+      position: absolute;
+      top: 0; left: 0;
+      transform-origin: top left;
+      background: #fff;
+    }
 
     .ksb-label {
       width: 100%; max-width: 480px; background: var(--w95-light); border: 2px solid var(--w95-text);
@@ -1237,6 +1238,7 @@
               <button class="w95-btn primary" data-action="generateSingle()"><span>▶</span> Generate</button>
               <button class="w95-btn" id="singlePrintBtn"><span>🖨</span> Print</button>
               <button class="w95-btn" data-action="clearSingle()"><span>🗑</span> Clear</button>
+              <button class="w95-btn" data-action="loadMockSingle()" title="Fill form with test data" style="margin-left: auto; background: #d4e8d4; border-color: #4a8a4a;"><span>🧪</span> Mock</button>
             </div>
             <div class="w95-status-bar">
               <div class="w95-status-panel" id="sStatusPanel">Ready · Layout: 1×1</div>
@@ -1360,6 +1362,7 @@
               <button class="w95-btn primary" data-action="generateBatch()"><span>▶</span> Generate</button>
               <button class="w95-btn" id="batchPrintBtn"><span>🖨</span> Print All</button>
               <button class="w95-btn" data-action="clearBatch()"><span>🗑</span> Clear</button>
+              <button class="w95-btn" data-action="loadMockBatch()" title="Fill with 6 test labels" style="margin-left: auto; background: #d4e8d4; border-color: #4a8a4a;"><span>🧪</span> Mock</button>
             </div>
             <div class="w95-status-bar">
               <div class="w95-status-panel" id="bStatusPanel">Ready · Layout: 1×1 · Card Mode</div>
@@ -1982,17 +1985,58 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
       const printArea = document.getElementById('printArea');
       if (printArea.innerHTML.trim()) {
         applyLayoutToPrintArea();
-      }
-      const batchPreview = document.querySelector('#batchPreviewArea .preview-grid-container');
-      if (batchPreview) {
-        batchPreview.className = 'preview-grid-container preview-grid-' + layout;
-      }
-      const singlePreview = document.querySelector('#singlePreviewArea .preview-grid-container');
-      if (singlePreview) {
-        singlePreview.className = 'preview-grid-container preview-grid-' + layout;
+        renderPreview();
       }
     }
     function getLayout() { return currentLayout; }
+
+    // A4 landscape in px at 96dpi: 297mm × 210mm
+    var A4_W_PX = 1122;
+    var A4_H_PX = 794;
+
+    function renderPreview() {
+      var printArea = document.getElementById('printArea');
+      if (!printArea) return;
+      var pages = Array.from(printArea.querySelectorAll('.print-page'));
+
+      // Work out which preview frame to target
+      var singleActive = document.getElementById('singlePage') && document.getElementById('singlePage').classList.contains('active');
+      var frameId = singleActive ? 'singlePreviewArea' : 'batchPreviewArea';
+      var frame = document.getElementById(frameId);
+      if (!frame) return;
+
+      if (pages.length === 0) {
+        frame.innerHTML = '<div style="color:var(--w95-dark);font-size:11px;text-align:center;padding:40px 0;">Click "Generate" to preview label</div>';
+        return;
+      }
+
+      // Available width inside the frame (subtract padding)
+      var availW = frame.clientWidth - 16;
+      if (availW < 80) availW = 300;
+
+      // Scale so one page thumbnail fits the available width
+      var scale = availW / A4_W_PX;
+      var thumbW = Math.round(A4_W_PX * scale);
+      var thumbH = Math.round(A4_H_PX * scale);
+
+      var html = '';
+      pages.forEach(function(page) {
+        // Clone the page and strip print-only classes so screen CSS applies
+        var clone = page.cloneNode(true);
+        // Apply inline dimensions that mimic @media print sizing
+        clone.style.cssText = 'width:' + A4_W_PX + 'px;height:' + A4_H_PX + 'px;padding:30px;box-sizing:border-box;background:#fff;display:grid;';
+        // Copy layout class for grid columns/rows
+        var layoutClass = Array.from(page.classList).find(function(c) { return c.startsWith('layout-'); });
+        if (layoutClass) clone.classList.add(layoutClass);
+
+        html += '<div class="preview-page-wrap" style="width:' + thumbW + 'px;height:' + thumbH + 'px;">'
+              + '<div class="preview-page-inner" style="width:' + A4_W_PX + 'px;height:' + A4_H_PX + 'px;transform:scale(' + scale.toFixed(4) + ');">'
+              + clone.outerHTML
+              + '</div></div>';
+      });
+
+      frame.innerHTML = html;
+    }
     function applyLayoutToPrintArea() {
       const printArea = document.getElementById('printArea');
       if (!printArea.innerHTML.trim()) return;
@@ -2086,10 +2130,10 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
         showLogo: showLogo
       };
       const html = createLabelHTML(data, 0);
-      document.getElementById('singlePreviewArea').innerHTML = '<div class="preview-grid-container preview-grid-' + currentLayout + '">' + html + '</div>';
       document.getElementById('printArea').innerHTML = html;
       applyLayoutToPrintArea();
       fitFontsToText();
+      renderPreview();
       addToHistory(data, 'single');
       document.getElementById('sStatusPanel').textContent = 'Label generated successfully · Layout: ' + currentLayout.replace('x', '×');
     }
@@ -2098,7 +2142,7 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
       document.getElementById('sToName').value = '';
       document.getElementById('sToAttn').value = '';
       document.getElementById('sToAddressPhone').value = '';
-      document.getElementById('singlePreviewArea').innerHTML = '<div style="color: var(--w95-dark); font-size: 11px; text-align: center; padding: 40px 0;">Click "Generate" to preview label</div>';
+      document.getElementById('singlePreviewArea').innerHTML = '<div style="color:#999;font-size:11px;text-align:center;padding:40px 0;">Click "Generate" to preview label</div>';
       document.getElementById('printArea').innerHTML = '';
       document.getElementById('sStatusPanel').textContent = 'Form cleared · Layout: ' + currentLayout.replace('x', '×');
     }
@@ -2203,6 +2247,7 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
         const previewHTML = labels.map((data, i) => createLabelHTML(data, i)).join('');
         document.getElementById('printArea').innerHTML = previewHTML;
         applyLayoutToPrintArea();
+        renderPreview();
       }
     }
 
@@ -2311,10 +2356,10 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
         return;
       }
       const previewHTML = labels.map((data, i) => createLabelHTML(data, i)).join('');
-      document.getElementById('batchPreviewArea').innerHTML = '<div class="preview-grid-container preview-grid-' + currentLayout + '">' + previewHTML + '</div>';
       document.getElementById('printArea').innerHTML = previewHTML;
       applyLayoutToPrintArea();
       fitFontsToText();
+      renderPreview();
       document.getElementById('bStatusPanel').textContent = `Generated ${labels.length} label(s) · Layout: ` + currentLayout.replace('x', '×');
     }
 
@@ -2350,10 +2395,10 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
       });
       updateBatchCount();
       const previewHTML = labels.map((data, i) => createLabelHTML(data, i)).join('');
-      document.getElementById('batchPreviewArea').innerHTML = '<div class="preview-grid-container preview-grid-' + currentLayout + '">' + previewHTML + '</div>';
       document.getElementById('printArea').innerHTML = previewHTML;
       applyLayoutToPrintArea();
       fitFontsToText();
+      renderPreview();
       labels.forEach(data => addToHistory(data, 'batch'));
       document.getElementById('bStatusPanel').textContent = `Generated ${labels.length} label(s) in cards · Layout: ` + currentLayout.replace('x', '×');
     }
@@ -2364,10 +2409,52 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
       } else {
         document.getElementById('batchInput').value = '';
       }
-      document.getElementById('batchPreviewArea').innerHTML = '<div style="color: var(--w95-dark); font-size: 11px; text-align: center; padding: 40px 0;">Add labels and click "Generate" to preview</div>';
+      document.getElementById('batchPreviewArea').innerHTML = '<div style="color:#999;font-size:11px;text-align:center;padding:40px 0;">Add labels and click "Generate" to preview</div>';
       document.getElementById('printArea').innerHTML = '';
       document.getElementById('batchCountPanel').textContent = '0 label(s)';
       document.getElementById('bStatusPanel').textContent = 'Form cleared · Layout: ' + currentLayout.replace('x', '×');
+    }
+
+    // ══════════════════════════════════════════════════════
+    // MOCK DATA — for testing print flow
+    // ══════════════════════════════════════════════════════
+    const MOCK_LABELS = [
+      { prefix: 'PT', name: 'EMBLEM ASIA',         attn: 'IBU ARNETA',    phone: '085781486063', address: 'MM2100 INDUSTRIAL TOWN BLOK T-3 JL. BALI CIKARANG BARAT BEKASI 17520',          sender: 'KSB Indonesia' },
+      { prefix: 'PT', name: 'ASTRA HONDA MOTOR',   attn: 'PAK BUDI',      phone: '02188901234',  address: 'JL. LAKSDA YOS SUDARSO KAV. 89 SUNTER JAYA TANJUNG PRIOK JAKARTA UTARA 14350', sender: 'KSB Indonesia' },
+      { prefix: 'PT', name: 'UNILEVER INDONESIA',  attn: 'IBU SARI',      phone: '02179187000',  address: 'BSD BOULEVARD BARAT BLOK BD 1-5 BSD CITY TANGERANG SELATAN BANTEN 15345',       sender: 'KSB Sales Indonesia' },
+      { prefix: 'CV', name: 'MAJU JAYA TEKNIK',    attn: 'PAK HENDRA',    phone: '02131456789',  address: 'JL. RAYA BEKASI KM 27 PONDOK UNGU PERMAI BLOK D NO. 12 BEKASI 17133',          sender: 'KSB Indonesia' },
+      { prefix: 'PT', name: 'KRAKATAU STEEL',       attn: 'PAK WAHYU',    phone: '02541398000',  address: 'JL. INDUSTRI NO.5 P.O. BOX 14 CILEGON BANTEN 42435',                           sender: 'KSB Sales Indonesia' },
+      { prefix: 'PT', name: 'SEMEN INDONESIA',      attn: 'IBU DEWI',     phone: '03118668',     address: 'JL. VETERAN GRESIK JAWA TIMUR 61122',                                          sender: 'KSB Indonesia' },
+    ];
+
+    function loadMockSingle() {
+      const m = MOCK_LABELS[0];
+      const prefixEl = document.getElementById('sToPrefix');
+      if (prefixEl) prefixEl.value = m.prefix;
+      document.getElementById('sToName').value = m.name;
+      document.getElementById('sToAttn').value = m.attn;
+      document.getElementById('sToAddressPhone').value = m.address + ' (' + m.phone + ')';
+      generateSingle();
+    }
+
+    function loadMockBatch() {
+      clearAllBatchCards();
+      MOCK_LABELS.forEach(function(m) {
+        addBatchCard();
+        const cards = document.querySelectorAll('.bulk-card');
+        const card = cards[cards.length - 1];
+        const id = card.id;
+        const prefixEl = document.getElementById(id + '_prefix');
+        if (prefixEl) prefixEl.value = m.prefix;
+        document.getElementById(id + '_name').value = m.name;
+        document.getElementById(id + '_attn').value = m.attn;
+        document.getElementById(id + '_phone').value = m.phone;
+        document.getElementById(id + '_address').value = m.address;
+        const senderEl = document.getElementById(id + '_sender');
+        if (senderEl) senderEl.value = m.sender;
+      });
+      generateBatch();
+      document.getElementById('bStatusPanel').textContent = MOCK_LABELS.length + ' mock labels loaded · Layout: ' + currentLayout.replace('x', '×');
     }
 
     function printLabels() {
