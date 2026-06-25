@@ -56,36 +56,50 @@
     .desk-scatter { position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: 1; pointer-events: none; }
     .scatter-item {
       position: absolute; text-align: center; pointer-events: auto;
-      transform: rotate(var(--r, 0deg)); transition: transform 0.3s ease; z-index: 2;
+      transform: rotate(var(--r, 0deg)); transition: transform 0.3s ease, box-shadow 0.3s ease; z-index: 2;
     }
-    .scatter-item:hover { transform: rotate(var(--r, 0deg)) translateY(-8px) scale(1.06); z-index: 4; }
+    .scatter-item:hover { transform: rotate(var(--r, 0deg)) translateY(-10px) scale(1.08); z-index: 10; }
     .scatter-item .item-num {
-      position: absolute; font-size: 24px; color: var(--w95-light);
+      position: absolute; font-size: 18px; color: var(--w95-light);
       font-family: 'VCR', monospace; text-shadow: 1px 1px 0 #000; white-space: nowrap;
+      background: rgba(0,0,0,0.25); padding: 1px 5px; border-radius: 2px;
     }
     .scatter-item .item-img {
       width: var(--w, 120px); height: var(--w, 120px); object-fit: contain;
-      filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.3)); transition: filter 0.3s ease;
+      filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.35)); transition: filter 0.3s ease;
+      display: block;
     }
-    .scatter-item:hover .item-img { filter: drop-shadow(4px 8px 12px rgba(0,0,0,0.4)); }
+    .scatter-item:hover .item-img { filter: drop-shadow(4px 10px 14px rgba(0,0,0,0.45)); }
 
-    #scatterSingle { top: 6%; left: 4%; --r: -12deg; --w: 260px; }
-    #scatterSingle .item-num { bottom: -14px; left: 8px; }
 
-    #scatterBatch { top: 3%; left: 38%; --r: 6deg; --w: 230px; }
-    #scatterBatch .item-num { bottom: -18px; right: -2px; }
 
-    #scatterHistory { top: 10%; right: 5%; --r: -4deg; --w: 250px; }
-    #scatterHistory .item-num { top: -14px; right: 12px; }
+    /* ── scrapbook layout: clustered corners, heavy overlaps, wild angles ── */
 
-    #scatterMine { bottom: 12%; left: 6%; --r: 9deg; --w: 245px; }
-    #scatterMine .item-num { top: -16px; left: -8px; }
+    /* Top-left cluster */
+    #scatterSingle  { top: 2%;  left: 1%;   --r: -18deg; --w: 240px; z-index: 3; }
+    #scatterSingle .item-num  { bottom: -14px; left: 6px; }
 
-    #scatterPhoto { bottom: 5%; left: 34%; --r: -7deg; --w: 270px; }
-    #scatterPhoto .item-num { bottom: -12px; left: 50%; transform: translateX(-50%); }
+    #scatterBatch   { top: 0%;  left: 14%;  --r:  6deg;  --w: 210px; z-index: 2; }
+    #scatterBatch .item-num   { top: -12px;  right: 4px; }
 
-    #scatterAccent { bottom: 14%; right: 3%; --r: 11deg; --w: 220px; }
-    #scatterAccent .item-num { top: -10px; right: 6px; }
+    /* Top-right cluster */
+    #scatterHistory { top: 1%;  right: 2%;  --r: -8deg;  --w: 245px; z-index: 3; }
+    #scatterHistory .item-num { bottom: -14px; right: 10px; }
+
+    /* Bottom-left cluster */
+    #scatterMine    { bottom: 2%; left: 0%;  --r:  14deg; --w: 230px; z-index: 3; }
+    #scatterMine .item-num    { top: -12px;  left: -4px; }
+
+    /* Bottom-center — slightly overlapping Mine */
+    #scatterPhoto   { bottom: 0%; left: 22%; --r: -11deg; --w: 255px; z-index: 4; }
+    #scatterPhoto .item-num   { bottom: -12px; left: 50%; transform: translateX(-50%); }
+
+    /* Bottom-right cluster */
+    #scatterNotes   { bottom: 5%; right: 12%; --r:  7deg;  --w: 215px; z-index: 2; }
+    #scatterNotes .item-num   { top: -12px; right: 2px; }
+
+    #scatterAccent  { bottom: 1%; right: 0%;  --r: -15deg; --w: 230px; z-index: 3; }
+    #scatterAccent .item-num  { top: -12px; right: 8px; }
 
     .desk-center { position: relative; z-index: 3; text-align: center; }
     .desk-title {
@@ -432,7 +446,19 @@
       }
 
       .home-page, .w95-desktop, .minesweeper-desktop, .calculator-desktop,
+      .photobooth-desktop, .notes-desktop,
       .w95-taskbar, .app-footer, .ms-game-over-overlay, .start-menu, .start-menu-backdrop {
+        display: none !important;
+      }
+      /* Keep the active desktop visible but strip its chrome */
+      .w95-desktop.active {
+        display: block !important;
+        background: transparent !important;
+        padding: 0 !important;
+        min-height: unset !important;
+      }
+      /* Hide everything inside active page except the printArea */
+      .w95-desktop.active > *:not(#printArea) {
         display: none !important;
       }
 
@@ -788,13 +814,15 @@
     @media (max-width: 600px) {
       .desk-title { font-size: 32px; }
       .desk-pill { padding: 8px 24px; font-size: 12px; }
-      #scatterSingle { top: 2%; left: 2%; --r: -10deg; --w: 120px; }
-      #scatterBatch { top: 5%; left: 35%; --r: 5deg; --w: 115px; }
-      #scatterHistory { top: 1%; right: 3%; --r: -3deg; --w: 125px; }
-      #scatterMine { bottom: 8%; left: 4%; --r: 7deg; --w: 120px; }
-      #scatterPhoto { bottom: 2%; left: 32%; --r: -6deg; --w: 130px; }
-      #scatterAccent { bottom: 10%; right: 2%; --r: 9deg; --w: 110px; }
-      .scatter-item .item-num { font-size: 14px; }
+      #scatterSingle  { top: 1%;    left: 0%;   --r: -18deg; --w: 105px; }
+      #scatterBatch   { top: 0%;    left: 20%;  --r:   6deg; --w: 95px; }
+      #scatterHistory { top: 0%;    right: 1%;  --r:  -8deg; --w: 105px; }
+      #scatterMine    { bottom: 1%; left: 0%;   --r:  14deg; --w: 100px; }
+      #scatterPhoto   { bottom: 0%; left: 24%;  --r: -11deg; --w: 110px; }
+      #scatterNotes   { bottom: 4%; right: 14%; --r:   7deg; --w: 95px; }
+      #scatterAccent  { bottom: 0%; right: 0%;  --r: -15deg; --w: 100px; }
+      .scatter-item .item-num { font-size: 12px; }
+      .
     }
   
     /* ══════════════════════════════════════════════════════
@@ -1207,7 +1235,7 @@
             </div>
             <div style="display: flex; gap: 8px;">
               <button class="w95-btn primary" data-action="generateSingle()"><span>▶</span> Generate</button>
-              <button class="w95-btn" data-action="printLabels()"><span>🖨</span> Print</button>
+              <button class="w95-btn" id="singlePrintBtn"><span>🖨</span> Print</button>
               <button class="w95-btn" data-action="clearSingle()"><span>🗑</span> Clear</button>
             </div>
             <div class="w95-status-bar">
@@ -1330,7 +1358,7 @@
             </div>
             <div style="display: flex; gap: 8px; margin-top: 12px;">
               <button class="w95-btn primary" data-action="generateBatch()"><span>▶</span> Generate</button>
-              <button class="w95-btn" data-action="printLabels()"><span>🖨</span> Print All</button>
+              <button class="w95-btn" id="batchPrintBtn"><span>🖨</span> Print All</button>
               <button class="w95-btn" data-action="clearBatch()"><span>🗑</span> Clear</button>
             </div>
             <div class="w95-status-bar">
@@ -2020,7 +2048,9 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
       const toAddress = (data.toAddress || 'MM2100 INDUSTRIAL TOWN BLOK T-3 JL. BALI CIKARANG BARAT BEKASI 17520').replace(/\n/g, '<br>');
       const toPhone = data.toPhone || '';
       const fromName = data.fromName || 'KSB SALES INDONESIA';
-      return `<div class="ksb-label" data-index="${index}"><div class="ksb-label-inner"><img src="${KSB_LOGO_URL}" alt="KSB" class="ksb-logo" data-error="this.style.display=none"><div class="label-section recipient-section"><div class="label-heading">Penerima :</div><div class="label-name">${escapeHtml(toName)}</div>${toAttn ? `<div class="label-attn">Attn: ${escapeHtml(toAttn)}</div>` : ''}<div class="label-address">${toAddress}</div>${toPhone ? `<div class="label-phone">(${escapeHtml(toPhone)})</div>` : ''}</div><div class="label-divider"></div><div class="label-section sender-section"><div class="label-heading">Pengirim :</div><div class="label-name">${escapeHtml(fromName)}</div></div></div></div>`;
+      const showLogo = data.showLogo !== false;
+      const logoHTML = showLogo ? `<img src="${KSB_LOGO_URL}" alt="KSB" class="ksb-logo" data-error="this.style.display=none">` : '';
+      return `<div class="ksb-label" data-index="${index}"><div class="ksb-label-inner">${logoHTML}<div class="label-section recipient-section"><div class="label-heading">Penerima :</div><div class="label-name">${escapeHtml(toName)}</div>${toAttn ? `<div class="label-attn">Attn: ${escapeHtml(toAttn)}</div>` : ''}<div class="label-address">${toAddress}</div>${toPhone ? `<div class="label-phone">(${escapeHtml(toPhone)})</div>` : ''}</div><div class="label-divider"></div><div class="label-section sender-section"><div class="label-heading">Pengirim :</div><div class="label-name">${escapeHtml(fromName)}</div></div></div></div>`;
     }
 
     function escapeHtml(text) {
@@ -2341,16 +2371,19 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
     }
 
     function printLabels() {
-      const printContent = document.getElementById('printArea').innerHTML;
+      const printArea = document.getElementById('printArea');
+      const printContent = printArea ? printArea.innerHTML : '';
       if (!printContent.trim()) {
         const activePage = document.querySelector('.w95-desktop.active');
-        if (activePage.id === 'singlePage') {
-          document.getElementById('sStatusPanel').textContent = 'Error: Generate labels first!';
+        if (activePage && activePage.id === 'singlePage') {
+          document.getElementById('sStatusPanel').textContent = 'Error: Generate a label first!';
         } else {
-          document.getElementById('bStatusPanel').textContent = 'Error: Generate labels first!';
+          const bStatus = document.getElementById('bStatusPanel');
+          if (bStatus) bStatus.textContent = 'Error: Generate labels first!';
         }
         return;
       }
+      applyLayoutToPrintArea();
       fitFontsToText();
       window.print();
     }
@@ -3868,6 +3901,23 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
 
       // Bind all click events
       initEventDelegation();
+
+      // Print buttons need direct listeners so window.print() fires
+      // inside a trusted user-gesture context (runAction indirection breaks this)
+      var singlePrintBtn = document.getElementById('singlePrintBtn');
+      if (singlePrintBtn) {
+        singlePrintBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          printLabels();
+        });
+      }
+      var batchPrintBtn = document.getElementById('batchPrintBtn');
+      if (batchPrintBtn) {
+        batchPrintBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          printLabels();
+        });
+      }
     });
 
 </script>
