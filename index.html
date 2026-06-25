@@ -11,8 +11,10 @@
   ║    • Single Label Printing                                                   ║
   ║    • Batch Label Printing (Card + Paste modes)                               ║
   ║    • Print History with Google Sheets sync                                   ║
-  ║    • Minesweeper (Beginner / Intermediate / Expert)                          ║
   ║    • Calculator with memory functions                                        ║
+  ║    • Minesweeper (Beginner / Intermediate / Expert)                          ║
+  ║    • Photobooth with filters & photo strips                                  ║
+  ║    • Notepad with save/load                                                  ║
   ║                                                                              ║
   ║  Note: Google Sheets integration requires CORS configuration on the          ║
   ║        Apps Script side. See README.md for setup instructions.               ║
@@ -73,33 +75,35 @@
 
 
 
-    /* ── scrapbook layout: clustered corners, heavy overlaps, wild angles ── */
+    /* ── scrapbook layout: balanced perimeter frame ── */
 
-    /* Top-left cluster */
-    #scatterSingle  { top: 2%;  left: 1%;   --r: -18deg; --w: 240px; z-index: 3; }
-    #scatterSingle .item-num  { bottom: -14px; left: 6px; }
+    /* Top-left: Single Label (01) */
+    #scatterSingle  { top: 8%;  left: 5%;   --r: -14deg; --w: 230px; z-index: 3; }
+    #scatterSingle .item-num  { bottom: -12px; left: 8px; }
 
-    #scatterBatch   { top: 0%;  left: 14%;  --r:  6deg;  --w: 210px; z-index: 2; }
-    #scatterBatch .item-num   { top: -12px;  right: 4px; }
+    /* Top-center-left: Batch Label (02) */
+    #scatterBatch   { top: 3%;  left: 24%;  --r:  6deg;  --w: 210px; z-index: 2; }
+    #scatterBatch .item-num   { top: -10px;  right: 6px; }
 
-    /* Top-right cluster */
-    #scatterHistory { top: 1%;  right: 2%;  --r: -8deg;  --w: 245px; z-index: 3; }
-    #scatterHistory .item-num { bottom: -14px; right: 10px; }
+    /* Right-mid: Calculator (03) */
+    #scatterAccent  { top: 38%; right: 4%;  --r:  10deg; --w: 220px; z-index: 3; }
+    #scatterAccent .item-num  { top: -10px; right: 8px; }
 
-    /* Bottom-left cluster */
-    #scatterMine    { bottom: 2%; left: 0%;  --r:  14deg; --w: 230px; z-index: 3; }
-    #scatterMine .item-num    { top: -12px;  left: -4px; }
+    /* Top-right: History (04) */
+    #scatterHistory { top: 8%;  right: 8%;  --r: -6deg;  --w: 240px; z-index: 3; }
+    #scatterHistory .item-num { bottom: -12px; right: 10px; }
 
-    /* Bottom-center — slightly overlapping Mine */
-    #scatterPhoto   { bottom: 0%; left: 22%; --r: -11deg; --w: 255px; z-index: 4; }
-    #scatterPhoto .item-num   { bottom: -12px; left: 50%; transform: translateX(-50%); }
+    /* Bottom-left: Minesweeper (05) */
+    #scatterMine    { bottom: 8%; left: 5%;  --r:  12deg; --w: 230px; z-index: 3; }
+    #scatterMine .item-num    { top: -10px;  left: 4px; }
 
-    /* Bottom-right cluster */
-    #scatterNotes   { bottom: 5%; right: 12%; --r:  7deg;  --w: 215px; z-index: 2; }
-    #scatterNotes .item-num   { top: -12px; right: 2px; }
+    /* Bottom-center: Photobooth (06) */
+    #scatterPhoto   { bottom: 5%; left: 40%; --r: -8deg;  --w: 250px; z-index: 4; }
+    #scatterPhoto .item-num   { bottom: -10px; left: 50%; transform: translateX(-50%); }
 
-    #scatterAccent  { bottom: 1%; right: 0%;  --r: -15deg; --w: 230px; z-index: 3; }
-    #scatterAccent .item-num  { top: -12px; right: 8px; }
+    /* Bottom-right: Notes (07) */
+    #scatterNotes   { bottom: 10%; right: 22%; --r:  5deg;  --w: 215px; z-index: 2; }
+    #scatterNotes .item-num   { top: -10px; right: 4px; }
 
     .desk-center { position: relative; z-index: 3; text-align: center; }
     .desk-title {
@@ -229,11 +233,13 @@
     }
 
     .ksb-label {
-      width: 100%; max-width: 480px; background: var(--w95-light); border: 2px solid var(--w95-text);
+      width: 100%; max-width: 480px; background: #fff; border: 2px solid #000;
       padding: 14px 18px; position: relative; margin: 0 auto;
-      box-shadow: inset 0 0 0 1px var(--w95-light), inset 0 0 0 3px var(--w95-text), inset 0 0 0 4px var(--w95-light), inset 0 0 0 6px var(--w95-text);
+      box-shadow: inset 0 0 0 1px #fff, inset 0 0 0 3px #000, inset 0 0 0 4px #fff, inset 0 0 0 6px #000;
       page-break-inside: avoid; page-break-after: always;
-      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; display: flex; flex-direction: column;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      display: flex; flex-direction: column;
+      aspect-ratio: 3.5 / 1;
     }
     .ksb-label .recipient-section {
       padding-right: 80px;
@@ -244,27 +250,76 @@
       word-break: break-word;
     }
     .ksb-label:last-child { page-break-after: auto; }
-    .ksb-label-inner { position: relative; display: flex; flex-direction: column; height: 100%; }
+    .ksb-label-inner {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      justify-content: space-between;
+    }
     .ksb-logo { position: absolute; top: 0; right: 0; width: 70px; height: auto; opacity: 0.9; }
-    .label-section { margin-bottom: 10px; }
+    .label-section { margin-bottom: 0; }
     .label-section:last-child { margin-bottom: 0; }
-    .label-heading { font-size: 10px; text-transform: capitalize; margin-bottom: 2px; font-weight: 400; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: var(--w95-darker); }
-    .label-name { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 2px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 1.2; }
-    .label-attn { font-size: 10px; text-transform: uppercase; margin-bottom: 6px; font-style: italic; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: var(--w95-darker); line-height: 1.2; }
-    .label-address { font-size: 11px; line-height: 1.35; text-transform: uppercase; letter-spacing: 0.2px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 600; margin-top: 2px; }
-    .label-phone { font-size: 10px; font-style: italic; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: var(--w95-darker); margin-top: 2px; }
-    .label-divider { height: 2px; background: var(--w95-text); margin: 8px 0; }
-    .recipient-section { flex: 0 0 auto; display: flex; flex-direction: column; margin-bottom: 8px; }
-    .sender-section { flex-shrink: 0; margin-top: 6px; }
+    .label-heading {
+      font-size: 10px;
+      text-transform: capitalize;
+      margin-bottom: 4px;
+      font-weight: 400;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      color: #555;
+    }
+    .label-name {
+      font-size: 24px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      line-height: 1.15;
+    }
+    .label-attn {
+      font-size: 12px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      font-style: italic;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      color: #555;
+      line-height: 1.2;
+    }
+    .label-address {
+      font-size: 14px;
+      line-height: 1.4;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+    .label-phone {
+      font-size: 11px;
+      font-style: italic;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      color: #555;
+      margin-top: 4px;
+    }
+    .label-divider {
+      height: 3px;
+      background: #000;
+      margin: 10px 0;
+      flex-shrink: 0;
+    }
+    .recipient-section {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+    .sender-section {
+      flex: 0 0 auto;
+      margin-top: 0;
+    }
 
-    .print-grid-1x1 { display: block; }
-    .print-grid-1x2 { display: grid !important; grid-template-columns: 1fr; grid-template-rows: repeat(2, 1fr); gap: 8mm; height: 100%; }
-    .print-grid-2x2 { display: grid !important; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); gap: 8mm; height: 100%; }
-    .print-grid-2x3 { display: grid !important; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(3, 1fr); gap: 6mm; height: 100%; }
-    .print-grid-3x2 { display: grid !important; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); gap: 6mm; height: 100%; }
-    .print-grid-3x3 { display: grid !important; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); gap: 4mm; height: 100%; align-items: stretch; justify-items: stretch; }
-    .print-grid-3x3 .ksb-label { width: 100%; max-width: 100%; height: 100%; margin: 0; padding: 12px 14px; display: flex; flex-direction: column; justify-content: space-between; }
-    .print-grid-3x3 .ksb-logo { width: 50px; }
+
 
     /* ══════════════════════════════════════════════════════
        PRINT SYSTEM — fully rewritten for reliable grid sizing
@@ -278,7 +333,7 @@
        per layout as a fallback.
        ══════════════════════════════════════════════════════ */
 
-    @page { size: A4 landscape; margin: 10mm; }
+
 
 
     /* ══════════════════════════════════════════════════════
@@ -430,11 +485,6 @@
     }
 
                     @media print {
-      /*
-        FORCE LANDSCAPE: Use explicit dimensions + rotate hack for browsers
-        that ignore @page orientation. The body is sized as landscape (wide x short)
-        so even if the browser defaults to portrait, the content layout is correct.
-      */
       @page { size: 297mm 210mm; margin: 0; }
 
       html, body {
@@ -451,14 +501,12 @@
       .w95-taskbar, .app-footer, .ms-game-over-overlay, .start-menu, .start-menu-backdrop {
         display: none !important;
       }
-      /* Keep the active desktop visible but strip its chrome */
       .w95-desktop.active {
         display: block !important;
         background: transparent !important;
         padding: 0 !important;
         min-height: unset !important;
       }
-      /* Hide everything inside active page except the printArea */
       .w95-desktop.active > *:not(#printArea) {
         display: none !important;
       }
@@ -476,7 +524,6 @@
       }
       #printArea * { visibility: visible !important; }
 
-      /* Each sheet = one landscape page. Exact dimensions inside margins. */
       .print-page {
         width: 281mm !important;
         height: 194mm !important;
@@ -496,37 +543,48 @@
         break-after: auto !important;
       }
 
+      /* ═══════════════════════════════════════════════════════
+         UNIFIED LABEL LAYOUT — same proportions for all grids
+         ═══════════════════════════════════════════════════════ */
+
       .print-page.layout-1x1 {
         grid-template-columns: 1fr;
-        grid-template-rows: 194mm;
+        grid-template-rows: 1fr;
         gap: 0;
+        padding: 10mm;
       }
       .print-page.layout-1x2 {
         grid-template-columns: 1fr;
-        grid-template-rows: 93mm 93mm;
+        grid-template-rows: repeat(2, 1fr);
         gap: 8mm;
+        padding: 8mm;
       }
       .print-page.layout-2x2 {
         grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: 93mm 93mm;
-        gap: 8mm;
+        grid-template-rows: repeat(2, 1fr);
+        gap: 6mm;
+        padding: 6mm;
       }
       .print-page.layout-2x3 {
         grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: 60mm 60mm 60mm;
-        gap: 7mm;
+        grid-template-rows: repeat(3, 1fr);
+        gap: 5mm;
+        padding: 5mm;
       }
       .print-page.layout-3x2 {
         grid-template-columns: repeat(3, 1fr);
-        grid-template-rows: 93mm 93mm;
-        gap: 8mm;
+        grid-template-rows: repeat(2, 1fr);
+        gap: 5mm;
+        padding: 5mm;
       }
       .print-page.layout-3x3 {
         grid-template-columns: repeat(3, 1fr);
-        grid-template-rows: 61mm 61mm 61mm;
-        gap: 5.5mm;
+        grid-template-rows: repeat(3, 1fr);
+        gap: 4mm;
+        padding: 4mm;
       }
 
+      /* ── Base label styling (applies to ALL layouts) ── */
       .ksb-label {
         width: 100% !important;
         max-width: 100% !important;
@@ -534,7 +592,7 @@
         min-height: 0 !important;
         margin: 0 !important;
         box-shadow: none !important;
-        border: 2pt solid #000 !important;
+        border: 2.5pt solid #000 !important;
         page-break-inside: avoid !important;
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
         display: flex !important;
@@ -543,6 +601,10 @@
         box-sizing: border-box !important;
         position: relative !important;
         overflow: hidden !important;
+        background: #fff !important;
+        /* Base font size — all children use em units */
+        font-size: 10pt !important;
+        padding: 1em 1.2em !important;
       }
       .ksb-label-inner {
         position: relative !important;
@@ -550,13 +612,15 @@
         flex-direction: column !important;
         height: 100% !important;
         min-height: 0 !important;
+        justify-content: space-between !important;
       }
       .recipient-section {
         flex: 1 1 auto !important;
         display: flex !important;
         flex-direction: column !important;
         min-height: 0 !important;
-        padding-right: 5mm !important;
+        padding-right: 5em !important;
+        justify-content: flex-start !important;
       }
       .sender-section {
         flex: 0 0 auto !important;
@@ -565,82 +629,60 @@
       .label-divider {
         background: #000 !important;
         flex: 0 0 auto !important;
-        margin: 2mm 0 !important;
-        height: 1.5pt !important;
+        margin: 0.4em 0 !important;
+        height: 2pt !important;
+        border: none !important;
       }
 
+      /* ── Font sizing using em (relative to 10pt base) ── */
+      .label-heading {
+        font-size: 0.75em !important;        /* 7.5pt */
+        color: #555 !important;
+        text-transform: capitalize !important;
+        margin-bottom: 0.35em !important;
+        font-weight: 400 !important;
+      }
       .label-name {
+        font-size: 1.7em !important;         /* 17pt */
         font-weight: 800 !important;
         text-transform: uppercase !important;
-        letter-spacing: 0.3px !important;
+        letter-spacing: 0.02em !important;
         word-break: break-word !important;
-      }
-      .label-address {
-        font-weight: 600 !important;
-        text-transform: uppercase !important;
-        letter-spacing: 0.2px !important;
+        line-height: 1.15 !important;
+        margin-bottom: 0.35em !important;
       }
       .label-attn {
+        font-size: 0.85em !important;        /* 8.5pt */
         font-style: italic !important;
         text-transform: uppercase !important;
         word-break: break-word !important;
+        color: #555 !important;
+        line-height: 1.2 !important;
+        margin-bottom: 0.35em !important;
       }
-      .label-heading {
-        color: #444 !important;
-        text-transform: capitalize !important;
+      .label-address {
+        font-size: 1em !important;           /* 10pt */
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.02em !important;
+        line-height: 1.35 !important;
       }
       .label-phone {
+        font-size: 0.8em !important;         /* 8pt */
         font-style: italic !important;
-        color: #333 !important;
+        color: #555 !important;
+        margin-top: 0.3em !important;
       }
 
-      .print-page.layout-1x1 .ksb-label   { padding: 12mm 14mm !important; }
-      .print-page.layout-1x1 .ksb-logo    { width: 160px !important; top: 10mm !important; right: 12mm !important; }
-      .print-page.layout-1x1 .label-heading { font-size: 12pt !important; margin-bottom: 2mm !important; }
-      .print-page.layout-1x1 .label-name    { font-size: 28pt !important; margin-bottom: 3mm !important; letter-spacing: 0.5px !important; line-height: 1.15 !important; }
-      .print-page.layout-1x1 .label-attn    { font-size: 16pt !important; margin-bottom: 4mm !important; }
-      .print-page.layout-1x1 .label-address { font-size: 18pt !important; line-height: 1.45 !important; }
-      .print-page.layout-1x1 .label-phone   { font-size: 14pt !important; margin-top: 3mm !important; }
-
-      .print-page.layout-1x2 .ksb-label   { padding: 7mm 10mm !important; }
-      .print-page.layout-1x2 .ksb-logo    { width: 110px !important; top: 5mm !important; right: 8mm !important; }
-      .print-page.layout-1x2 .label-heading { font-size: 10pt !important; margin-bottom: 1.5mm !important; }
-      .print-page.layout-1x2 .label-name    { font-size: 20pt !important; margin-bottom: 2mm !important; line-height: 1.15 !important; }
-      .print-page.layout-1x2 .label-attn    { font-size: 12pt !important; margin-bottom: 2.5mm !important; }
-      .print-page.layout-1x2 .label-address { font-size: 13pt !important; line-height: 1.4 !important; }
-      .print-page.layout-1x2 .label-phone   { font-size: 11pt !important; margin-top: 2mm !important; }
-
-      .print-page.layout-2x2 .ksb-label   { padding: 6mm 8mm !important; }
-      .print-page.layout-2x2 .ksb-logo    { width: 85px !important; top: 4mm !important; right: 6mm !important; }
-      .print-page.layout-2x2 .label-heading { font-size: 9pt !important; margin-bottom: 1mm !important; }
-      .print-page.layout-2x2 .label-name    { font-size: 16pt !important; margin-bottom: 1.5mm !important; line-height: 1.2 !important; }
-      .print-page.layout-2x2 .label-attn    { font-size: 11pt !important; margin-bottom: 2mm !important; }
-      .print-page.layout-2x2 .label-address { font-size: 11.5pt !important; line-height: 1.38 !important; }
-      .print-page.layout-2x2 .label-phone   { font-size: 10pt !important; margin-top: 1.5mm !important; }
-
-      .print-page.layout-2x3 .ksb-label   { padding: 4mm 6mm !important; }
-      .print-page.layout-2x3 .ksb-logo    { width: 65px !important; top: 3mm !important; right: 5mm !important; }
-      .print-page.layout-2x3 .label-heading { font-size: 7.5pt !important; margin-bottom: 0.5mm !important; }
-      .print-page.layout-2x3 .label-name    { font-size: 13pt !important; margin-bottom: 1mm !important; line-height: 1.15 !important; }
-      .print-page.layout-2x3 .label-attn    { font-size: 9pt !important; margin-bottom: 1mm !important; }
-      .print-page.layout-2x3 .label-address { font-size: 9.5pt !important; line-height: 1.3 !important; }
-      .print-page.layout-2x3 .label-phone   { font-size: 8pt !important; margin-top: 0.5mm !important; }
-
-      .print-page.layout-3x2 .ksb-label   { padding: 5mm 6mm !important; }
-      .print-page.layout-3x2 .ksb-logo    { width: 60px !important; top: 4mm !important; right: 4mm !important; }
-      .print-page.layout-3x2 .label-heading { font-size: 8pt !important; margin-bottom: 0.8mm !important; }
-      .print-page.layout-3x2 .label-name    { font-size: 13pt !important; margin-bottom: 1mm !important; line-height: 1.15 !important; }
-      .print-page.layout-3x2 .label-attn    { font-size: 9pt !important; margin-bottom: 1.5mm !important; }
-      .print-page.layout-3x2 .label-address { font-size: 9.5pt !important; line-height: 1.32 !important; }
-      .print-page.layout-3x2 .label-phone   { font-size: 8pt !important; margin-top: 0.8mm !important; }
-
-      .print-page.layout-3x3 .ksb-label   { padding: 3mm 4mm !important; }
-      .print-page.layout-3x3 .ksb-logo    { width: 50px !important; top: 2mm !important; right: 3mm !important; }
-      .print-page.layout-3x3 .label-heading { font-size: 7pt !important; margin-bottom: 0.5mm !important; }
-      .print-page.layout-3x3 .label-name    { font-size: 11pt !important; margin-bottom: 0.8mm !important; line-height: 1.15 !important; letter-spacing: 0.1px !important; }
-      .print-page.layout-3x3 .label-attn    { font-size: 8pt !important; margin-bottom: 1mm !important; }
-      .print-page.layout-3x3 .label-address { font-size: 8.5pt !important; line-height: 1.3 !important; }
-      .print-page.layout-3x3 .label-phone   { font-size: 7pt !important; margin-top: 0.5mm !important; }
+      /* Logo */
+      .ksb-logo {
+        position: absolute !important;
+        top: 0.5em !important;
+        right: 0.5em !important;
+        width: 4.5em !important;
+        height: auto !important;
+        opacity: 0.9 !important;
+      }
     }    }
 
     .w95-list { border: 2px inset var(--w95-dark); background: var(--w95-light); max-height: 400px; overflow: auto; }
@@ -815,15 +857,15 @@
     @media (max-width: 600px) {
       .desk-title { font-size: 32px; }
       .desk-pill { padding: 8px 24px; font-size: 12px; }
-      #scatterSingle  { top: 1%;    left: 0%;   --r: -18deg; --w: 105px; }
-      #scatterBatch   { top: 0%;    left: 20%;  --r:   6deg; --w: 95px; }
-      #scatterHistory { top: 0%;    right: 1%;  --r:  -8deg; --w: 105px; }
-      #scatterMine    { bottom: 1%; left: 0%;   --r:  14deg; --w: 100px; }
-      #scatterPhoto   { bottom: 0%; left: 24%;  --r: -11deg; --w: 110px; }
-      #scatterNotes   { bottom: 4%; right: 14%; --r:   7deg; --w: 95px; }
-      #scatterAccent  { bottom: 0%; right: 0%;  --r: -15deg; --w: 100px; }
+      /* Mobile perimeter frame — tighter but non-overlapping */
+      #scatterSingle  { top: 2%;  left: 2%;   --r: -14deg; --w: 110px; }
+      #scatterBatch   { top: 1%;  left: 34%;  --r:  6deg;  --w: 100px; }
+      #scatterAccent  { top: 35%; right: 2%;  --r:  10deg; --w: 100px; }
+      #scatterHistory { top: 2%;  right: 2%;  --r:  -6deg;  --w: 110px; }
+      #scatterMine    { bottom: 2%; left: 2%;  --r:  12deg; --w: 105px; }
+      #scatterPhoto   { bottom: 1%; left: 35%; --r:  -8deg;  --w: 115px; }
+      #scatterNotes   { bottom: 4%; right: 32%; --r:   5deg;  --w: 100px; }
       .scatter-item .item-num { font-size: 12px; }
-      .
     }
   
     /* ══════════════════════════════════════════════════════
@@ -1098,6 +1140,7 @@
     }
 </style>
 <base target="_blank">
+<base target="_blank">
 </head>
 <body>
 
@@ -1116,28 +1159,28 @@
         <div class="menu-item" data-action="openPage('batch')" title="Batch Label Printing"></div>
       </div>
       <div class="scatter-item" id="scatterHistory">
-        <span class="item-num">(03)</span>
+        <span class="item-num">(04)</span>
         <img src="https://file.garden/ad-wGPVIV3ilAD_L/WORK%20PROJECT/LABEL%20MAKER/Icon/print%20history.png" alt="Print History" class="item-img">
         <div class="menu-item" data-action="openPage('history')" title="Print History"></div>
       </div>
       <!-- Bottom Row: Accessories & Games -->
       <div class="scatter-item" id="scatterMine">
-        <span class="item-num">(04)</span>
+        <span class="item-num">(05)</span>
         <img src="https://file.garden/ad-wGPVIV3ilAD_L/WORK%20PROJECT/LABEL%20MAKER/Icon/Minesweeper.png" alt="Minesweeper" class="item-img">
         <div class="menu-item" data-action="openPage('minesweeper')" title="Minesweeper"></div>
       </div>
       <div class="scatter-item" id="scatterPhoto">
-        <span class="item-num">(05)</span>
+        <span class="item-num">(06)</span>
         <img src="https://file.garden/ad-wGPVIV3ilAD_L/WORK%20PROJECT/LABEL%20MAKER/Icon/Photo-Camera.png" alt="Photobooth" class="item-img">
         <div class="menu-item" data-action="openPage('photobooth')" title="Photobooth"></div>
       </div>
       <div class="scatter-item" id="scatterNotes">
-        <span class="item-num">(06)</span>
+        <span class="item-num">(07)</span>
         <img src="https://file.garden/ad-wGPVIV3ilAD_L/WORK%20PROJECT/LABEL%20MAKER/Icon/Notes.png" alt="Notepad" class="item-img">
         <div class="menu-item" data-action="openPage('notes')" title="Notepad"></div>
       </div>
       <div class="scatter-item" id="scatterAccent">
-        <span class="item-num">(07)</span>
+        <span class="item-num">(03)</span>
         <img src="https://file.garden/ad-wGPVIV3ilAD_L/WORK%20PROJECT/LABEL%20MAKER/Icon/Calculator.png" alt="Calculator" class="item-img">
         <div class="menu-item" data-action="openPage('calculator')" title="Calculator"></div>
       </div>
@@ -2094,7 +2137,9 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
       const fromName = data.fromName || 'KSB SALES INDONESIA';
       const showLogo = data.showLogo !== false;
       const logoHTML = showLogo ? `<img src="${KSB_LOGO_URL}" alt="KSB" class="ksb-logo" data-error="this.style.display=none">` : '';
-      return `<div class="ksb-label" data-index="${index}"><div class="ksb-label-inner">${logoHTML}<div class="label-section recipient-section"><div class="label-heading">Penerima :</div><div class="label-name">${escapeHtml(toName)}</div>${toAttn ? `<div class="label-attn">Attn: ${escapeHtml(toAttn)}</div>` : ''}<div class="label-address">${toAddress}</div>${toPhone ? `<div class="label-phone">(${escapeHtml(toPhone)})</div>` : ''}</div><div class="label-divider"></div><div class="label-section sender-section"><div class="label-heading">Pengirim :</div><div class="label-name">${escapeHtml(fromName)}</div></div></div></div>`;
+      const attnHTML = toAttn ? `<div class="label-attn">Attn: ${escapeHtml(toAttn)}</div>` : '';
+      const phoneHTML = toPhone ? `<div class="label-phone">(${escapeHtml(toPhone)})</div>` : '';
+      return `<div class="ksb-label" data-index="${index}"><div class="ksb-label-inner">${logoHTML}<div class="label-section recipient-section"><div class="label-heading">Penerima :</div><div class="label-name">${escapeHtml(toName)}</div>${attnHTML}<div class="label-address">${toAddress}</div>${phoneHTML}</div><div class="label-divider"></div><div class="label-section sender-section"><div class="label-heading">Pengirim :</div><div class="label-name">${escapeHtml(fromName)}</div></div></div></div>`;
     }
 
     function escapeHtml(text) {
