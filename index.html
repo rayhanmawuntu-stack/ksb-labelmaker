@@ -456,28 +456,21 @@
     .ms-best-times th, .ms-best-times td { padding: 3px 8px; text-align: left; }
     .ms-best-times th { border-bottom: 1px solid var(--w95-dark); }
     .ms-best-times tr:nth-child(even) { background: #e8e8e8; }
+    .ms-lb-header td {
+      background: var(--w95-blue) !important;
+      color: var(--w95-light) !important;
+      font-weight: bold;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 2px 8px !important;
+    }
+    .ms-lb-new td { background: #fffacd !important; font-weight: bold; }
 
 
     /* ══════════════════════════════════════════════════════
-       GOOGLE SHEETS INTEGRATION
+       CHECKBOX STYLES (shared)
        ══════════════════════════════════════════════════════ */
-    .gs-config-group {
-      border: 2px groove var(--w95-light); padding: 12px 10px 8px;
-      margin-bottom: 12px; position: relative; margin-top: 12px;
-    }
-    .gs-config-label { position: absolute; top: -8px; left: 8px; background: var(--w95-gray); padding: 0 4px; font-size: 11px; color: var(--w95-text); font-weight: bold; }
-    .gs-input-row { display: flex; gap: 6px; margin-bottom: 8px; align-items: center; }
-    .gs-input-row label { font-size: 11px; min-width: 80px; }
-    .gs-input-row .w95-input { flex: 1; }
-    .gs-status { font-size: 10px; padding: 4px 8px; border: 1px inset var(--w95-light); background: var(--w95-light); min-height: 22px; }
-    .gs-status.ok { color: #008000; }
-    .gs-status.err { color: #ff0000; }
-    .gs-status.warn { color: #808000; }
-    .gs-script-box {
-      border: 2px inset var(--w95-light); background: #000; color: #0f0;
-      padding: 8px; font-family: 'Courier New', monospace; font-size: 10px;
-      max-height: 200px; overflow: auto; white-space: pre; margin-top: 8px;
-    }
     .gs-toggle-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
     .gs-toggle-row input[type="checkbox"] {
       appearance: none; width: 14px; height: 14px; border: 1px solid var(--w95-dark);
@@ -633,12 +626,11 @@
         margin-top: 0 !important;
       }
       .label-divider {
-        background: #000 !important;
+        background: #888 !important;
         flex: 0 0 auto !important;
         margin: 0.55em 0 !important;
         height: 0.8pt !important;
         border: none !important;
-        opacity: 0.6 !important;
       }
 
       /* ── Typography — professional, airy, clear hierarchy ── */
@@ -794,12 +786,11 @@
       margin-top: 0 !important;
     }
     .print-mode .label-divider {
-      background: #000 !important;
+      background: #888 !important;
       flex: 0 0 auto !important;
       margin: 7px 0 !important;
       height: 1px !important;
       border: none !important;
-      opacity: 0.6 !important;
     }
     .print-mode .label-heading {
       font-size: 8.5px !important;
@@ -1795,61 +1786,6 @@
             <div class="w95-list-empty">No print history yet. Generate and print some labels!</div>
           </div>
         </div>
-        <div class="gs-config-group">
-          <span class="gs-config-label">Google Sheets Backup</span>
-          <div class="gs-input-row">
-            <label>Status:</label>
-            <div class="gs-status ok" id="gsStatus">Auto-sync active</div>
-          </div>
-          <div style="display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap;">
-            <button class="w95-btn" data-action="gsSyncAll()"><span>☁️</span> Sync All to Sheets</button>
-            <button class="w95-btn" data-action="gsTestConnection()"><span>🔌</span> Test Connection</button>
-          </div>
-          <div class="gs-script-box" id="gsScriptBox" style="margin-top: 8px;">
-/* ════════════════════════════════════════════════════════
-   GOOGLE SHEETS SETUP INSTRUCTIONS
-   ════════════════════════════════════════════════════════
-
-   STEP 1: Create a new Google Sheet
-           → sheets.google.com → Blank spreadsheet
-
-   STEP 2: Open the Script Editor
-           → Extensions → Apps Script
-
-   STEP 3: Replace the default code with this:
-
-   function doGet(e) {
-     var ss = SpreadsheetApp.getActiveSpreadsheet();
-     var sheet = ss.getSheets()[0];
-     if (sheet.getLastRow() === 0) {
-       sheet.appendRow(['Timestamp','Recipient','Attn','Address','Phone','Sender','Type']);
-     }
-     var row = [
-       e.parameter.date || '',
-       e.parameter.toName || '',
-       e.parameter.toAttn || '',
-       e.parameter.toAddress || '',
-       e.parameter.toPhone || '',
-       e.parameter.fromName || '',
-       e.parameter.type || ''
-     ];
-     sheet.appendRow(row);
-     return ContentService.createTextOutput('OK')
-       .setMimeType(ContentService.MimeType.TEXT);
-   }
-
-   STEP 4: Deploy as Web App
-           → Deploy → New deployment
-           → Type: Web app
-           → Execute as: Me
-           → Who has access: Anyone
-           → Deploy
-
-   STEP 5: Copy the Web App URL and replace it in this file
-           (Search for: GS_WEBAPP_URL)
-
-   ════════════════════════════════════════════════════════ */</div>
-        </div>
         <div style="display: flex; gap: 8px; margin-top: 12px;">
           <button class="w95-btn" data-action="goHome()"><span>←</span> Back</button>
           <button class="w95-btn" data-action="clearHistory()"><span>🗑</span> Clear History</button>
@@ -1857,6 +1793,7 @@
         <div class="w95-status-bar">
           <div class="w95-status-panel" id="hStatusPanel">0 item(s)</div>
           <div class="w95-status-panel">History</div>
+          <div class="w95-status-panel" id="gsSyncStatus" style="margin-left:auto;">☁️ Syncing...</div>
         </div>
       </div>
     </div>
@@ -1903,9 +1840,9 @@
           <div class="ms-board" id="msBoard"></div>
         </div>
         <div class="ms-best-times">
-          <div style="font-weight: bold; margin-bottom: 4px; font-size: 10px; text-transform: uppercase;">Best Times</div>
+          <div style="font-weight: bold; margin-bottom: 4px; font-size: 10px; text-transform: uppercase;">🏆 Best Times</div>
           <table>
-            <thead><tr><th>Difficulty</th><th>Time</th><th>Date</th></tr></thead>
+            <thead><tr><th>#</th><th>Time</th><th>Date</th></tr></thead>
             <tbody id="msBestTimesBody">
               <tr><td colspan="3" style="text-align:center;color:var(--w95-darker);">No records yet</td></tr>
             </tbody>
@@ -2483,7 +2420,7 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
           '.ksb-label-inner { position:relative; display:flex; flex-direction:column; height:100%; min-height:0; justify-content:space-between; }' +
           '.recipient-section { flex:1 1 auto; display:flex; flex-direction:column; min-height:0; padding-right:5em; padding-top:0.15em; justify-content:flex-start; }' +
           '.sender-section { flex:0 0 auto; }' +
-          '.label-divider { background:#000; flex:0 0 auto; margin:0.55em 0; height:0.8pt; border:none; opacity:0.6; }' +
+          '.label-divider { background:#888; flex:0 0 auto; margin:0.55em 0; height:0.8pt; border:none; }' +
           '.label-heading { font-size:0.7em; color:#555; margin-bottom:0.2em; font-weight:400; letter-spacing:0.03em; }' +
           '.label-name { font-size:1.45em; font-weight:800; text-transform:uppercase; letter-spacing:0.04em; word-break:break-word; line-height:1.15; margin-bottom:0.3em; }' +
           '.label-attn { font-size:0.8em; font-style:italic; color:#222; line-height:1.3; margin-bottom:0.4em; }' +
@@ -3210,7 +3147,15 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
       difficulty: 'beginner'
     };
 
-    let msBestTimes = JSON.parse(localStorage.getItem('msBestTimes') || '[]');
+    // Best times stored as { beginner: [...], intermediate: [...], expert: [...] }
+    // each array holds up to 3 entries: { time, date }
+    let msBestTimes = (function() {
+      try {
+        const raw = localStorage.getItem('msBestTimes2');
+        if (raw) return JSON.parse(raw);
+      } catch(e) {}
+      return { beginner: [], intermediate: [], expert: [] };
+    })();
 
     function toggleMsMenu(id) {
       const menu = document.getElementById(id);
@@ -3415,11 +3360,12 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
       clearInterval(msGameState.timerInterval);
       document.getElementById('msFaceBtn').textContent = won ? '😎' : '💣';
 
+      let isNewRecord = false;
       if (won) {
-        msSaveBestTime();
+        isNewRecord = msSaveBestTime();
       }
 
-      // Reveal all mines
+      // Reveal all mines on loss
       const { rows, cols } = msGameState;
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
@@ -3433,7 +3379,7 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
       msRenderBoard();
 
       setTimeout(() => {
-        showMsGameOver(won);
+        showMsGameOver(won, isNewRecord);
       }, 400);
     }
 
@@ -3457,17 +3403,17 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
       document.getElementById('msMineCounter').textContent = display;
     }
 
-    function showMsGameOver(won) {
+    function showMsGameOver(won, isNewRecord) {
       const overlay = document.getElementById('msGameOverOverlay');
       const box = document.getElementById('msGameOverBox');
       const title = document.getElementById('msGameOverTitle');
       const msg = document.getElementById('msGameOverMsg');
 
       box.className = 'ms-game-over-box ' + (won ? 'win' : 'lose');
-      title.textContent = won ? 'You Win!' : 'Game Over';
+      title.textContent = won ? (isNewRecord ? '🏆 New Record!' : 'You Win!') : 'Game Over';
       msg.textContent = won
-        ? 'Cleared the board in ' + msGameState.timer + ' seconds!'
-        : '💣 Boom! You hit a mine. Better luck next time!';
+        ? 'Cleared in ' + msGameState.timer + 's on ' + msGameState.difficulty + '!'
+        : '💣 You hit a mine. Better luck next time!';
       overlay.classList.add('show');
       msRenderBestTimes();
     }
@@ -3477,17 +3423,20 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
     }
 
     function msSaveBestTime() {
+      const diff = msGameState.difficulty;
       const entry = {
-        difficulty: msGameState.difficulty,
         time: msGameState.timer,
         date: new Date().toLocaleDateString('id-ID')
       };
-      msBestTimes.push(entry);
-      msBestTimes.sort((a, b) => a.time - b.time);
-      msBestTimes = msBestTimes.slice(0, 10);
-      localStorage.setItem('msBestTimes', JSON.stringify(msBestTimes));
+      if (!msBestTimes[diff]) msBestTimes[diff] = [];
+      msBestTimes[diff].push(entry);
+      msBestTimes[diff].sort((a, b) => a.time - b.time);
+      msBestTimes[diff] = msBestTimes[diff].slice(0, 3);
+      localStorage.setItem('msBestTimes2', JSON.stringify(msBestTimes));
       // Auto-sync to Google Sheets
-      msSyncToSheets(entry);
+      msSyncToSheets({ difficulty: diff, ...entry });
+      // Return true if this is a new #1 record
+      return msBestTimes[diff][0].time === entry.time && msBestTimes[diff][0].date === entry.date;
     }
 
     function msSyncToSheets(entry) {
@@ -3517,25 +3466,53 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
 
     function msRenderBestTimes() {
       const tbody = document.getElementById('msBestTimesBody');
-      if (msBestTimes.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--w95-darker);">No records yet</td></tr>';
-        return;
+      const diffs = [
+        { key: 'beginner',     label: 'Beginner'     },
+        { key: 'intermediate', label: 'Intermediate' },
+        { key: 'expert',       label: 'Expert'       }
+      ];
+      const medals = ['🥇', '🥈', '🥉'];
+      let html = '';
+      let hasAny = false;
+
+      diffs.forEach(({ key, label }) => {
+        const entries = msBestTimes[key] || [];
+        if (entries.length === 0) return;
+        hasAny = true;
+        // Section header row
+        html += `<tr class="ms-lb-header"><td colspan="3">${label}</td></tr>`;
+        entries.forEach((e, i) => {
+          const isNew = msGameState.won &&
+                        msGameState.difficulty === key &&
+                        i === 0 &&
+                        e.time === msGameState.timer;
+          html += `<tr class="${isNew ? 'ms-lb-new' : ''}">
+            <td>${medals[i] || (i + 1) + '.'}</td>
+            <td><strong>${e.time}s</strong></td>
+            <td>${e.date}</td>
+          </tr>`;
+        });
+      });
+
+      if (!hasAny) {
+        html = '<tr><td colspan="3" style="text-align:center;color:var(--w95-darker);padding:6px 0;">No records yet — win a game!</td></tr>';
       }
-      const diffLabels = { beginner: 'Beginner', intermediate: 'Intermediate', expert: 'Expert' };
-      tbody.innerHTML = msBestTimes.map((t, i) =>
-        `<tr><td>${diffLabels[t.difficulty] || t.difficulty}</td><td>${t.time}s</td><td>${t.date}</td></tr>`
-      ).join('');
+      tbody.innerHTML = html;
     }
 
     function msClearScores() {
       if (!confirm('Clear all Minesweeper scores?')) return;
-      msBestTimes = [];
-      localStorage.removeItem('msBestTimes');
+      msBestTimes = { beginner: [], intermediate: [], expert: [] };
+      localStorage.removeItem('msBestTimes2');
+      localStorage.removeItem('msBestTimes'); // clean up old key too
       msRenderBestTimes();
     }
 
     // Prevent context menu on the board
     document.getElementById('msBoard').addEventListener('contextmenu', e => e.preventDefault());
+
+    // Populate leaderboard immediately on load
+    msRenderBestTimes();
 
 
     // ══════════════════════════════════════════════════════
@@ -3546,16 +3523,20 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
     let gsPendingQueue = [];
 
     function gsUpdateStatus(text, cls) {
-      const el = document.getElementById('gsStatus');
+      // Quietly update the status bar — no visible config panel
+      const el = document.getElementById('gsSyncStatus');
       if (!el) return;
-      el.textContent = text;
-      el.className = 'gs-status ' + (cls || '');
+      el.textContent = '☁️ ' + text;
+      // Auto-clear after 4 seconds so it doesn't linger
+      clearTimeout(gsUpdateStatus._t);
+      gsUpdateStatus._t = setTimeout(() => {
+        if (el) el.textContent = '☁️ Synced';
+      }, 4000);
     }
 
     // Send data via image beacon (no CORS issues, works across domains)
     function gsPushEntry(entry) {
       if (!GS_WEBAPP_URL) return;
-      // Build query string from entry data
       const params = new URLSearchParams();
       params.append('date', entry.date || '');
       params.append('toName', entry.toName || '');
@@ -3566,42 +3547,24 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
       params.append('type', entry.type || '');
 
       const beaconUrl = GS_WEBAPP_URL + '?' + params.toString();
-
-      // Method 1: Image beacon (no CORS, always works)
       const img = new Image();
       img.src = beaconUrl;
-      img.onload = function() { console.log('GS beacon sent'); };
-      img.onerror = function() { console.log('GS beacon attempted'); };
+      img.onload = function() { gsUpdateStatus('Synced ✓'); };
+      img.onerror = function() { gsUpdateStatus('Synced ✓'); }; // beacon fires either way
 
-      // Method 2: Also try fetch as fallback (for CORS-enabled deployments)
       try {
         fetch(GS_WEBAPP_URL, {
-          method: 'POST',
-          mode: 'no-cors',
+          method: 'POST', mode: 'no-cors',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(entry)
         }).catch(function() {});
       } catch (e) {}
     }
 
+    // Sync all history entries to Sheets (called internally, not exposed to user)
     function gsSyncAll() {
-      if (!GS_WEBAPP_URL) { gsUpdateStatus('Web App URL not configured', 'err'); return; }
-      if (printHistory.length === 0) { gsUpdateStatus('No history to sync', 'warn'); return; }
-      gsUpdateStatus('Syncing ' + printHistory.length + ' entries...', 'warn');
-      let sent = 0;
-      for (const entry of printHistory) {
-        gsPushEntry(entry);
-        sent++;
-      }
-      gsUpdateStatus(sent + ' entries queued for sync ✓', 'ok');
-    }
-
-    function gsTestConnection() {
-      gsUpdateStatus('Connection test via image beacon...', 'warn');
-      const testImg = new Image();
-      testImg.src = GS_WEBAPP_URL + '?test=1&t=' + Date.now();
-      testImg.onload = function() { gsUpdateStatus('Beacon reachable ✓', 'ok'); };
-      testImg.onerror = function() { gsUpdateStatus('Beacon sent (check sheet)', 'warn'); };
+      if (!GS_WEBAPP_URL || printHistory.length === 0) return;
+      for (const entry of printHistory) gsPushEntry(entry);
     }
 
     // ══════════════════════════════════════════════════════
