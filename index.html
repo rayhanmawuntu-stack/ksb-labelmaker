@@ -490,7 +490,7 @@
     }
 
                     @media print {
-      @page { size: 297mm 210mm; margin: 0; }
+      @page { size: 297mm 210mm landscape; margin: 0; }
 
       html, body {
         width: 297mm !important;
@@ -520,9 +520,8 @@
         display: block !important;
         position: static !important;
         width: 297mm !important;
-        height: 210mm !important;
         margin: 0 !important;
-        padding: 8mm !important;
+        padding: 0 !important;
         box-sizing: border-box !important;
         background: #fff !important;
         visibility: visible !important;
@@ -530,11 +529,10 @@
       #printArea * { visibility: visible !important; }
 
       .print-page {
-        width: 281mm !important;
-        height: 194mm !important;
+        width: 297mm !important;
+        height: 210mm !important;
         display: grid !important;
         margin: 0 !important;
-        padding: 0 !important;
         box-sizing: border-box !important;
         page-break-after: always !important;
         break-after: page !important;
@@ -705,8 +703,9 @@
        ══════════════════════════════════════════════════════ */
     .print-mode .print-page {
       display: grid !important;
+      width: 100% !important;
+      height: 100% !important;
       margin: 0 !important;
-      padding: 0 !important;
       box-sizing: border-box !important;
       align-items: stretch !important;
       justify-items: stretch !important;
@@ -717,37 +716,37 @@
       grid-template-columns: 1fr;
       grid-template-rows: 1fr;
       gap: 0;
-      padding: 10mm;
+      padding: 38px;
     }
     .print-mode .print-page.layout-1x2 {
       grid-template-columns: 1fr;
       grid-template-rows: repeat(2, 1fr);
-      gap: 8mm;
-      padding: 8mm;
+      gap: 30px;
+      padding: 30px;
     }
     .print-mode .print-page.layout-2x2 {
       grid-template-columns: repeat(2, 1fr);
       grid-template-rows: repeat(2, 1fr);
-      gap: 6mm;
-      padding: 6mm;
+      gap: 23px;
+      padding: 23px;
     }
     .print-mode .print-page.layout-2x3 {
       grid-template-columns: repeat(2, 1fr);
       grid-template-rows: repeat(3, 1fr);
-      gap: 5mm;
-      padding: 5mm;
+      gap: 19px;
+      padding: 19px;
     }
     .print-mode .print-page.layout-3x2 {
       grid-template-columns: repeat(3, 1fr);
       grid-template-rows: repeat(2, 1fr);
-      gap: 5mm;
-      padding: 5mm;
+      gap: 19px;
+      padding: 19px;
     }
     .print-mode .print-page.layout-3x3 {
       grid-template-columns: repeat(3, 1fr);
       grid-template-rows: repeat(3, 1fr);
-      gap: 4mm;
-      padding: 4mm;
+      gap: 15px;
+      padding: 15px;
     }
     .print-mode .ksb-label {
       width: 100% !important;
@@ -755,10 +754,10 @@
       height: 100% !important;
       min-height: 0 !important;
       margin: 0 !important;
-      border: 1.5pt solid #000 !important;
+      border: 2px solid #000 !important;
       box-shadow:
-        inset 0 0 0 2pt #fff,
-        inset 0 0 0 3.5pt #000 !important;
+        inset 0 0 0 3px #fff,
+        inset 0 0 0 5px #000 !important;
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
       display: flex !important;
       flex-direction: column !important;
@@ -767,8 +766,8 @@
       position: relative !important;
       overflow: hidden !important;
       background: #fff !important;
-      font-size: 9pt !important;
-      padding: 0.6em 0.75em !important;
+      font-size: 12px !important;
+      padding: 7px 9px !important;
     }
     .print-mode .ksb-label-inner {
       position: relative !important;
@@ -783,7 +782,7 @@
       display: flex !important;
       flex-direction: column !important;
       min-height: 0 !important;
-      padding-right: 4.5em !important;
+      padding-right: 46px !important;
       justify-content: flex-start !important;
     }
     .print-mode .sender-section {
@@ -793,48 +792,48 @@
     .print-mode .label-divider {
       background: #000 !important;
       flex: 0 0 auto !important;
-      margin: 0.35em 0 !important;
-      height: 1pt !important;
+      margin: 4px 0 !important;
+      height: 1px !important;
       border: none !important;
     }
     .print-mode .label-heading {
-      font-size: 0.68em !important;
+      font-size: 8px !important;
       color: #000 !important;
       text-transform: none !important;
-      margin-bottom: 0.1em !important;
+      margin-bottom: 1px !important;
       font-weight: 400 !important;
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
     }
     .print-mode .label-name {
-      font-size: 1.55em !important;
+      font-size: 18px !important;
       font-weight: 800 !important;
       text-transform: uppercase !important;
-      letter-spacing: 0em !important;
+      letter-spacing: 0 !important;
       word-break: break-word !important;
       line-height: 1.1 !important;
-      margin-bottom: 0.2em !important;
+      margin-bottom: 2px !important;
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
     }
     .print-mode .label-attn {
-      font-size: 0.82em !important;
+      font-size: 10px !important;
       font-style: italic !important;
       text-transform: none !important;
       word-break: break-word !important;
       color: #000 !important;
       line-height: 1.2 !important;
-      margin-bottom: 0.25em !important;
+      margin-bottom: 3px !important;
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
     }
     .print-mode .label-address {
-      font-size: 0.88em !important;
+      font-size: 11px !important;
       font-weight: 700 !important;
       text-transform: uppercase !important;
-      letter-spacing: 0em !important;
+      letter-spacing: 0 !important;
       line-height: 1.3 !important;
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
     }
     .print-mode .label-phone {
-      font-size: 0.82em !important;
+      font-size: 10px !important;
       font-style: italic !important;
       font-weight: 400 !important;
       color: #000 !important;
@@ -842,9 +841,9 @@
     }
     .print-mode .ksb-logo {
       position: absolute !important;
-      top: 0.3em !important;
-      right: 0.3em !important;
-      width: 3.8em !important;
+      top: 4px !important;
+      right: 4px !important;
+      width: 46px !important;
       height: auto !important;
       opacity: 0.85 !important;
     }
@@ -863,24 +862,137 @@
     .w95-taskbar-time { margin-left: auto; border: 2px inset var(--w95-light); padding: 2px 8px; font-size: 11px; min-width: 60px; text-align: center; }
     .app-footer { text-align: center; padding: 15px; font-size: 10px; color: var(--w95-light); margin-bottom: 28px; }
 
-    .bulk-cards-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; max-height: 420px; overflow-y: auto; padding: 4px; }
-    .bulk-card { background: var(--w95-light); border: 2px outset var(--w95-light); padding: 10px; position: relative; transition: border-color 0.2s; }
-    .bulk-card:hover { border-color: var(--w95-blue); }
-    .bulk-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--w95-dark); }
-    .bulk-card-num { font-family: 'VCR', monospace; font-size: 12px; color: var(--w95-blue); font-weight: bold; display: flex; align-items: center; gap: 6px; }
-    .bulk-card-num .card-badge { background: var(--w95-blue); color: var(--w95-light); width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 10px; border: 1px outset var(--w95-light); }
-    .bulk-card-remove { width: 18px; height: 18px; background: var(--w95-gray); border: 1px outset var(--w95-light); font-size: 10px; display: flex; align-items: center; justify-content: center; color: var(--w95-text); padding: 0; line-height: 1; }
-    .bulk-card-remove:active { border: 1px inset var(--w95-light); }
-    .bulk-card-field { margin-bottom: 6px; }
-    .bulk-card-field label { font-size: 10px; color: var(--w95-darker); display: block; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.3px; }
-    .bulk-card-field .w95-input, .bulk-card-field .w95-textarea { font-size: 11px; padding: 3px 5px; }
-    .bulk-card-field .w95-textarea { min-height: 40px; resize: vertical; }
-    .bulk-card-sender { margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--w95-dark); }
-    .bulk-card-sender label { font-size: 10px; color: var(--w95-darker); display: block; margin-bottom: 2px; text-transform: uppercase; }
-    .bulk-toolbar { display: flex; gap: 8px; margin-bottom: 12px; padding: 8px; background: var(--w95-gray); border: 2px inset var(--w95-light); align-items: center; flex-wrap: wrap; }
-    .bulk-toolbar .w95-btn { min-height: 26px; }
-    .bulk-toolbar-sep { width: 2px; height: 20px; background: var(--w95-dark); border-right: 1px solid var(--w95-light); }
-    .bulk-count { font-family: 'VCR', monospace; font-size: 12px; color: var(--w95-blue); margin-left: auto; }
+    /* ══════════════════════════════════════════════════════
+       BATCH CARDS — Win95 aesthetic, screenshot layout
+       ══════════════════════════════════════════════════════ */
+    .bulk-cards-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      max-height: 520px;
+      overflow-y: auto;
+      padding: 4px 2px 8px;
+    }
+    .bulk-card {
+      background: var(--w95-gray);
+      border: 2px outset var(--w95-light);
+      padding: 0;
+      position: relative;
+    }
+    /* Header — Win95 title-bar style with number badge + label + action btns */
+    .bulk-card-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 6px;
+      background: linear-gradient(90deg, var(--w95-blue) 0%, var(--w95-blue-light) 100%);
+      margin-bottom: 0;
+      border-bottom: none;
+    }
+    .bulk-card-num {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex: 1;
+    }
+    .bulk-card-num .card-badge {
+      background: var(--w95-light);
+      color: var(--w95-blue);
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: bold;
+      border: 1px solid var(--w95-darker);
+      flex-shrink: 0;
+      font-family: 'MS Sans Serif', sans-serif;
+    }
+    .bulk-card-num span:last-child {
+      font-size: 11px;
+      font-weight: bold;
+      color: var(--w95-light);
+      font-family: 'MS Sans Serif', sans-serif;
+    }
+    /* Action buttons in header */
+    .bulk-card-actions {
+      display: flex;
+      gap: 2px;
+      align-items: center;
+    }
+    .bulk-card-remove,
+    .bulk-card-dupe {
+      width: 16px;
+      height: 14px;
+      background: var(--w95-gray);
+      border: 1px outset var(--w95-light);
+      font-size: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--w95-text);
+      padding: 0;
+      line-height: 1;
+    }
+    .bulk-card-remove:active,
+    .bulk-card-dupe:active { border: 1px inset var(--w95-light); }
+    /* Card body */
+    .bulk-card-body {
+      padding: 8px 8px 6px;
+    }
+    /* Field rows */
+    .bulk-card-field {
+      margin-bottom: 7px;
+    }
+    .bulk-card-field label,
+    .bulk-card-sender label {
+      font-size: 10px;
+      color: var(--w95-darker);
+      display: block;
+      margin-bottom: 2px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      font-family: 'MS Sans Serif', sans-serif;
+      font-weight: bold;
+    }
+    /* Inputs inherit the standard w95-input style, just ensure sizing */
+    .bulk-card-field .w95-input,
+    .bulk-card-field .w95-textarea,
+    .bulk-card-field .w95-select,
+    .bulk-card-sender .w95-select,
+    .bulk-card-sender .w95-input {
+      font-size: 11px;
+      padding: 3px 5px;
+      width: 100%;
+    }
+    .bulk-card-field .w95-textarea {
+      min-height: 48px;
+      resize: vertical;
+    }
+    /* Prefix row */
+    .bulk-card-prefix-row {
+      display: flex;
+      gap: 4px;
+    }
+    .bulk-card-prefix-row .w95-select {
+      width: auto !important;
+      min-width: 58px !important;
+      flex-shrink: 0 !important;
+    }
+    .bulk-card-prefix-row .custom-prefix-input {
+      width: 64px !important;
+      flex-shrink: 0 !important;
+    }
+    .bulk-card-prefix-row .name-input {
+      flex: 1 !important;
+    }
+    /* Sender section — thin separator line */
+    .bulk-card-sender {
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px solid var(--w95-dark);
+    }
     .bulk-empty-state { text-align: center; padding: 60px 20px; color: var(--w95-dark); grid-column: 1 / -1; }
     .bulk-empty-state .empty-icon { font-size: 32px; margin-bottom: 12px; opacity: 0.5; }
     .bulk-empty-state p { font-size: 11px; margin-bottom: 16px; }
@@ -1375,12 +1487,20 @@
       <div class="w95-menu-bar">
         <div class="w95-menu-wrapper">
           <span class="w95-menu-item" data-action="toggleMenu('fileMenu')">File</span>
-          <div class="w95-dropdown" id="fileMenu"><div class="w95-dropdown-item" data-action="goHome();closeMenus()">Exit to Desktop</div></div>
+          <div class="w95-dropdown" id="fileMenu">
+              <div class="w95-dropdown-item" data-action="generateSingle();closeMenus()">Generate Label</div>
+              <div class="w95-dropdown-item" data-action="printLabels();closeMenus()">Print...</div>
+              <div class="w95-dropdown-sep"></div>
+              <div class="w95-dropdown-item" data-action="clearSingle();closeMenus()">New / Clear</div>
+              <div class="w95-dropdown-sep"></div>
+              <div class="w95-dropdown-item" data-action="goHome();closeMenus()">Exit to Desktop</div>
+          </div>
         </div>
         <div class="w95-menu-wrapper">
           <span class="w95-menu-item" data-action="toggleMenu('editMenu')">Edit</span>
           <div class="w95-dropdown" id="editMenu">
-            <div class="w95-dropdown-label">Label Layout</div><div class="w95-dropdown-sep"></div>
+            <div class="w95-dropdown-label">Label Layout</div>
+            <div class="w95-dropdown-sep"></div>
             <div class="w95-dropdown-item" data-action="setLayout('1x1');closeMenus()"><span class="check" id="chk-1x1">✓</span> 1 × 1 (Default)</div>
             <div class="w95-dropdown-item" data-action="setLayout('1x2');closeMenus()"><span class="check" id="chk-1x2">&nbsp;</span> 1 × 2</div>
             <div class="w95-dropdown-item" data-action="setLayout('2x2');closeMenus()"><span class="check" id="chk-2x2">&nbsp;</span> 2 × 2</div>
@@ -1392,7 +1512,8 @@
         <div class="w95-menu-wrapper">
           <span class="w95-menu-item" data-action="toggleMenu('viewMenu')">View</span>
           <div class="w95-dropdown" id="viewMenu">
-            <div class="w95-dropdown-item" data-action="goHome();closeMenus()">Home</div>
+            <div class="w95-dropdown-item" data-action="goHome();closeMenus()">🖥 Desktop</div>
+            <div class="w95-dropdown-sep"></div>
             <div class="w95-dropdown-item" data-action="openPage('single');closeMenus()">Single Label</div>
             <div class="w95-dropdown-item" data-action="openPage('batch');closeMenus()">Batch Label</div>
             <div class="w95-dropdown-item" data-action="openPage('history');closeMenus()">Print History</div>
@@ -1401,7 +1522,7 @@
         <div class="w95-menu-wrapper">
           <span class="w95-menu-item" data-action="toggleMenu('helpMenu')">Help</span>
           <div class="w95-dropdown" id="helpMenu">
-            <div class="w95-dropdown-item" data-action="alert('Labelmaker v4.2\nKSB Shipping Label System\nWindows 95 Edition');closeMenus()">About...</div>
+            <div class="w95-dropdown-item" data-action="alert('Labelmaker v4.2\nKSB Shipping Label System\nWindows 95 Edition\n\nShortcuts:\n  Enter — Generate label\n  Ctrl+P — Print');closeMenus()">About Labelmaker...</div>
           </div>
         </div>
       </div>
@@ -1486,24 +1607,38 @@
       <div class="w95-menu-bar">
         <div class="w95-menu-wrapper">
           <span class="w95-menu-item" data-action="toggleMenu('fileMenu2')">File</span>
-          <div class="w95-dropdown" id="fileMenu2"><div class="w95-dropdown-item" data-action="goHome();closeMenus()">Exit to Desktop</div></div>
+          <div class="w95-dropdown" id="fileMenu2">
+              <div class="w95-dropdown-item" data-action="generateBatch();closeMenus()">Generate Labels</div>
+              <div class="w95-dropdown-item" data-action="printLabels();closeMenus()">Print All...</div>
+              <div class="w95-dropdown-sep"></div>
+              <div class="w95-dropdown-item" data-action="addBatchCard();closeMenus()">Add Label</div>
+              <div class="w95-dropdown-item" data-action="addBatchCards(5);closeMenus()">Add 5 Labels</div>
+              <div class="w95-dropdown-sep"></div>
+              <div class="w95-dropdown-item" data-action="clearBatch();closeMenus()">New / Clear All</div>
+              <div class="w95-dropdown-sep"></div>
+              <div class="w95-dropdown-item" data-action="goHome();closeMenus()">Exit to Desktop</div>
+          </div>
         </div>
         <div class="w95-menu-wrapper">
           <span class="w95-menu-item" data-action="toggleMenu('editMenu2')">Edit</span>
           <div class="w95-dropdown" id="editMenu2">
-            <div class="w95-dropdown-label">Label Layout</div><div class="w95-dropdown-sep"></div>
+            <div class="w95-dropdown-label">Label Layout</div>
+            <div class="w95-dropdown-sep"></div>
             <div class="w95-dropdown-item" data-action="setLayout('1x1');closeMenus()"><span class="check" id="chk2-1x1">✓</span> 1 × 1 (Default)</div>
             <div class="w95-dropdown-item" data-action="setLayout('1x2');closeMenus()"><span class="check" id="chk2-1x2">&nbsp;</span> 1 × 2</div>
             <div class="w95-dropdown-item" data-action="setLayout('2x2');closeMenus()"><span class="check" id="chk2-2x2">&nbsp;</span> 2 × 2</div>
             <div class="w95-dropdown-item" data-action="setLayout('2x3');closeMenus()"><span class="check" id="chk2-2x3">&nbsp;</span> 2 × 3</div>
             <div class="w95-dropdown-item" data-action="setLayout('3x2');closeMenus()"><span class="check" id="chk2-3x2">&nbsp;</span> 3 × 2</div>
             <div class="w95-dropdown-item" data-action="setLayout('3x3');closeMenus()"><span class="check" id="chk2-3x3">&nbsp;</span> 3 × 3</div>
+            <div class="w95-dropdown-sep"></div>
+            <div class="w95-dropdown-item" data-action="pasteExcelToCards();closeMenus()">Paste from Excel</div>
           </div>
         </div>
         <div class="w95-menu-wrapper">
           <span class="w95-menu-item" data-action="toggleMenu('viewMenu2')">View</span>
           <div class="w95-dropdown" id="viewMenu2">
-            <div class="w95-dropdown-item" data-action="goHome();closeMenus()">Home</div>
+            <div class="w95-dropdown-item" data-action="goHome();closeMenus()">🖥 Desktop</div>
+            <div class="w95-dropdown-sep"></div>
             <div class="w95-dropdown-item" data-action="openPage('single');closeMenus()">Single Label</div>
             <div class="w95-dropdown-item" data-action="openPage('batch');closeMenus()">Batch Label</div>
             <div class="w95-dropdown-item" data-action="openPage('history');closeMenus()">Print History</div>
@@ -1512,7 +1647,7 @@
         <div class="w95-menu-wrapper">
           <span class="w95-menu-item" data-action="toggleMenu('helpMenu2')">Help</span>
           <div class="w95-dropdown" id="helpMenu2">
-            <div class="w95-dropdown-item" data-action="alert('Labelmaker v4.2\nKSB Shipping Label System\nWindows 95 Edition');closeMenus()">About...</div>
+            <div class="w95-dropdown-item" data-action="alert('Labelmaker v4.2\nKSB Shipping Label System\nWindows 95 Edition\n\nShortcuts:\n  Ctrl+P — Print all labels\n  Add Label — inserts a new card\n  Paste from Excel — bulk import');closeMenus()">About Labelmaker...</div>
           </div>
         </div>
       </div>
@@ -1533,7 +1668,6 @@
                 <button class="w95-btn primary" data-action="addBatchCard()"><span>➕</span> Add Label</button>
                 <button class="w95-btn" data-action="addBatchCards(5)"><span>➕➕</span> Add 5</button>
                 <div class="bulk-toolbar-sep"></div>
-                <button class="w95-btn" data-action="pasteExcelToCards()"><span>📋</span> Paste Excel</button>
                 <button class="w95-btn" data-action="clearAllBatchCards()"><span>🗑</span> Clear</button>
                 <div class="bulk-count" id="batchCardCount">0 label(s)</div>
               </div>
@@ -1611,12 +1745,17 @@
       <div class="w95-menu-bar">
         <div class="w95-menu-wrapper">
           <span class="w95-menu-item" data-action="toggleMenu('fileMenu3')">File</span>
-          <div class="w95-dropdown" id="fileMenu3"><div class="w95-dropdown-item" data-action="goHome();closeMenus()">Exit to Desktop</div></div>
+          <div class="w95-dropdown" id="fileMenu3">
+              <div class="w95-dropdown-item" data-action="clearHistory();closeMenus()">Clear History</div>
+              <div class="w95-dropdown-sep"></div>
+              <div class="w95-dropdown-item" data-action="goHome();closeMenus()">Exit to Desktop</div>
+          </div>
         </div>
         <div class="w95-menu-wrapper">
           <span class="w95-menu-item" data-action="toggleMenu('editMenu3')">Edit</span>
           <div class="w95-dropdown" id="editMenu3">
-            <div class="w95-dropdown-label">Label Layout</div><div class="w95-dropdown-sep"></div>
+            <div class="w95-dropdown-label">Label Layout</div>
+            <div class="w95-dropdown-sep"></div>
             <div class="w95-dropdown-item" data-action="setLayout('1x1');closeMenus()"><span class="check" id="chk3-1x1">✓</span> 1 × 1 (Default)</div>
             <div class="w95-dropdown-item" data-action="setLayout('1x2');closeMenus()"><span class="check" id="chk3-1x2">&nbsp;</span> 1 × 2</div>
             <div class="w95-dropdown-item" data-action="setLayout('2x2');closeMenus()"><span class="check" id="chk3-2x2">&nbsp;</span> 2 × 2</div>
@@ -1628,7 +1767,8 @@
         <div class="w95-menu-wrapper">
           <span class="w95-menu-item" data-action="toggleMenu('viewMenu3')">View</span>
           <div class="w95-dropdown" id="viewMenu3">
-            <div class="w95-dropdown-item" data-action="goHome();closeMenus()">Home</div>
+            <div class="w95-dropdown-item" data-action="goHome();closeMenus()">🖥 Desktop</div>
+            <div class="w95-dropdown-sep"></div>
             <div class="w95-dropdown-item" data-action="openPage('single');closeMenus()">Single Label</div>
             <div class="w95-dropdown-item" data-action="openPage('batch');closeMenus()">Batch Label</div>
             <div class="w95-dropdown-item" data-action="openPage('history');closeMenus()">Print History</div>
@@ -1637,7 +1777,7 @@
         <div class="w95-menu-wrapper">
           <span class="w95-menu-item" data-action="toggleMenu('helpMenu3')">Help</span>
           <div class="w95-dropdown" id="helpMenu3">
-            <div class="w95-dropdown-item" data-action="alert('Labelmaker v4.2\nKSB Shipping Label System\nWindows 95 Edition');closeMenus()">About...</div>
+            <div class="w95-dropdown-item" data-action="alert('Labelmaker v4.2\nKSB Shipping Label System\nWindows 95 Edition\n\nClick any history entry to reprint.');closeMenus()">About Labelmaker...</div>
           </div>
         </div>
       </div>
@@ -2274,7 +2414,7 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
 ;
 
     // A4 landscape in px at 96dpi: 297mm × 210mm
-    var A4_W_PX = 1122;
+    var A4_W_PX = 1123;
     var A4_H_PX = 794;
 
     function renderPreview() {
@@ -2292,45 +2432,32 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
         return;
       }
 
-      // Available width inside the frame (subtract padding)
-      var availW = frame.clientWidth - 16;
-      if (availW < 80) availW = 300;
+      // A4 landscape at 96dpi: 297mm × 210mm = 1122.5 × 793.7px → round to integers
+      var A4_W = 1123;
+      var A4_H = 794;
 
-      // A4 landscape = 297mm × 210mm at 96 dpi = 1122 × 794 px
-      var scale = availW / A4_W_PX;
-      var thumbW = Math.round(A4_W_PX * scale);
-      var thumbH = Math.round(A4_H_PX * scale);
+      var availW = frame.clientWidth - 16;
+      if (availW < 80) availW = 320;
+
+      var scale = availW / A4_W;
+      var thumbW = Math.round(A4_W * scale);
+      var thumbH = Math.round(A4_H * scale);
 
       var previewHTML = '';
       pages.forEach(function(page) {
-        // Clone the page and strip any inline styles that were set by fitFontsToText()
-        // so the preview is driven purely by the .print-mode CSS (identical to @media print).
         var clone = page.cloneNode(true);
+        // Strip any inline overrides — let .print-mode CSS do all the work
+        clone.querySelectorAll('*').forEach(function(el) { el.removeAttribute('style'); });
+        // Set the clone to exact A4-landscape pixel size so the grid fills it
+        clone.style.cssText = 'width:' + A4_W + 'px;height:' + A4_H + 'px;box-sizing:border-box;overflow:hidden;';
 
-        // Remove all inline font/padding overrides set by fitFontsToText / renderPreview
-        clone.querySelectorAll('.ksb-label, .label-name, .label-attn, .label-address, .label-phone, .label-heading, .ksb-logo').forEach(function(el) {
-          el.removeAttribute('style');
-        });
+        var inner = '<div class="print-mode" style="width:' + A4_W + 'px;height:' + A4_H + 'px;overflow:hidden;background:#fff;">'
+          + clone.outerHTML + '</div>';
 
-        // Size the clone to exact A4-landscape pixel dimensions
-        clone.style.cssText = [
-          'width:' + A4_W_PX + 'px',
-          'height:' + A4_H_PX + 'px',
-          'box-sizing:border-box',
-          'background:#fff',
-          'overflow:hidden'
-        ].join(';');
-
-        // Wrap in a print-mode container so our .print-mode CSS rules apply —
-        // this mirrors @media print exactly without actually being in print mode.
-        var inner = '<div class="print-mode" style="width:' + A4_W_PX + 'px;height:' + A4_H_PX + 'px;overflow:hidden;">'
-          + clone.outerHTML
-          + '</div>';
-
-        previewHTML += '<div class="preview-page-wrap" style="width:' + thumbW + 'px;height:' + thumbH + 'px;">'
-          + '<div class="preview-page-inner" style="width:' + A4_W_PX + 'px;height:' + A4_H_PX + 'px;transform:scale(' + scale.toFixed(4) + ');transform-origin:top left;">'
-          + inner
-          + '</div></div>';
+        previewHTML +=
+          '<div class="preview-page-wrap" style="width:' + thumbW + 'px;height:' + thumbH + 'px;margin-bottom:6px;">'
+          + '<div class="preview-page-inner" style="width:' + A4_W + 'px;height:' + A4_H + 'px;transform:scale(' + scale.toFixed(5) + ');transform-origin:top left;">'
+          + inner + '</div></div>';
       });
 
       frame.innerHTML = previewHTML;
@@ -2459,7 +2586,52 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
       const card = document.createElement('div');
       card.className = 'bulk-card';
       card.id = cardId;
-      card.innerHTML = `<div class="bulk-card-header"><div class="bulk-card-num"><span class="card-badge">${batchCardCount}</span><span>Label No. ${batchCardCount}</span></div><button class="bulk-card-remove" data-action="removeBatchCard('${cardId}')" title="Remove">×</button></div><div class="bulk-card-field"><label>Penerima (Company / Entity)</label><div style="display: flex; gap: 4px;"><select class="w95-select" id="${cardId}_prefix" style="width: auto; min-width: 60px; flex-shrink: 0;" data-change="handleCardPrefixChange('${cardId}'); debounceBatchPreview()"><option value="">—</option><option value="PT" selected>PT</option><option value="CV">CV</option><option value="custom">Custom…</option></select><input type="text" class="w95-input" id="${cardId}_customPrefix" style="display: none; width: 70px; flex-shrink: 0;" placeholder="Prefix" data-input="debounceBatchPreview()"><input type="text" class="w95-input" id="${cardId}_name" placeholder="e.g. EMBLEM ASIA" style="flex: 1;" data-input="debounceBatchPreview()"></div></div><div class="bulk-card-field"><label>Attn (Person Name)</label><input type="text" class="w95-input" id="${cardId}_attn" placeholder="e.g. Ibu Arneta" data-input="debounceBatchPreview()"></div><div class="bulk-card-field"><label>Phone Number</label><input type="text" class="w95-input" id="${cardId}_phone" placeholder="e.g. 08123456789" data-input="debounceBatchPreview()"></div><div class="bulk-card-field"><label>Address</label><textarea class="w95-textarea" id="${cardId}_address" rows="2" placeholder="Full street address..." data-input="debounceBatchPreview()"></textarea></div><div class="bulk-card-sender"><label>Pengirim (Sender)</label><select class="w95-select" id="${cardId}_sender" data-change="handleCardSenderChange('${cardId}'); debounceBatchPreview()"><option value="KSB Indonesia">KSB Indonesia</option><option value="KSB Sales Indonesia">KSB Sales Indonesia</option><option value="custom">Custom...</option></select><input type="text" class="w95-input" id="${cardId}_customSender" style="margin-top: 4px; display: none;" placeholder="Enter custom sender..." data-input="debounceBatchPreview()"></div>`;
+      card.innerHTML = `
+        <div class="bulk-card-header">
+          <div class="bulk-card-num">
+            <span class="card-badge">${batchCardCount}</span>
+            <span>Label No. ${batchCardCount}</span>
+          </div>
+          <div class="bulk-card-actions">
+            <button class="bulk-card-remove" data-action="removeBatchCard('${cardId}')" title="Remove">×</button>
+          </div>
+        </div>
+        <div class="bulk-card-body">
+          <div class="bulk-card-field">
+            <label>Penerima (Company / Entity)</label>
+            <div class="bulk-card-prefix-row">
+              <select class="w95-select" id="${cardId}_prefix" data-change="handleCardPrefixChange('${cardId}'); debounceBatchPreview()">
+                <option value="">—</option>
+                <option value="PT" selected>PT</option>
+                <option value="CV">CV</option>
+                <option value="custom">Custom…</option>
+              </select>
+              <input type="text" class="w95-input custom-prefix-input" id="${cardId}_customPrefix" style="display:none;" placeholder="Prefix" data-input="debounceBatchPreview()">
+              <input type="text" class="w95-input name-input" id="${cardId}_name" placeholder="e.g. EMBLEM ASIA" data-input="debounceBatchPreview()">
+            </div>
+          </div>
+          <div class="bulk-card-field">
+            <label>Attn (Person Name)</label>
+            <input type="text" class="w95-input" id="${cardId}_attn" placeholder="e.g. Ibu Arneta" data-input="debounceBatchPreview()">
+          </div>
+          <div class="bulk-card-field">
+            <label>Phone Number</label>
+            <input type="text" class="w95-input" id="${cardId}_phone" placeholder="e.g. 08123456789" data-input="debounceBatchPreview()">
+          </div>
+          <div class="bulk-card-field">
+            <label>Address</label>
+            <textarea class="w95-textarea" id="${cardId}_address" rows="2" placeholder="Full street address..." data-input="debounceBatchPreview()"></textarea>
+          </div>
+          <div class="bulk-card-sender">
+            <label>Pengirim (Sender)</label>
+            <select class="w95-select" id="${cardId}_sender" data-change="handleCardSenderChange('${cardId}'); debounceBatchPreview()">
+              <option value="KSB Indonesia">KSB Indonesia</option>
+              <option value="KSB Sales Indonesia">KSB Sales Indonesia</option>
+              <option value="custom">Custom...</option>
+            </select>
+            <input type="text" class="w95-input" id="${cardId}_customSender" style="margin-top:4px;display:none;" placeholder="Enter custom sender..." data-input="debounceBatchPreview()">
+          </div>
+        </div>`;
       container.appendChild(card);
       updateBatchCount();
       setTimeout(() => { const firstInput = card.querySelector(`#${cardId}_name`); if (firstInput) firstInput.focus(); }, 50);
@@ -2494,6 +2666,38 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
       batchCardCount = 0;
       updateBatchCount();
       document.getElementById('bStatusPanel').textContent = 'All cards cleared · Layout: ' + currentLayout.replace('x', '×');
+    }
+
+    function duplicateBatchCard(cardId) {
+      const src = document.getElementById(cardId);
+      if (!src) return;
+      // Read values from source card
+      const prefix = src.querySelector(`#${cardId}_prefix`).value;
+      const customPrefix = src.querySelector(`#${cardId}_customPrefix`).value;
+      const name = src.querySelector(`#${cardId}_name`).value;
+      const attn = src.querySelector(`#${cardId}_attn`).value;
+      const phone = src.querySelector(`#${cardId}_phone`).value;
+      const address = src.querySelector(`#${cardId}_address`).value;
+      const sender = src.querySelector(`#${cardId}_sender`).value;
+      const customSender = src.querySelector(`#${cardId}_customSender`).value;
+      // Add a new blank card then fill it
+      addBatchCard();
+      const cards = document.querySelectorAll('.bulk-card');
+      const newCard = cards[cards.length - 1];
+      const newId = newCard.id;
+      newCard.querySelector(`#${newId}_prefix`).value = prefix;
+      const customPrefixEl = newCard.querySelector(`#${newId}_customPrefix`);
+      customPrefixEl.value = customPrefix;
+      customPrefixEl.style.display = prefix === 'custom' ? 'block' : 'none';
+      newCard.querySelector(`#${newId}_name`).value = name;
+      newCard.querySelector(`#${newId}_attn`).value = attn;
+      newCard.querySelector(`#${newId}_phone`).value = phone;
+      newCard.querySelector(`#${newId}_address`).value = address;
+      newCard.querySelector(`#${newId}_sender`).value = sender;
+      const customSenderEl = newCard.querySelector(`#${newId}_customSender`);
+      customSenderEl.value = customSender;
+      customSenderEl.style.display = sender === 'custom' ? 'block' : 'none';
+      debounceBatchPreview();
     }
 
     function updateBatchCount() {
@@ -2690,7 +2894,52 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
         const isCustom = data.fromName !== 'KSB Indonesia' && data.fromName !== 'KSB Sales Indonesia';
         const parsedName2 = parseCompanyPrefix(data.toName);
         const isCustomPrefix2 = parsedName2.prefix === 'custom';
-        card.innerHTML = `<div class="bulk-card-header"><div class="bulk-card-num"><span class="card-badge">${batchCardCount}</span><span>Label No. ${batchCardCount}</span></div><button class="bulk-card-remove" data-action="removeBatchCard('${cardId}')" title="Remove">×</button></div><div class="bulk-card-field"><label>Penerima (Company / Entity)</label><div style="display: flex; gap: 4px;"><select class="w95-select" id="${cardId}_prefix" style="width: auto; min-width: 60px; flex-shrink: 0;" data-change="handleCardPrefixChange('${cardId}'); debounceBatchPreview()"><option value="" ${parsedName2.prefix === '' ? 'selected' : ''}>—</option><option value="PT" ${parsedName2.prefix === 'PT' ? 'selected' : ''}>PT</option><option value="CV" ${parsedName2.prefix === 'CV' ? 'selected' : ''}>CV</option><option value="custom" ${isCustomPrefix2 ? 'selected' : ''}>Custom…</option></select><input type="text" class="w95-input" id="${cardId}_customPrefix" style="display: ${isCustomPrefix2 ? 'block' : 'none'}; width: 70px; flex-shrink: 0;" value="${escapeHtml(isCustomPrefix2 ? parsedName2.customPrefix : '')}" placeholder="Prefix" data-input="debounceBatchPreview()"><input type="text" class="w95-input" id="${cardId}_name" value="${escapeHtml(parsedName2.name)}" placeholder="e.g. EMBLEM ASIA" style="flex: 1;" data-input="debounceBatchPreview()"></div></div><div class="bulk-card-field"><label>Attn (Person Name)</label><input type="text" class="w95-input" id="${cardId}_attn" value="${escapeHtml(data.toAttn)}" placeholder="e.g. Ibu Arneta" data-input="debounceBatchPreview()"></div><div class="bulk-card-field"><label>Phone Number</label><input type="text" class="w95-input" id="${cardId}_phone" value="${escapeHtml(data.toPhone)}" placeholder="e.g. 08123456789" data-input="debounceBatchPreview()"></div><div class="bulk-card-field"><label>Address</label><textarea class="w95-textarea" id="${cardId}_address" rows="2" placeholder="Full street address..." data-input="debounceBatchPreview()">${escapeHtml(data.toAddress)}</textarea></div><div class="bulk-card-sender"><label>Pengirim (Sender)</label><select class="w95-select" id="${cardId}_sender" data-change="handleCardSenderChange('${cardId}'); debounceBatchPreview()"><option value="KSB Indonesia" ${data.fromName === 'KSB Indonesia' ? 'selected' : ''}>KSB Indonesia</option><option value="KSB Sales Indonesia" ${data.fromName === 'KSB Sales Indonesia' ? 'selected' : ''}>KSB Sales Indonesia</option><option value="custom" ${isCustom ? 'selected' : ''}>Custom...</option></select><input type="text" class="w95-input" id="${cardId}_customSender" style="margin-top: 4px; display: ${isCustom ? 'block' : 'none'};" value="${isCustom ? escapeHtml(data.fromName) : ''}" placeholder="Enter custom sender..." data-input="debounceBatchPreview()"></div>`;
+        card.innerHTML = `
+          <div class="bulk-card-header">
+            <div class="bulk-card-num">
+              <span class="card-badge">${batchCardCount}</span>
+              <span>Label No. ${batchCardCount}</span>
+            </div>
+            <div class="bulk-card-actions">
+              <button class="bulk-card-remove" data-action="removeBatchCard('${cardId}')" title="Remove">×</button>
+            </div>
+          </div>
+          <div class="bulk-card-body">
+            <div class="bulk-card-field">
+              <label>Penerima (Company / Entity)</label>
+              <div class="bulk-card-prefix-row">
+                <select class="w95-select" id="${cardId}_prefix" data-change="handleCardPrefixChange('${cardId}'); debounceBatchPreview()">
+                  <option value="" ${parsedName2.prefix === '' ? 'selected' : ''}>—</option>
+                  <option value="PT" ${parsedName2.prefix === 'PT' ? 'selected' : ''}>PT</option>
+                  <option value="CV" ${parsedName2.prefix === 'CV' ? 'selected' : ''}>CV</option>
+                  <option value="custom" ${isCustomPrefix2 ? 'selected' : ''}>Custom…</option>
+                </select>
+                <input type="text" class="w95-input custom-prefix-input" id="${cardId}_customPrefix" style="display:${isCustomPrefix2 ? 'block' : 'none'};" value="${escapeHtml(isCustomPrefix2 ? parsedName2.customPrefix : '')}" placeholder="Prefix" data-input="debounceBatchPreview()">
+                <input type="text" class="w95-input name-input" id="${cardId}_name" value="${escapeHtml(parsedName2.name)}" placeholder="e.g. EMBLEM ASIA" data-input="debounceBatchPreview()">
+              </div>
+            </div>
+            <div class="bulk-card-field">
+              <label>Attn (Person Name)</label>
+              <input type="text" class="w95-input" id="${cardId}_attn" value="${escapeHtml(data.toAttn)}" placeholder="e.g. Ibu Arneta" data-input="debounceBatchPreview()">
+            </div>
+            <div class="bulk-card-field">
+              <label>Phone Number</label>
+              <input type="text" class="w95-input" id="${cardId}_phone" value="${escapeHtml(data.toPhone)}" placeholder="e.g. 08123456789" data-input="debounceBatchPreview()">
+            </div>
+            <div class="bulk-card-field">
+              <label>Address</label>
+              <textarea class="w95-textarea" id="${cardId}_address" rows="2" placeholder="Full street address..." data-input="debounceBatchPreview()">${escapeHtml(data.toAddress)}</textarea>
+            </div>
+            <div class="bulk-card-sender">
+              <label>Pengirim (Sender)</label>
+              <select class="w95-select" id="${cardId}_sender" data-change="handleCardSenderChange('${cardId}'); debounceBatchPreview()">
+                <option value="KSB Indonesia" ${data.fromName === 'KSB Indonesia' ? 'selected' : ''}>KSB Indonesia</option>
+                <option value="KSB Sales Indonesia" ${data.fromName === 'KSB Sales Indonesia' ? 'selected' : ''}>KSB Sales Indonesia</option>
+                <option value="custom" ${isCustom ? 'selected' : ''}>Custom...</option>
+              </select>
+              <input type="text" class="w95-input" id="${cardId}_customSender" style="margin-top:4px;display:${isCustom ? 'block' : 'none'};" value="${isCustom ? escapeHtml(data.fromName) : ''}" placeholder="Enter custom sender..." data-input="debounceBatchPreview()">
+            </div>
+          </div>`;
         container.appendChild(card);
       });
       updateBatchCount();
@@ -2772,7 +3021,20 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
       }
       applyLayoutToPrintArea();
       fitFontsToText();
+
+      // Build a descriptive filename: "KSB Labels - N label(s) - YYYY-MM-DD"
+      const labelCount = printArea.querySelectorAll('.ksb-label').length;
+      const now = new Date();
+      const dateStr = now.getFullYear() + '-'
+        + String(now.getMonth() + 1).padStart(2, '0') + '-'
+        + String(now.getDate()).padStart(2, '0');
+      const originalTitle = document.title;
+      document.title = 'KSB Labels - ' + labelCount + ' label(s) - ' + dateStr;
+
       window.print();
+
+      // Restore title after print dialog closes
+      setTimeout(function() { document.title = originalTitle; }, 1000);
     }
 
     function addToHistory(data, type) {
