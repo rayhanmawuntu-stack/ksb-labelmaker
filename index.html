@@ -594,7 +594,7 @@
         height: 100% !important;
         min-height: 0 !important;
         margin: 0 !important;
-        /* Double-border frame: outer solid + inset white gap + inset inner black */
+        /* Double-border frame */
         border: 1.5pt solid #000 !important;
         box-shadow:
           inset 0 0 0 2pt #fff,
@@ -608,9 +608,8 @@
         position: relative !important;
         overflow: hidden !important;
         background: #fff !important;
-        /* Base font size — all children use em units */
         font-size: 9pt !important;
-        padding: 0.6em 0.75em !important;
+        padding: 1em 1.1em !important;
       }
       .ksb-label-inner {
         position: relative !important;
@@ -625,8 +624,9 @@
         display: flex !important;
         flex-direction: column !important;
         min-height: 0 !important;
-        padding-right: 4.5em !important;
+        padding-right: 5em !important;
         justify-content: flex-start !important;
+        padding-top: 0.15em !important;
       }
       .sender-section {
         flex: 0 0 auto !important;
@@ -635,64 +635,67 @@
       .label-divider {
         background: #000 !important;
         flex: 0 0 auto !important;
-        margin: 0.35em 0 !important;
-        height: 1pt !important;
+        margin: 0.55em 0 !important;
+        height: 0.8pt !important;
         border: none !important;
+        opacity: 0.6 !important;
       }
 
-      /* ── Font sizing — tuned to match PDF proportions ── */
+      /* ── Typography — professional, airy, clear hierarchy ── */
       .label-heading {
-        font-size: 0.68em !important;
-        color: #000 !important;
+        font-size: 0.7em !important;
+        color: #555 !important;
         text-transform: none !important;
-        margin-bottom: 0.1em !important;
+        margin-bottom: 0.2em !important;
         font-weight: 400 !important;
+        letter-spacing: 0.03em !important;
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
       }
       .label-name {
-        font-size: 1.55em !important;
+        font-size: 1.45em !important;
         font-weight: 800 !important;
         text-transform: uppercase !important;
-        letter-spacing: 0em !important;
+        letter-spacing: 0.04em !important;
         word-break: break-word !important;
-        line-height: 1.1 !important;
-        margin-bottom: 0.2em !important;
+        line-height: 1.15 !important;
+        margin-bottom: 0.3em !important;
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
       }
       .label-attn {
-        font-size: 0.82em !important;
+        font-size: 0.8em !important;
         font-style: italic !important;
         text-transform: none !important;
         word-break: break-word !important;
-        color: #000 !important;
-        line-height: 1.2 !important;
-        margin-bottom: 0.25em !important;
+        color: #222 !important;
+        line-height: 1.3 !important;
+        margin-bottom: 0.4em !important;
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
       }
       .label-address {
-        font-size: 0.88em !important;
+        font-size: 0.82em !important;
         font-weight: 700 !important;
         text-transform: uppercase !important;
-        letter-spacing: 0em !important;
-        line-height: 1.3 !important;
+        letter-spacing: 0.025em !important;
+        line-height: 1.5 !important;
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
       }
       .label-phone {
-        font-size: 0.82em !important;
+        font-size: 0.78em !important;
         font-style: italic !important;
         font-weight: 400 !important;
-        color: #000 !important;
+        color: #333 !important;
+        letter-spacing: 0.01em !important;
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
       }
 
-      /* Logo — top-right, sized proportionally */
+      /* Logo — top-right */
       .ksb-logo {
         position: absolute !important;
-        top: 0.3em !important;
-        right: 0.3em !important;
-        width: 3.8em !important;
+        top: 0.6em !important;
+        right: 0.6em !important;
+        width: 3.6em !important;
         height: auto !important;
-        opacity: 0.85 !important;
+        opacity: 0.75 !important;
       }
     }    }
 
@@ -767,7 +770,7 @@
       overflow: hidden !important;
       background: #fff !important;
       font-size: 12px !important;
-      padding: 7px 9px !important;
+      padding: 12px 14px !important;
     }
     .print-mode .ksb-label-inner {
       position: relative !important;
@@ -782,7 +785,8 @@
       display: flex !important;
       flex-direction: column !important;
       min-height: 0 !important;
-      padding-right: 46px !important;
+      padding-right: 56px !important;
+      padding-top: 2px !important;
       justify-content: flex-start !important;
     }
     .print-mode .sender-section {
@@ -792,26 +796,28 @@
     .print-mode .label-divider {
       background: #000 !important;
       flex: 0 0 auto !important;
-      margin: 4px 0 !important;
+      margin: 7px 0 !important;
       height: 1px !important;
       border: none !important;
+      opacity: 0.6 !important;
     }
     .print-mode .label-heading {
-      font-size: 8px !important;
-      color: #000 !important;
+      font-size: 8.5px !important;
+      color: #555 !important;
       text-transform: none !important;
-      margin-bottom: 1px !important;
+      margin-bottom: 2px !important;
       font-weight: 400 !important;
+      letter-spacing: 0.03em !important;
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
     }
     .print-mode .label-name {
-      font-size: 18px !important;
+      font-size: 17px !important;
       font-weight: 800 !important;
       text-transform: uppercase !important;
-      letter-spacing: 0 !important;
+      letter-spacing: 0.04em !important;
       word-break: break-word !important;
-      line-height: 1.1 !important;
-      margin-bottom: 2px !important;
+      line-height: 1.15 !important;
+      margin-bottom: 4px !important;
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
     }
     .print-mode .label-attn {
@@ -819,33 +825,34 @@
       font-style: italic !important;
       text-transform: none !important;
       word-break: break-word !important;
-      color: #000 !important;
-      line-height: 1.2 !important;
-      margin-bottom: 3px !important;
+      color: #222 !important;
+      line-height: 1.3 !important;
+      margin-bottom: 5px !important;
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
     }
     .print-mode .label-address {
-      font-size: 11px !important;
+      font-size: 10px !important;
       font-weight: 700 !important;
       text-transform: uppercase !important;
-      letter-spacing: 0 !important;
-      line-height: 1.3 !important;
+      letter-spacing: 0.025em !important;
+      line-height: 1.5 !important;
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
     }
     .print-mode .label-phone {
-      font-size: 10px !important;
+      font-size: 9.5px !important;
       font-style: italic !important;
       font-weight: 400 !important;
-      color: #000 !important;
+      color: #333 !important;
+      letter-spacing: 0.01em !important;
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
     }
     .print-mode .ksb-logo {
       position: absolute !important;
-      top: 4px !important;
-      right: 4px !important;
-      width: 46px !important;
+      top: 7px !important;
+      right: 7px !important;
+      width: 44px !important;
       height: auto !important;
-      opacity: 0.85 !important;
+      opacity: 0.75 !important;
     }
 
     .w95-list { border: 2px inset var(--w95-dark); background: var(--w95-light); max-height: 400px; overflow: auto; }
@@ -2432,35 +2439,60 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
         return;
       }
 
-      // A4 landscape at 96dpi: 297mm × 210mm = 1122.5 × 793.7px → round to integers
-      var A4_W = 1123;
-      var A4_H = 794;
+      // True A4 landscape at 96dpi
+      var PW = 1123; // 297mm
+      var PH = 794;  // 210mm
 
       var availW = frame.clientWidth - 16;
       if (availW < 80) availW = 320;
+      var scale = availW / PW;
+      var thumbH = Math.round(PH * scale);
 
-      var scale = availW / A4_W;
-      var thumbW = Math.round(A4_W * scale);
-      var thumbH = Math.round(A4_H * scale);
+      frame.innerHTML = '';
 
-      var previewHTML = '';
-      pages.forEach(function(page) {
-        var clone = page.cloneNode(true);
-        // Strip any inline overrides — let .print-mode CSS do all the work
-        clone.querySelectorAll('*').forEach(function(el) { el.removeAttribute('style'); });
-        // Set the clone to exact A4-landscape pixel size so the grid fills it
-        clone.style.cssText = 'width:' + A4_W + 'px;height:' + A4_H + 'px;box-sizing:border-box;overflow:hidden;';
+      pages.forEach(function(page, idx) {
+        // Wrapper sized to the scaled thumbnail
+        var wrap = document.createElement('div');
+        wrap.style.cssText = 'width:' + Math.round(PW * scale) + 'px;height:' + thumbH + 'px;position:relative;overflow:hidden;margin-bottom:6px;border:1px solid #333;box-shadow:2px 2px 8px rgba(0,0,0,.5);flex-shrink:0;';
 
-        var inner = '<div class="print-mode" style="width:' + A4_W + 'px;height:' + A4_H + 'px;overflow:hidden;background:#fff;">'
-          + clone.outerHTML + '</div>';
+        var iframe = document.createElement('iframe');
+        iframe.style.cssText = 'position:absolute;top:0;left:0;width:' + PW + 'px;height:' + PH + 'px;border:none;transform:scale(' + scale.toFixed(6) + ');transform-origin:top left;background:#fff;';
+        iframe.setAttribute('scrolling', 'no');
 
-        previewHTML +=
-          '<div class="preview-page-wrap" style="width:' + thumbW + 'px;height:' + thumbH + 'px;margin-bottom:6px;">'
-          + '<div class="preview-page-inner" style="width:' + A4_W + 'px;height:' + A4_H + 'px;transform:scale(' + scale.toFixed(5) + ');transform-origin:top left;">'
-          + inner + '</div></div>';
+        wrap.appendChild(iframe);
+        frame.appendChild(wrap);
+
+        // Write the label HTML into the iframe with the label CSS applied directly
+        // This means the browser resolves em/pt/mm in a clean isolated context at the right size
+        var pageHTML = page.outerHTML;
+        var doc = iframe.contentDocument || iframe.contentWindow.document;
+        doc.open();
+        doc.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><style>' +
+          '* { margin:0; padding:0; box-sizing:border-box; }' +
+          'html,body { width:' + PW + 'px; height:' + PH + 'px; overflow:hidden; background:#fff; font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; }' +
+          // Layout grid — exact copy of @media print rules (mm resolves correctly at this px viewport)
+          '.print-page { display:grid; width:' + PW + 'px; height:' + PH + 'px; box-sizing:border-box; align-items:stretch; justify-items:stretch; overflow:hidden; background:#fff; }' +
+          '.print-page.layout-1x1 { grid-template-columns:1fr; grid-template-rows:1fr; gap:0; padding:10mm; }' +
+          '.print-page.layout-1x2 { grid-template-columns:1fr; grid-template-rows:repeat(2,1fr); gap:8mm; padding:8mm; }' +
+          '.print-page.layout-2x2 { grid-template-columns:repeat(2,1fr); grid-template-rows:repeat(2,1fr); gap:6mm; padding:6mm; }' +
+          '.print-page.layout-2x3 { grid-template-columns:repeat(2,1fr); grid-template-rows:repeat(3,1fr); gap:5mm; padding:5mm; }' +
+          '.print-page.layout-3x2 { grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(2,1fr); gap:5mm; padding:5mm; }' +
+          '.print-page.layout-3x3 { grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr); gap:4mm; padding:4mm; }' +
+          // Label styles — exact copy of @media print .ksb-label block
+          '.ksb-label { width:100%; height:100%; margin:0; border:1.5pt solid #000; box-shadow:inset 0 0 0 2pt #fff,inset 0 0 0 3.5pt #000; font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; display:flex; flex-direction:column; justify-content:space-between; box-sizing:border-box; position:relative; overflow:hidden; background:#fff; font-size:9pt; padding:1em 1.1em; }' +
+          '.ksb-label-inner { position:relative; display:flex; flex-direction:column; height:100%; min-height:0; justify-content:space-between; }' +
+          '.recipient-section { flex:1 1 auto; display:flex; flex-direction:column; min-height:0; padding-right:5em; padding-top:0.15em; justify-content:flex-start; }' +
+          '.sender-section { flex:0 0 auto; }' +
+          '.label-divider { background:#000; flex:0 0 auto; margin:0.55em 0; height:0.8pt; border:none; opacity:0.6; }' +
+          '.label-heading { font-size:0.7em; color:#555; margin-bottom:0.2em; font-weight:400; letter-spacing:0.03em; }' +
+          '.label-name { font-size:1.45em; font-weight:800; text-transform:uppercase; letter-spacing:0.04em; word-break:break-word; line-height:1.15; margin-bottom:0.3em; }' +
+          '.label-attn { font-size:0.8em; font-style:italic; color:#222; line-height:1.3; margin-bottom:0.4em; }' +
+          '.label-address { font-size:0.82em; font-weight:700; text-transform:uppercase; letter-spacing:0.025em; line-height:1.5; }' +
+          '.label-phone { font-size:0.78em; font-style:italic; font-weight:400; color:#333; letter-spacing:0.01em; }' +
+          '.ksb-logo { position:absolute; top:0.6em; right:0.6em; width:3.6em; height:auto; opacity:0.75; }' +
+          '</style></head><body>' + pageHTML + '</body></html>');
+        doc.close();
       });
-
-      frame.innerHTML = previewHTML;
     }
     function applyLayoutToPrintArea() {
       const printArea = document.getElementById('printArea');
