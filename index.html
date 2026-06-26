@@ -232,27 +232,6 @@
       transform-origin: top left;
       background: #fff;
     }
-    /* Preview labels should match print styling */
-    .preview-page-inner .ksb-label {
-      border: 2px solid #000 !important;
-      box-shadow: inset 0 0 0 1px #fff, inset 0 0 0 3px #000, inset 0 0 0 4px #fff, inset 0 0 0 6px #000 !important;
-      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
-    }
-    .preview-page-inner .label-divider {
-      background: #000 !important;
-      height: 2px !important;
-      margin: 4px 0 !important;
-    }
-    .preview-page-inner .label-heading {
-      color: #333 !important;
-      text-transform: none !important;
-    }
-    .preview-page-inner .label-attn {
-      color: #444 !important;
-    }
-    .preview-page-inner .label-phone {
-      color: #444 !important;
-    }
 
     .ksb-label {
       width: 100%; max-width: 480px; background: #fff; border: 2px solid #000;
@@ -710,6 +689,150 @@
         opacity: 0.9 !important;
       }
     }    }
+
+    /* ══════════════════════════════════════════════════════
+       PRINT-MODE CLASS — mirrors @media print exactly so the
+       on-screen preview renders identically to the real print.
+       Applied to the .preview-page-inner wrapper in renderPreview().
+       ══════════════════════════════════════════════════════ */
+    .print-mode .print-page {
+      display: grid !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      box-sizing: border-box !important;
+      align-items: stretch !important;
+      justify-items: stretch !important;
+      overflow: hidden !important;
+      background: #fff !important;
+    }
+    .print-mode .print-page.layout-1x1 {
+      grid-template-columns: 1fr;
+      grid-template-rows: 1fr;
+      gap: 0;
+      padding: 10mm;
+    }
+    .print-mode .print-page.layout-1x2 {
+      grid-template-columns: 1fr;
+      grid-template-rows: repeat(2, 1fr);
+      gap: 8mm;
+      padding: 8mm;
+    }
+    .print-mode .print-page.layout-2x2 {
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      gap: 6mm;
+      padding: 6mm;
+    }
+    .print-mode .print-page.layout-2x3 {
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 5mm;
+      padding: 5mm;
+    }
+    .print-mode .print-page.layout-3x2 {
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      gap: 5mm;
+      padding: 5mm;
+    }
+    .print-mode .print-page.layout-3x3 {
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 4mm;
+      padding: 4mm;
+    }
+    .print-mode .ksb-label {
+      width: 100% !important;
+      max-width: 100% !important;
+      height: 100% !important;
+      min-height: 0 !important;
+      margin: 0 !important;
+      box-shadow: none !important;
+      border: 2.5pt solid #000 !important;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: space-between !important;
+      box-sizing: border-box !important;
+      position: relative !important;
+      overflow: hidden !important;
+      background: #fff !important;
+      font-size: 9pt !important;
+      padding: 0.7em 0.9em !important;
+    }
+    .print-mode .ksb-label-inner {
+      position: relative !important;
+      display: flex !important;
+      flex-direction: column !important;
+      height: 100% !important;
+      min-height: 0 !important;
+      justify-content: space-between !important;
+    }
+    .print-mode .recipient-section {
+      flex: 1 1 auto !important;
+      display: flex !important;
+      flex-direction: column !important;
+      min-height: 0 !important;
+      padding-right: 5em !important;
+      justify-content: flex-start !important;
+    }
+    .print-mode .sender-section {
+      flex: 0 0 auto !important;
+      margin-top: 0 !important;
+    }
+    .print-mode .label-divider {
+      background: #000 !important;
+      flex: 0 0 auto !important;
+      margin: 0.3em 0 !important;
+      height: 1.5pt !important;
+      border: none !important;
+    }
+    .print-mode .label-heading {
+      font-size: var(--lh-font, 0.65em) !important;
+      color: #333 !important;
+      text-transform: none !important;
+      margin-bottom: 0.2em !important;
+      font-weight: 400 !important;
+    }
+    .print-mode .label-name {
+      font-size: var(--ln-font, 1.6em) !important;
+      font-weight: 800 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.02em !important;
+      word-break: break-word !important;
+      line-height: 1.15 !important;
+      margin-bottom: 0.25em !important;
+    }
+    .print-mode .label-attn {
+      font-size: var(--la-font, 0.8em) !important;
+      font-style: italic !important;
+      text-transform: uppercase !important;
+      word-break: break-word !important;
+      color: #444 !important;
+      line-height: 1.2 !important;
+      margin-bottom: 0.3em !important;
+    }
+    .print-mode .label-address {
+      font-size: var(--laddr-font, 0.9em) !important;
+      font-weight: 700 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.02em !important;
+      line-height: 1.35 !important;
+    }
+    .print-mode .label-phone {
+      font-size: var(--lp-font, 0.75em) !important;
+      font-style: italic !important;
+      color: #444 !important;
+      margin-top: 0.2em !important;
+    }
+    .print-mode .ksb-logo {
+      position: absolute !important;
+      top: 0.4em !important;
+      right: 0.4em !important;
+      width: var(--logo-w, 4em) !important;
+      height: auto !important;
+      opacity: 0.9 !important;
+    }
 
     .w95-list { border: 2px inset var(--w95-dark); background: var(--w95-light); max-height: 400px; overflow: auto; }
     .w95-list-item { padding: 6px 8px; border-bottom: 1px solid var(--w95-gray); display: flex; justify-content: space-between; align-items: center; font-size: 11px; }
@@ -1172,7 +1295,6 @@
       padding: 20px; text-align: center; color: #800000; font-size: 11px;
     }
 </style>
-<base target="_blank">
 <base target="_blank">
 </head>
 <body>
@@ -2155,84 +2277,45 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
         return;
       }
 
-      // Available width inside the frame
+      // Available width inside the frame (subtract padding)
       var availW = frame.clientWidth - 16;
       if (availW < 80) availW = 300;
 
-      // A4 landscape = 297mm x 210mm at 96dpi = 1122 x 794 px
+      // A4 landscape = 297mm × 210mm at 96 dpi = 1122 × 794 px
       var scale = availW / A4_W_PX;
       var thumbW = Math.round(A4_W_PX * scale);
       var thumbH = Math.round(A4_H_PX * scale);
 
       var previewHTML = '';
       pages.forEach(function(page) {
+        // Clone the page and strip any inline styles that were set by fitFontsToText()
+        // so the preview is driven purely by the .print-mode CSS (identical to @media print).
         var clone = page.cloneNode(true);
 
-        // Apply exact print dimensions and grid styling
-        clone.style.cssText = 'width:' + A4_W_PX + 'px;height:' + A4_H_PX + 'px;padding:30px;box-sizing:border-box;background:#fff;display:grid;position:relative;';
-
-        var layoutClass = Array.from(page.classList).find(function(c) { return c.startsWith('layout-'); });
-        if (layoutClass) clone.classList.add(layoutClass);
-
-        // Apply screen-like font sizing for preview (not print vmin)
-        var labels = clone.querySelectorAll('.ksb-label');
-        labels.forEach(function(label) {
-          // For preview, calculate proportional sizes based on label dimensions
-          var labelW = label.offsetWidth || (A4_W_PX / (layoutClass === 'layout-3x3' ? 3 : layoutClass === 'layout-2x2' || layoutClass === 'layout-2x3' || layoutClass === 'layout-3x2' ? 2 : 1));
-          var labelH = label.offsetHeight || (A4_H_PX / (layoutClass === 'layout-1x2' || layoutClass === 'layout-2x2' || layoutClass === 'layout-3x2' ? 2 : layoutClass === 'layout-2x3' || layoutClass === 'layout-3x3' ? 3 : 1));
-
-          // Calculate base font size proportional to label width
-          // Reference: 480px label = 24px base font for name
-          var baseFont = Math.max(8, Math.min(22, labelW / 20));
-
-          var nameEl = label.querySelector('.label-name');
-          var addrEl = label.querySelector('.label-address');
-          var attnEl = label.querySelector('.label-attn');
-          var phoneEl = label.querySelector('.label-phone');
-          var headingEl = label.querySelector('.label-heading');
-          var logoEl = label.querySelector('.ksb-logo');
-
-          if (nameEl) {
-            var nameLen = nameEl.textContent.length;
-            var addrLen = addrEl ? addrEl.textContent.length : 0;
-            var totalLen = nameLen + addrLen;
-
-            // Scale down for long content
-            var contentScale = 1.0;
-            if (totalLen > 60) contentScale = Math.max(0.5, 1 - (totalLen - 60) * 0.005);
-            if (nameLen > 20) contentScale *= Math.max(0.7, 1 - (nameLen - 20) * 0.01);
-
-            var nameSize = Math.max(10, baseFont * 1.6 * contentScale);
-            var addrSize = Math.max(8, baseFont * 0.9 * contentScale);
-            var attnSize = Math.max(7, baseFont * 0.7 * contentScale);
-            var phoneSize = Math.max(6, baseFont * 0.6 * contentScale);
-            var headingSize = Math.max(6, baseFont * 0.55 * contentScale);
-
-            nameEl.style.fontSize = nameSize + 'px';
-            if (addrEl) addrEl.style.fontSize = addrSize + 'px';
-            if (attnEl) attnEl.style.fontSize = attnSize + 'px';
-            if (phoneEl) phoneEl.style.fontSize = phoneSize + 'px';
-            if (headingEl) headingEl.style.fontSize = headingSize + 'px';
-          }
-
-          // Logo sizing
-          if (logoEl) {
-            var logoW = Math.max(20, Math.min(60, labelW * 0.12));
-            logoEl.style.width = logoW + 'px';
-          }
-
-          // Padding
-          if (labelW < 250) {
-            label.style.padding = '4px 6px';
-          } else if (labelW < 400) {
-            label.style.padding = '6px 10px';
-          }
+        // Remove all inline font/padding overrides set by fitFontsToText / renderPreview
+        clone.querySelectorAll('.ksb-label, .label-name, .label-attn, .label-address, .label-phone, .label-heading, .ksb-logo').forEach(function(el) {
+          el.removeAttribute('style');
         });
 
+        // Size the clone to exact A4-landscape pixel dimensions
+        clone.style.cssText = [
+          'width:' + A4_W_PX + 'px',
+          'height:' + A4_H_PX + 'px',
+          'box-sizing:border-box',
+          'background:#fff',
+          'overflow:hidden'
+        ].join(';');
+
+        // Wrap in a print-mode container so our .print-mode CSS rules apply —
+        // this mirrors @media print exactly without actually being in print mode.
+        var inner = '<div class="print-mode" style="width:' + A4_W_PX + 'px;height:' + A4_H_PX + 'px;overflow:hidden;">'
+          + clone.outerHTML
+          + '</div>';
+
         previewHTML += '<div class="preview-page-wrap" style="width:' + thumbW + 'px;height:' + thumbH + 'px;">'
-              + '<div class="preview-page-inner" style="width:' + A4_W_PX + 'px;height:' + A4_H_PX + 'px;transform:scale(' + scale.toFixed(4) + ');transform-origin:top left;">'
-              + clone.outerHTML
-              + '</div></div>';
+          + '<div class="preview-page-inner" style="width:' + A4_W_PX + 'px;height:' + A4_H_PX + 'px;transform:scale(' + scale.toFixed(4) + ');transform-origin:top left;">'
+          + inner
+          + '</div></div>';
       });
 
       frame.innerHTML = previewHTML;
@@ -2782,95 +2865,13 @@ Built for Labelmaker');closeCalcMenus()">About...</div>
 
     // Approximate chars-per-line at base font for each layout width
     function fitFontsToText() {
-      const printArea = document.getElementById('printArea');
-      if (!printArea) return;
-
-      const pages = printArea.querySelectorAll('.print-page');
-      if (pages.length === 0) {
-        const labels = printArea.querySelectorAll('.ksb-label');
-        labels.forEach(label => fitLabelFonts(label, currentLayout || '1x1'));
-        return;
-      }
-
-      pages.forEach(page => {
-        const layoutMatch = page.className.match(/layout-(\dx\d)/);
-        const layout = layoutMatch ? layoutMatch[1] : (currentLayout || '1x1');
-        page.querySelectorAll('.ksb-label').forEach(label => fitLabelFonts(label, layout));
-      });
+      // No-op: font sizing is now handled entirely by CSS (.print-mode and @media print).
+      // JS inline overrides are no longer applied so the preview and print share
+      // the same cascade and remain pixel-perfect matches.
     }
 
     function fitLabelFonts(label, layout) {
-      // Dynamic font sizing for screen preview — print uses vmin
-      const nameEl = label.querySelector('.label-name');
-      const attnEl = label.querySelector('.label-attn');
-      const addrEl = label.querySelector('.label-address');
-      const phoneEl = label.querySelector('.label-phone');
-      const logoEl = label.querySelector('.ksb-logo');
-      const senderSection = label.querySelector('.sender-section');
-      const recipientSection = label.querySelector('.recipient-section');
-
-      if (!nameEl || !addrEl) return;
-
-      // Get label dimensions
-      const rect = label.getBoundingClientRect();
-      const labelW = rect.width || label.clientWidth || 480;
-      const labelH = rect.height || label.clientHeight || 140;
-
-      // Calculate content metrics
-      const nameText = nameEl.textContent.trim();
-      const attnText = attnEl ? attnEl.textContent.replace(/^Attn:\s*/, '').trim() : '';
-      const addrText = addrEl.textContent.trim();
-      const phoneText = phoneEl ? phoneEl.textContent.trim() : '';
-      const senderNameEl = senderSection ? senderSection.querySelector('.label-name') : null;
-      const senderText = senderNameEl ? senderNameEl.textContent.trim() : '';
-
-      // Base font size calculation (proportional to label size)
-      // Reference: 480px wide label = 10px base font for screen preview
-      const baseFont = Math.max(6, Math.min(13, labelW / 50));
-
-      // Content complexity adjustment — scale down for dense content
-      const nameScore = nameText.length;
-      const addrScore = addrText.length;
-      const totalChars = nameScore + addrScore + (attnText ? attnText.length : 0) + senderText.length;
-
-      let contentScale = 1.0;
-      if (totalChars > 70) {
-        contentScale = Math.max(0.6, 1 - (totalChars - 70) * 0.005);
-      }
-      if (nameScore > 22) {
-        contentScale *= Math.max(0.75, 1 - (nameScore - 22) * 0.01);
-      }
-      if (addrScore > 55) {
-        contentScale *= Math.max(0.85, 1 - (addrScore - 55) * 0.003);
-      }
-
-      // Final font size
-      const finalBase = Math.max(6, baseFont * contentScale);
-
-      // Apply to screen preview (print uses vmin)
-      label.style.fontSize = finalBase + 'px';
-
-      // Logo sizing — proportional to label width
-      if (logoEl) {
-        const logoW = Math.max(20, Math.min(60, labelW * 0.13));
-        logoEl.style.width = logoW + 'px';
-      }
-
-      // Padding adjustment based on label size
-      if (labelW < 180) {
-        label.style.padding = '3px 5px';
-      } else if (labelW < 280) {
-        label.style.padding = '5px 7px';
-      } else if (labelW < 400) {
-        label.style.padding = '6px 10px';
-      } else {
-        label.style.padding = '8px 14px';
-      }
-
-      // Line-height for long addresses
-      if (addrScore > 55) {
-        addrEl.style.lineHeight = '1.3';
-      }
+      // No-op: see fitFontsToText above.
     }
 
 
